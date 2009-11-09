@@ -3,16 +3,34 @@ GemTemplate
 
 A gem template for new projects.
 
-Setup
------
+Requirements
+------------
 
 <pre>
-git clone git://github.com/winton/gem_template.git my_project
-cd my_project
-rake setup
-git remote add origin git@github.com:winton/my_project.git
+sudo gem install stencil --source http://gemcutter.org
 </pre>
 
-A project wide find-replace occurs on file names and contents.
+Setup the template
+------------------
 
-Edit <code>gemspec.rb</code> and <code>MIT-LICENSE</code>, and your project is ready for its first commit.
+You only have to do this once.
+
+<pre>
+git clone git@github.com:winton/gem_template.git
+cd gem_template
+stencil
+</pre>
+
+Setup a new project
+-------------------
+
+Do this for every new project.
+
+<pre>
+mkdir my_project
+git init
+stencil gem_template
+rake rename
+</pre>
+
+The last command does a find-replace (gem\_template -> my\_project) on files and filenames.

@@ -24,10 +24,9 @@ Rake::GemPackageTask.new(GEM_SPEC) do |pkg|
   pkg.gem_spec = GEM_SPEC
 end
 
-desc "Setup project"
-task :setup do
-  name = File.basename(Dir.pwd)
-  `rm -Rf .git`
+desc "Rename project"
+task :rename do
+  name = ENV['NAME'] || File.basename(Dir.pwd)
   begin
     dir = Dir['**/gem_template*']
     from = dir.pop
@@ -43,7 +42,6 @@ task :setup do
       `sed -i "" 's/gem_template/#{name}/g' #{path}`
     end
   end
-  `git init`
 end
 
 desc "Run specs"
