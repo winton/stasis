@@ -8,7 +8,6 @@ GEM_SPEC = Gem::Specification.new do |s|
   s.summary = ""
   # == CONFIGURE ==
   s.executables << GEM_NAME
-  s.extensions  << "install"
   s.extra_rdoc_files = [ "README.markdown" ]
   s.files = GEM_FILES.to_a
   s.has_rdoc = false
