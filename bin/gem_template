@@ -1,4 +1,4 @@
 #!/usr/bin/env ruby
 
-$:.push File.expand_path("#{File.dirname(__FILE__)}/../lib")
-require 'gem_template'
+$:.push File.expand_path("#{File.dirname(__FILE__)}/../config/dep")
+Dep.bin!

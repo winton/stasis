@@ -7,7 +7,7 @@ Requirements
 ------------
 
 <pre>
-sudo gem install stencil --source http://gemcutter.org
+sudo gem install stencil
 </pre>
 
 Setup the template
