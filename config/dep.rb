@@ -4,7 +4,7 @@ require 'dep'
 Dep do
   gem :dep, '=0.1.2'
   gem(:rake, '=0.8.7') { require 'rake' }
-  gem :rspec '=1.3.0'
+  gem :rspec, '=1.3.0'
   
   gemspec do
     author 'Winton Welsh'
@@ -23,8 +23,8 @@ Dep do
   lib { require 'lib/gem_template/gem_template' }
   
   rakefile do
-    rake { require 'rake/gempackagetask' }
-    rspec { require 'spec/rake/spectask' }
+    gem(:rake) { require 'rake/gempackagetask' }
+    gem(:rspec) { require 'spec/rake/spectask' }
     require 'dep/tasks'
   end
   
