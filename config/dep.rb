@@ -1,38 +1,36 @@
 require 'rubygems'
 require 'dep'
 
-Dep.gem do
-  
-  dep '=0.1.1'
-  rake '=0.8.7', :require => %w(rake)
-  rspec '=1.3.0'
-end
-
-Dep.gemspec do
-
-  author 'Winton Welsh'
-  email 'mail@wintoni.us'
-  name 'gem_template'
-  homepage "http://github.com/winton/#{name}"
-  root File.expand_path("#{File.dirname(__FILE__)}/../")
-  summary ""
-  version '0.1.0'
-end
-
-Dep.profile do
-  
-  bin :require => %w(lib/gem_template)
+Dep do
+  gem :dep, '=0.1.2'
+  gem(:rake, '=0.8.7') { require 'rake' }
+  gem :rspec '=1.3.0'
   
   gemspec do
-    dep
+    author 'Winton Welsh'
+    dependencies do
+      gem :dep
+    end
+    email 'mail@wintoni.us'
+    name 'gem_template'
+    homepage "http://github.com/winton/#{name}"
+    root File.expand_path("#{File.dirname(__FILE__)}/../")
+    summary ""
+    version '0.1.0'
   end
   
-  lib :require => %w(lib/gem_template/gem_template)
+  bin { require 'lib/gem_template' }
+  lib { require 'lib/gem_template/gem_template' }
   
-  rakefile :require => %w(dep/tasks) do
-    rake :require => %w(rake/gempackagetask)
-    rspec :require => %w(spec/rake/spectask)
+  rakefile do
+    rake { require 'rake/gempackagetask' }
+    rspec { require 'spec/rake/spectask' }
+    require 'dep/tasks'
   end
   
-  spec_helper :require => %w(dep/spec_helper lib/gem_template pp)
+  spec_helper do
+    require 'dep/spec_helper'
+    require 'lib/gem_template'
+    require 'pp'
+  end
 end
