@@ -1,8 +1,9 @@
 require 'rubygems'
+gem 'require'
 require 'require'
 
 Require File.dirname(__FILE__) do
-  gem :require, '=0.1.5'
+  gem :require, '=0.1.6'
   gem(:rake, '=0.8.7') { require 'rake' }
   gem :rspec, '=1.3.0'
   
