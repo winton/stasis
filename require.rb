@@ -3,7 +3,7 @@ gem 'require'
 require 'require'
 
 Require do
-  gem :require, '=0.2.5'
+  gem :require, '=0.2.6'
   gem(:rake, '=0.8.7') { require 'rake' }
   gem :rspec, '=1.3.0'
   
