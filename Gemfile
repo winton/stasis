@@ -14,6 +14,9 @@ group :gemspec_dev do
   gem 'rspec', v[:rspec]
 end
 
+group :lib do
+end
+
 group :rake do
   gem 'rake', v[:rake], :require => %w(rake rake/gempackagetask)
   gem 'rspec', v[:rspec], :require => %w(spec/rake/spectask)
