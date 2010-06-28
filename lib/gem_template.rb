@@ -1,2 +1,1 @@
-require File.expand_path("#{File.dirname(__FILE__)}/../require")
-Require.lib!
+require 'gem_template/version'
