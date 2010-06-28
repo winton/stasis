@@ -44,6 +44,9 @@ task :default => :spec
 desc "Rename project"
 task :rename do
   name = ENV['NAME'] || File.basename(Dir.pwd)
+  camelize = lambda do |str|
+    str.to_s.gsub(/\/(.?)/) { "::#{$1.upcase}" }.gsub(/(?:^|_)(.)/) { $1.upcase }
+  end
   begin
     dir = Dir['**/gem_template*']
     from = dir.pop
@@ -57,6 +60,7 @@ task :rename do
     next if path.include?('Rakefile')
     if File.file?(path)
       `sed -i 's/gem_template/#{name}/g' #{path}`
+      `sed -i 's/GemTemplate/#{camelize.call(name)}/g' #{path}`
     end
   end
 end
