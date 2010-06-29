@@ -59,8 +59,8 @@ task :rename do
   Dir["**/*"].each do |path|
     next if path.include?('Rakefile')
     if File.file?(path)
-      `sed -i 's/gem_template/#{name}/g' #{path}`
-      `sed -i 's/GemTemplate/#{camelize.call(name)}/g' #{path}`
+      `sed -i '' 's/gem_template/#{name}/g' #{path}`
+      `sed -i '' 's/GemTemplate/#{camelize.call(name)}/g' #{path}`
       no_space = File.read(path).gsub(/\s+\z/, '')
       File.open(path, 'w') { |f| f.write(no_space) }
     end
