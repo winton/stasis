@@ -53,7 +53,7 @@ task :rename do
     if from
       to = from.split('/')
       to[-1].gsub!('gem_template', name)
-      FileUtils.mv(from, to.join)
+      FileUtils.mv(from, to.join('/'))
     end
   end while dir.length > 0
   Dir["**/*"].each do |path|
