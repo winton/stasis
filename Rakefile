@@ -51,9 +51,9 @@ task :rename do
     dir = Dir['**/gem_template*']
     from = dir.pop
     if from
-      rb = from.include?('.rb')
-      to = File.dirname(from) + "/#{name}#{'.rb' if rb}"
-      FileUtils.mv(from, to)
+      to = from.split('/')
+      to[-1].gsub!('gem_template', name)
+      FileUtils.mv(from, to.join)
     end
   end while dir.length > 0
   Dir["**/*"].each do |path|
