@@ -3,14 +3,13 @@ require 'bundler'
 
 Bundler.require(:spec)
 
-require 'lib/gem_template'
-require 'pp'
-
 Spec::Runner.configure do |config|
 end
 
-SPEC = File.expand_path("#{Bundler.root}/spec")
-$:.unshift File.expand_path("#{Bundler.root}/lib")
+SPEC = File.dirname(__FILE__)
+
+require "#{Bundler.root}/lib/gem_template"
+require 'pp'
 
 # For use with rspec textmate bundle
 def debug(object)

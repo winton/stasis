@@ -23,4 +23,9 @@ group :rake do
 end
 
 group :spec do
+  gem 'rspec', v[:rspec], :require => %w(
+    spec/adapters/mock_frameworks/rspec
+    spec/runner/formatter/progress_bar_formatter
+    spec/runner/formatter/text_mate_formatter
+  )
 end
