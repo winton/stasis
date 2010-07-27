@@ -2,9 +2,8 @@
 lib = File.expand_path('../lib/', __FILE__)
 $:.unshift lib unless $:.include?(lib)
 
+require 'gem_template/gems'
 require 'gem_template/version'
-require 'rubygems'
-require 'bundler'
 
 Gem::Specification.new do |s|
   s.name = "gem_template"
@@ -16,12 +15,12 @@ Gem::Specification.new do |s|
   s.summary = ""
   s.description = ""
 
-  Bundler.definition.dependencies.each do |dep|
-    if dep.groups.include?(:gemspec)
-      s.add_dependency dep.name, dep.requirement
-    elsif dep.groups.include?(:gemspec_dev)
-      s.add_development_dependency dep.name, dep.requirement
-    end
+  GemTemplate::Gems::TYPES[:gemspec].each do |g|
+    s.add_dependency g.to_s, GemTemplate::Gems::VERSIONS[g]
+  end
+  
+  GemTemplate::Gems::TYPES[:gemspec_dev].each do |g|
+    s.add_development_dependency g.to_s, GemTemplate::Gems::VERSIONS[g]
   end
 
   s.files = Dir.glob("{bin,lib}/**/*") + %w(LICENSE README.md)

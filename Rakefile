@@ -1,7 +1,10 @@
-require 'rubygems'
-require 'bundler'
+require File.dirname(__FILE__) + '/lib/gem_template/gems'
 
-Bundler.require(:rake)
+GemTemplate::Gems.require(:rake)
+
+require 'rake'
+require 'rake/gempackagetask'
+require 'spec/rake/spectask'
 
 def gemspec
   @gemspec ||= begin
@@ -25,6 +28,41 @@ if defined?(Spec::Rake::SpecTask)
     t.warning = true
   end
   task :spec
+end
+
+namespace :gems do
+  desc "Install gems (DEV=1|0 DOCS=1|0 SUDO=1|0)"
+  task :install do
+    file = File.dirname(__FILE__) + '/gems'
+    sudo = (ENV['SUDO'] ||= '0').to_i
+    docs = (ENV['DOCS'] ||= '0').to_i
+    sudo = sudo == 1 ? 'sudo' : ''
+    docs = docs == 1 ? '' : '--no-ri --no-rdoc'
+    gems = []
+    
+    if File.exists?(file)
+      File.open(file, 'r') do |f|
+        gems = f.readlines.collect do |line|
+          line.split(' ')
+        end
+      end
+    else
+      gems = GemTemplate::Gems::TYPES[:gemspec]
+      gems = GemTemplate::Gems::TYPES[:gemspec_dev] if ENV['DEV'] == '1'
+      gems.collect! do |g|
+        [ g.to_s, GemTemplate::Gems::VERSIONS[g] ]
+      end
+    end
+    
+    gems.each do |(name, version)|      
+      if Gem.source_index.find_name(name, version).empty?
+        version = version ? "-v #{version}" : ''
+        system "#{sudo} gem install #{name} #{version} #{docs}"
+      else
+        puts "already installed: #{name} #{version}"
+      end
+    end
+  end
 end
 
 desc "Install gem locally"
@@ -57,7 +95,6 @@ task :rename do
     end
   end while dir.length > 0
   Dir["**/*"].each do |path|
-    next if path.include?('Rakefile')
     if File.file?(path)
       `sed -i '' 's/gem_template/#{name}/g' #{path}`
       `sed -i '' 's/GemTemplate/#{camelize.call(name)}/g' #{path}`
