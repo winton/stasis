@@ -85,8 +85,8 @@ task :rename do
   camelize = lambda do |str|
     str.to_s.gsub(/\/(.?)/) { "::#{$1.upcase}" }.gsub(/(?:^|_)(.)/) { $1.upcase }
   end
+  dir = Dir['**/gem_template*']
   begin
-    dir = Dir['**/gem_template*']
     from = dir.pop
     if from
       to = from.split('/')
