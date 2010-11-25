@@ -7,7 +7,7 @@ unless defined?(GemTemplate::Gems)
     
       VERSIONS = {
         :rake => '=0.8.7',
-        :rspec => '=1.3.0'
+        :rspec => '=1.3.1'
       }
     
       TYPES = {
