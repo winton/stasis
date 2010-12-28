@@ -1,6 +1,6 @@
 require File.dirname(__FILE__) + '/lib/gem_template/gems'
 
-GemTemplate::Gems.require(:rake)
+GemTemplate::Gems.activate %w(rake rspec)
 
 require 'rake'
 require 'rake/gempackagetask'

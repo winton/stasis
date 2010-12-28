@@ -1,0 +1,12 @@
+name: gem_template
+version: 0.1.0
+authors:
+  -
+email:
+homepage:
+summary:
+description:
+dependencies:
+  -
+development_dependencies:
+  -

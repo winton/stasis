@@ -1,39 +1,32 @@
 unless defined?(GemTemplate::Gems)
   
-  require 'rubygems'
+  require "#{File.dirname(__FILE__)}/gemsets"
   
   module GemTemplate
     class Gems
-    
-      VERSIONS = {
-        :rake => '=0.8.7',
-        :rspec => '=1.3.1'
-      }
-    
-      TYPES = {
-        :gemspec => [],
-        :gemspec_dev => [ :rspec ],
-        :lib => [],
-        :rake => [ :rake, :rspec ],
-        :spec => [ :rspec ]
-      }
-      
       class <<self
         
-        def lockfile
-          file = File.expand_path('../../../gems', __FILE__)
-          unless File.exists?(file)
-            File.open(file, 'w') do |f|
-              Gem.loaded_specs.each do |key, value|
-                f.puts "#{key} #{value.version.version}"
-              end
-            end
-          end
-        end
+        attr_accessor :testing, :versions, :warn
         
-        def require(type=nil)
-          (TYPES[type] || TYPES.values.flatten.compact).each do |name|
-            gem name.to_s, VERSIONS[name]
+        Gems.testing = false
+        Gems.warn = true
+        
+        def activate(*gems)
+          begin
+            require 'rubygems' if !defined?(::Gem) || @testing
+          rescue LoadError
+            puts "rubygems library could not be required" if @warn
+          end
+          
+          Gemsets.gemset = :default unless defined?(@gemset)
+          
+          gems.flatten.collect(&:to_sym).each do |name|
+            version = @versions[name]
+            if defined?(gem)
+              gem name.to_s, version
+            else
+              puts "#{name} #{"(#{version})" if version} failed to activate" if @warn
+            end
           end
         end
       end

@@ -1,0 +1,6 @@
+gem_template:
+  rake: =0.8.7
+  default:
+    rspec: =1.3.1
+  rspec2:
+    rspec: =2.3.0

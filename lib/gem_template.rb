@@ -1,10 +1,8 @@
 require File.dirname(__FILE__) + '/gem_template/gems'
 
-GemTemplate::Gems.require(:lib)
+GemTemplate::Gems.activate %w()
 
 $:.unshift File.dirname(__FILE__)
-
-require 'gem_template/version'
 
 module GemTemplate
 end
