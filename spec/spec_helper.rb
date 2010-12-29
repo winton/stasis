@@ -8,13 +8,3 @@ require 'pp'
 
 Spec::Runner.configure do |config|
 end
-
-def capture_stdout
-  old = $stdout
-  out = StringIO.new
-  $stdout = out
-  yield
-  return out.string
-ensure
-  $stdout = old
-end

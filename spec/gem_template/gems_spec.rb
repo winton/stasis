@@ -2,25 +2,25 @@ require 'spec_helper'
 
 describe GemTemplate::Gems do
   
+  before(:each) do
+    @old_config = GemTemplate::Gems.config
+    
+    GemTemplate::Gems.config.gemspec = "#{$root}/spec/fixtures/gemspec.yml"
+    GemTemplate::Gems.config.gemsets = [
+      "#{$root}/spec/fixtures/gemsets.yml"
+    ]
+    GemTemplate::Gems.config.testing = true
+    GemTemplate::Gems.config.warn = true
+    
+    GemTemplate::Gems.gemspec true
+    GemTemplate::Gems.gemset = nil
+  end
+  
+  after(:each) do
+    GemTemplate::Gems.config = @old_config
+  end
+  
   describe :activate do
-    before(:each) do
-      GemTemplate::Gems.configs = [
-        "#{$root}/spec/fixtures/gemsets.yml"
-      ]
-      GemTemplate::Gems.gemset = nil
-      GemTemplate::Gems.testing = true
-    end
-    
-    it "should warn if unable to require rubygems" do
-      GemTemplate::Gems.stub!(:require)
-      GemTemplate::Gems.should_receive(:require).with('rubygems').and_raise(LoadError)
-      GemTemplate::Gems.stub!(:gem)
-      out = capture_stdout do
-        GemTemplate::Gems.activate :rspec
-      end
-      out.should =~ /rubygems library could not be required/
-    end
-    
     it "should activate gems" do
       GemTemplate::Gems.stub!(:gem)
       GemTemplate::Gems.should_receive(:gem).with('rspec', '=1.3.1')
@@ -31,9 +31,9 @@ describe GemTemplate::Gems do
   
   describe :gemset= do
     before(:each) do
-      GemTemplate::Gems.configs = [
+      GemTemplate::Gems.config.gemsets = [
         {
-          :gem_template => {
+          :name => {
             :rake => '>0.8.6',
             :default => {
               :externals => '=1.0.2'
@@ -55,7 +55,7 @@ describe GemTemplate::Gems do
     
       it "should set @gemsets" do
         GemTemplate::Gems.gemsets.should == {
-          :gem_template => {
+          :name => {
             :rake => ">0.8.6",
             :default => {
               :externals => '=1.0.2',
@@ -93,7 +93,7 @@ describe GemTemplate::Gems do
     
       it "should set @gemsets" do
         GemTemplate::Gems.gemsets.should == {
-          :gem_template => {
+          :name => {
             :rake => ">0.8.6",
             :default => {
               :externals => '=1.0.2',
@@ -126,21 +126,6 @@ describe GemTemplate::Gems do
   end
   
   describe :reload_gemspec do
-    before(:all) do
-      GemTemplate::Gems.configs = [
-        "#{$root}/spec/fixtures/gemsets.yml"
-      ]
-      GemTemplate::Gems.gemset = :default
-    end
-  
-    before(:each) do
-      @gemspec_path = "#{$root}/gem_template.gemspec"
-      @gemspec = File.read(@gemspec_path)
-      yml = File.read("#{$root}/spec/fixtures/gemspec.yml")
-      File.stub!(:read).and_return yml
-      GemTemplate::Gems.reload_gemspec
-    end
-  
     it "should populate @gemspec" do
       GemTemplate::Gems.gemspec.hash.should == {
         "name" => "name",
@@ -168,7 +153,9 @@ describe GemTemplate::Gems do
     end
   
     it "should produce a valid gemspec" do
-      gemspec = eval(@gemspec, binding, @gemspec_path)
+      GemTemplate::Gems.gemset = :default
+      gemspec = File.expand_path("../../../gem_template.gemspec", __FILE__)
+      gemspec = eval(File.read(gemspec), binding, gemspec)
       gemspec.validate.should == true
     end
   end
