@@ -1,16 +1,16 @@
 # -*- encoding: utf-8 -*-
 Gem::Specification.new do |s|
-  GemTemplate::Gemspec.data.each do |key, value|
+  GemTemplate::Gems.gemspec.hash.each do |key, value|
     unless %w(dependencies development_dependencies).include?(key)
       s.send "#{key}=", value
     end
   end
 
-  GemTemplate::Gemspec.dependencies.each do |g|
+  GemTemplate::Gems.gemspec.dependencies.each do |g|
     s.add_dependency g.to_s, GemTemplate::Gems.versions[g]
   end
   
-  GemTemplate::Gemspec.development_dependencies.each do |g|
+  GemTemplate::Gems.gemspec.development_dependencies.each do |g|
     s.add_development_dependency g.to_s, GemTemplate::Gems.versions[g]
   end
 
