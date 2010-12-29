@@ -9,4 +9,4 @@ description:
 dependencies:
   -
 development_dependencies:
-  -
+  - rspec
