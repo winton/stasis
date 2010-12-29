@@ -9,7 +9,6 @@ describe GemTemplate::Gems do
     GemTemplate::Gems.config.gemsets = [
       "#{$root}/spec/fixtures/gemsets.yml"
     ]
-    GemTemplate::Gems.config.testing = true
     GemTemplate::Gems.config.warn = true
     
     GemTemplate::Gems.gemspec true

@@ -23,7 +23,6 @@ unless defined?(GemTemplate::Gems)
         Gems.config = SimpleStruct.new(
           :gemsets => [ "#{File.expand_path('../../../', __FILE__)}/config/gemsets.yml" ],
           :gemspec => "#{File.expand_path('../../../', __FILE__)}/config/gemspec.yml",
-          :testing => false,
           :warn => true
         )
         
