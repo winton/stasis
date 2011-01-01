@@ -9,4 +9,5 @@ description:
 dependencies:
   -
 development_dependencies:
+  - rake
   - rspec

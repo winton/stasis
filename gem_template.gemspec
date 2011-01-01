@@ -3,20 +3,22 @@ lib = File.expand_path('../lib/', __FILE__)
 $:.unshift lib unless $:.include?(lib)
  
 require 'gem_template/gems'
-GemTemplate::Gems.gemset ||= :default
+GemTemplate::Gems.gemset ||= ENV['GEMSET'] || :default
 
 Gem::Specification.new do |s|
   GemTemplate::Gems.gemspec.hash.each do |key, value|
-    unless %w(dependencies development_dependencies).include?(key)
+    if key == 'name' && GemTemplate::Gems.gemset != :default
+      s.name = "#{value}-#{GemTemplate::Gems.gemset}"
+    elsif !%w(dependencies development_dependencies).include?(key)
       s.send "#{key}=", value
     end
   end
 
-  GemTemplate::Gems.gemspec.dependencies.each do |g|
+  GemTemplate::Gems.dependencies.each do |g|
     s.add_dependency g.to_s, GemTemplate::Gems.versions[g]
   end
   
-  GemTemplate::Gems.gemspec.development_dependencies.each do |g|
+  GemTemplate::Gems.development_dependencies.each do |g|
     s.add_development_dependency g.to_s, GemTemplate::Gems.versions[g]
   end
 

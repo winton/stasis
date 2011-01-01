@@ -8,5 +8,14 @@ summary: Summary
 description: Description
 dependencies:
   - rake
+  - default:
+    - mysql
+  - rspec2:
+    - mysql2
 development_dependencies:
-  - rspec
+  - default:
+    - mysql
+    - rspec
+  - rspec2:
+    - mysql2
+    - rspec

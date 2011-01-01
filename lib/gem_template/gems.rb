@@ -6,16 +6,17 @@ unless defined?(GemTemplate::Gems)
     module Gems
       class <<self
         
-        attr_accessor :config, :gemset, :gemsets, :versions
+        attr_accessor :config
+        attr_reader :gemset, :gemsets, :versions
         
         class SimpleStruct
-          attr_accessor :hash
+          attr_reader :hash
           
           def initialize(hash)
             @hash = hash
             @hash.each do |key, value|
-              self.class.send(:define_method, key) { hash[key] }
-              self.class.send(:define_method, "#{key}=") { |v| hash[key] = v }
+              self.class.send(:define_method, key) { @hash[key] }
+              self.class.send(:define_method, "#{key}=") { |v| @hash[key] = v }
             end
           end
         end
@@ -33,7 +34,7 @@ unless defined?(GemTemplate::Gems)
             puts "rubygems library could not be required" if @config.warn
           end
           
-          self.gemset = :default unless defined?(@gemset) && @gemset
+          self.gemset ||= gemset_from_loaded_specs
           
           gems.flatten.collect(&:to_sym).each do |name|
             version = @versions[name]
@@ -43,6 +44,14 @@ unless defined?(GemTemplate::Gems)
               puts "#{name} #{"(#{version})" if version} failed to activate" if @config.warn
             end
           end
+        end
+        
+        def dependencies
+          dependency_filter(@gemspec.dependencies, @gemset)
+        end
+        
+        def development_dependencies
+          dependency_filter(@gemspec.development_dependencies, @gemset)
         end
         
         def gemset=(gemset)
@@ -58,11 +67,11 @@ unless defined?(GemTemplate::Gems)
             }.inject({}) do |hash, config|
               deep_merge(hash, symbolize_keys(config))
             end
-        
-            @versions = @gemsets[gemspec.name.to_sym].inject({}) do |hash, (key, value)|
-              if value.is_a?(::String)
+            
+            @versions = (@gemsets[gemspec.name.to_sym] || {}).inject({}) do |hash, (key, value)|
+              if !value.is_a?(::Hash)
                 hash[key] = value
-              elsif value.is_a?(::Hash) && key == @gemset
+              elsif key == @gemset
                 value.each { |k, v| hash[k] = v }
               end
               hash
@@ -90,6 +99,32 @@ unless defined?(GemTemplate::Gems)
             Hash === v1 && Hash === v2 ? v1.merge(v2, &merger) : v2
           end
           first.merge(second, &merger)
+        end
+        
+        def dependency_filter(dependencies, match)
+          dependencies.inject([]) { |array, value|
+            if value.is_a?(::Hash)
+              array += value[match.to_s] if value[match.to_s]
+            else
+              array << value
+            end
+            array
+          }.uniq.collect(&:to_sym)
+        end
+        
+        def gemset_from_loaded_specs
+          if defined?(Gem)
+            Gem.loaded_specs.each do |name, spec|
+              if name == gemspec.name
+                return :default
+              elsif name[0..gemspec.name.length] == "#{gemspec.name}-"
+                return name[gemspec.name.length+1..-1].to_sym
+              end
+            end
+            :default
+          else
+            :none
+          end
         end
       
         def symbolize_keys(hash)

@@ -58,26 +58,29 @@ describe GemTemplate::Gems do
             :rake => ">0.8.6",
             :default => {
               :externals => '=1.0.2',
+              :mysql => "=2.8.1",
               :rspec => "=1.3.1"
             },
-            :rspec2 => { :rspec => "=2.3.0" }
+            :rspec2 => {
+              :mysql2 => "=0.2.6",
+              :rspec => "=2.3.0"
+            }
           }
         }
       end
     
       it "should set Gems.versions" do
         GemTemplate::Gems.versions.should == {
+          :externals => "=1.0.2",
+          :mysql => "=2.8.1",
           :rake => ">0.8.6",
-          :rspec => "=1.3.1",
-          :externals => "=1.0.2"
+          :rspec => "=1.3.1"
         }
       end
-    
-      it "should set everything to nil if gemset given nil value" do
-        GemTemplate::Gems.gemset = nil
-        GemTemplate::Gems.gemset.should == nil
-        GemTemplate::Gems.gemsets.should == nil
-        GemTemplate::Gems.versions.should == nil
+      
+      it "should return proper values for Gems.dependencies" do
+        GemTemplate::Gems.dependencies.should == [ :rake, :mysql ]
+        GemTemplate::Gems.development_dependencies.should == [ :mysql, :rspec ]
       end
     end
     
@@ -96,18 +99,28 @@ describe GemTemplate::Gems do
             :rake => ">0.8.6",
             :default => {
               :externals => '=1.0.2',
+              :mysql => "=2.8.1",
               :rspec => "=1.3.1"
             },
-            :rspec2 => { :rspec => "=2.3.0" }
+            :rspec2 => {
+              :mysql2=>"=0.2.6",
+              :rspec => "=2.3.0"
+            }
           }
         }
       end
     
       it "should set Gems.versions" do
         GemTemplate::Gems.versions.should == {
+          :mysql2 => "=0.2.6",
           :rake => ">0.8.6",
           :rspec => "=2.3.0"
         }
+      end
+      
+      it "should return proper values for Gems.dependencies" do
+        GemTemplate::Gems.dependencies.should == [ :rake, :mysql2 ]
+        GemTemplate::Gems.development_dependencies.should == [ :mysql2, :rspec ]
       end
     end
     
@@ -124,6 +137,22 @@ describe GemTemplate::Gems do
     end
   end
   
+  describe :gemset_from_loaded_specs do
+    before(:each) do
+      Gem.stub!(:loaded_specs)
+    end
+    
+    it "should return the correct gemset for name gem" do
+      Gem.should_receive(:loaded_specs).and_return({ "name" => nil })
+      GemTemplate::Gems.send(:gemset_from_loaded_specs).should == :default
+    end
+    
+    it "should return the correct gemset for name-rspec gem" do
+      Gem.should_receive(:loaded_specs).and_return({ "name-rspec2" => nil })
+      GemTemplate::Gems.send(:gemset_from_loaded_specs).should == :rspec2
+    end
+  end
+  
   describe :reload_gemspec do
     it "should populate @gemspec" do
       GemTemplate::Gems.gemspec.hash.should == {
@@ -134,8 +163,15 @@ describe GemTemplate::Gems do
         "homepage" => "http://github.com/author/name",
         "summary" => "Summary",
         "description" => "Description",
-        "dependencies" => ["rake"],
-        "development_dependencies" => ["rspec"]
+        "dependencies" => [
+          "rake",
+          { "default" => [ "mysql" ] },
+          { "rspec2" => [ "mysql2" ] }
+        ],
+        "development_dependencies" => [
+          { "default" => [ "mysql", "rspec" ] },
+          { "rspec2" => [ "mysql2", "rspec" ] }
+        ]
        }
     end
   
@@ -147,8 +183,15 @@ describe GemTemplate::Gems do
       GemTemplate::Gems.gemspec.homepage.should == "http://github.com/author/name"
       GemTemplate::Gems.gemspec.summary.should == "Summary"
       GemTemplate::Gems.gemspec.description.should == "Description"
-      GemTemplate::Gems.gemspec.dependencies.should == ["rake"]
-      GemTemplate::Gems.gemspec.development_dependencies.should == ["rspec"]
+      GemTemplate::Gems.gemspec.dependencies.should == [
+        "rake",
+        { "default" => ["mysql"] },
+        { "rspec2" => [ "mysql2" ] }
+      ]
+      GemTemplate::Gems.gemspec.development_dependencies.should == [
+        { "default" => [ "mysql", "rspec" ] },
+        { "rspec2" => [ "mysql2", "rspec" ] }
+      ]
     end
   
     it "should produce a valid gemspec" do
