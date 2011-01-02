@@ -28,8 +28,8 @@ task :gem do
   old_gemset = ENV['GEMSET']
   pkg = "#{File.dirname(__FILE__)}/pkg"
   system "rm -Rf #{pkg}"
-  (GemTemplate::Gems.gemspecs.keys + %w(default nodep)).each do |gemset|
-    ENV['GEMSET'] = gemset
+  GemTemplate::Gems.gemset_names.each do |gemset|
+    ENV['GEMSET'] = gemset.to_s
     system "mkdir -p #{pkg} && cd #{pkg} && gem build ../gem_template.gemspec"
   end
   ENV['GEMSET'] = old_gemset

@@ -9,6 +9,8 @@ Gem::Specification.new do |s|
   GemTemplate::Gems.gemspec.hash.each do |key, value|
     if key == 'name' && GemTemplate::Gems.gemset != :default
       s.name = "#{value}-#{GemTemplate::Gems.gemset}"
+    elsif key == 'summary' && GemTemplate::Gems.gemset == :solo
+      s.summary = value + " (no dependencies)"
     elsif !%w(dependencies development_dependencies).include?(key)
       s.send "#{key}=", value
     end

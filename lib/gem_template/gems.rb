@@ -83,6 +83,13 @@ unless defined?(GemTemplate::Gems)
           end
         end
         
+        def gemset_names
+          [ :default, :solo ] + @gemsets[gemspec.name.to_sym].inject([]) { |array, (key, value)|
+            array.push(key) if value.is_a?(::Hash)
+            array
+          }
+        end
+        
         def gemspec(reload=false)
           if @gemspec && !reload
             @gemspec
