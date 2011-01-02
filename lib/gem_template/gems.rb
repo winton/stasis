@@ -84,10 +84,13 @@ unless defined?(GemTemplate::Gems)
         end
         
         def gemset_names
-          [ :default, :solo ] + @gemsets[gemspec.name.to_sym].inject([]) { |array, (key, value)|
-            array.push(key) if value.is_a?(::Hash)
-            array
-          }
+          (
+            [ :default, :solo ] +
+            @gemsets[gemspec.name.to_sym].inject([]) { |array, (key, value)|
+              array.push(key) if value.is_a?(::Hash)
+              array
+            }
+          ).uniq
         end
         
         def gemspec(reload=false)
