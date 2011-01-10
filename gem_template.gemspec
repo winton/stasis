@@ -26,7 +26,7 @@ Gem::Specification.new do |s|
   end
 
   s.executables = `cd #{root} && git ls-files -- {bin}/*`.split("\n").collect { |f| File.basename(f) }
-  s.files = `cd #{root} && git ls-files`.split("\n")
+  s.files = `cd #{root} && git ls-files`.split("\n").collect { |f| "#{root}/#{f}" }
   s.require_paths = %w(lib)
-  s.test_files = `cd #{root} && git ls-files -- {features,test,spec}/*`.split("\n")
+  s.test_files = `cd #{root} && git ls-files -- {features,test,spec}/*`.split("\n").collect { |f| "#{root}/#{f}" }
 end
