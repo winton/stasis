@@ -72,10 +72,10 @@ unless defined?(GemTemplate::Gems)
             end
             
             @versions = (@gemsets[gemspec.name.to_sym] || {}).inject({}) do |hash, (key, value)|
-              if !value.is_a?(::Hash)
+              if !value.is_a?(::Hash) && value
                 hash[key] = value
               elsif key == @gemset
-                value.each { |k, v| hash[k] = v }
+                (value || {}).each { |k, v| hash[k] = v }
               end
               hash
             end
@@ -88,9 +88,9 @@ unless defined?(GemTemplate::Gems)
         
         def gemset_names
           (
-            [ :default, :solo ] +
+            [ :default ] +
             @gemsets[gemspec.name.to_sym].inject([]) { |array, (key, value)|
-              array.push(key) if value.is_a?(::Hash)
+              array.push(key) if value.is_a?(::Hash) || value.nil?
               array
             }
           ).uniq
@@ -115,7 +115,7 @@ unless defined?(GemTemplate::Gems)
         end
         
         def dependency_filter(dependencies, match)
-          dependencies.inject([]) { |array, value|
+          (dependencies || []).inject([]) { |array, value|
             if value.is_a?(::Hash)
               array += value[match.to_s] if value[match.to_s]
             else

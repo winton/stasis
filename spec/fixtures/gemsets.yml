@@ -6,3 +6,4 @@ name:
   rspec2:
     mysql2: =0.2.6
     rspec: =2.3.0
+  solo: null

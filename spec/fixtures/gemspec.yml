@@ -12,10 +12,4 @@ dependencies:
     - mysql
   - rspec2:
     - mysql2
-development_dependencies:
-  - default:
-    - mysql
-    - rspec
-  - rspec2:
-    - mysql2
-    - rspec
+development_dependencies: null
