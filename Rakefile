@@ -26,11 +26,13 @@ end
 desc "Build gem(s)"
 task :gem do
   old_gemset = ENV['GEMSET']
-  pkg = "#{File.dirname(__FILE__)}/pkg"
+  root = File.expand_path('../', __FILE__)
+  pkg = "#{root}/pkg"
   system "rm -Rf #{pkg}"
   GemTemplate::Gems.gemset_names.each do |gemset|
     ENV['GEMSET'] = gemset.to_s
-    system "mkdir -p #{pkg} && cd #{pkg} && gem build ../gem_template.gemspec"
+    system "cd #{root} && gem build gem_template.gemspec"
+    system "mkdir -p #{pkg} && mv *.gem pkg"
   end
   ENV['GEMSET'] = old_gemset
 end
