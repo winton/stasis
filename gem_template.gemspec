@@ -25,7 +25,7 @@ Gem::Specification.new do |s|
     s.add_development_dependency g.to_s, GemTemplate::Gems.versions[g]
   end
 
-  s.executables = `cd #{root} && git ls-files -- {bin}/*`.split("\n").collect { |f| File.basename(f) }
+  s.executables = `cd #{root} && git ls-files bin/*`.split("\n").collect { |f| File.basename(f) }
   s.files = `cd #{root} && git ls-files`.split("\n")
   s.require_paths = %w(lib)
   s.test_files = `cd #{root} && git ls-files -- {features,test,spec}/*`.split("\n")
