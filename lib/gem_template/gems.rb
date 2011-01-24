@@ -36,7 +36,7 @@ unless defined?(GemTemplate::Gems)
           
           self.gemset ||= gemset_from_loaded_specs
           
-          gems.flatten.collect(&:to_sym).each do |name|
+          gems.flatten.collect { |g| g.to_sym }.each do |name|
             version = @versions[name]
             vendor = File.expand_path("../../../vendor/#{name}/lib", __FILE__)
             if File.exists?(vendor)
