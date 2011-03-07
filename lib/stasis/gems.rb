@@ -1,8 +1,8 @@
-unless defined?(GemTemplate::Gems)
+unless defined?(Stasis::Gems)
   
   require 'yaml'
   
-  module GemTemplate
+  class Stasis
     module Gems
       class <<self
         

@@ -1,13 +1,13 @@
-name: gem_template
+name: stasis
 version: 0.1.0
 authors:
-  -
-email:
-homepage:
-summary:
-description:
+  - Winton Welsh
+email: mail@wintoni.us
+homepage: http://wintoni.us
+summary: Markup-agnostic static site generator
+description: A markup-agnostic static site generator.
 dependencies:
-  -
+  - tilt
 development_dependencies:
   - rake
   - rspec
