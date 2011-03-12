@@ -30,6 +30,7 @@ class Stasis
       next unless File.file?(path)
       next unless Tilt.mappings.keys.include?(File.extname(path)[1..-1])
       context = Context::Render.new rel_path
+      trigger :helpers, context, path, rel_path
       trigger :before, context, path, rel_path
       next if context.ignore
       template = Tilt.new path
@@ -56,7 +57,11 @@ class Stasis
         blocks += callbacks.send(type, rel_path)
         blocks += callbacks.send(type, File.basename(rel_path))
         blocks.each do |block|
-          context.instance_eval &block
+          if type == :helpers
+            context.class.class_eval &block
+          else
+            context.instance_eval &block
+          end
         end
       end
       dir = File.expand_path('../', dir)
@@ -83,6 +88,16 @@ class Stasis
           @before[view] << block
         else
           @before[view]
+        end
+      end
+      
+      def helpers(view=nil, &block)
+        @helpers ||= {}
+        @helpers[view] ||= []
+        if block
+          @helpers[view] << block
+        else
+          @helpers[view]
         end
       end
     end

@@ -41,6 +41,11 @@ Stasis uses [Tilt](https://github.com/rtomayko/tilt) to support the following te
 Example
 -------
 
+Our [spec project](https://github.com/winton/stasis/tree/master/spec/fixtures/project) implements all the features below.
+
+Get Started
+-----------
+
 Create a directory for your project and a markup file:
 
 ### view.erb
@@ -63,9 +68,20 @@ You now have a `public` directory with rendered markup:
 Controllers
 -----------
 
-A controller defines `before` and `after` render callbacks.
-
 The only reserved filename in a Stasis project is `controller.rb`.
+
+You can have a `controller.rb` at any directory level:
+
+    controller.rb
+    index.erb
+    pages/
+      controller.rb
+      page.erb
+
+Callbacks
+---------
+
+Define `before` and `after` render callbacks within your controller:
 
 ### controller.rb
 
@@ -85,19 +101,16 @@ The only reserved filename in a Stasis project is `controller.rb`.
 
     Welcome to <%= @title %>!
 
-### Multiple Controllers
+Change the Destination
+----------------------
 
-You can have a `controller.rb` at any directory level:
+Let's say we want `view.erb` to be our front page:
 
-    controller.rb
-    index.erb
-    pages/
-      controller.rb
-      page.erb
+### controller.rb
 
-This allows you to better organize your callbacks.
-
-Read more about [callback execution order](https://github.com/winton/stasis/wiki/Callback-Execution-Order).
+    before 'view.erb' do
+      @destination = '/index.html'
+    end
 
 Layouts
 -------
@@ -121,25 +134,38 @@ Create the layout markup:
     end
     
     before 'layout.erb' do
-      @ignore = true
+      @destination = nil
     end
 
 We want `view.erb` to use the layout, so we set `@layout = 'layout.erb'`.
 
-We do not want a `public/layout.html` file, so we set `@ignore = true`.
+We do not want a `public/layout.html` file, so we set `@destination = nil`.
 
-Change the Path
----------------
+Helpers
+-------
 
-Let's say we want `view.erb` to be our front page.
+Define helper methods within your controllers.
 
 ### controller.rb
 
-    before 'view.erb' do
-      @path = '/'
+    helpers do
+      def active?(path)
+        @source == path
+      end
     end
 
-Adding `@path = '/'` changes the render location to `public/index.html`.
+### layout.erb
+
+    <%= active?('view.erb') %>
+
+Class Variables
+---------------
+
+To summarize, the following class variables have a special purpose in a Stasis project:
+
+* `@destination` - Get/set the destination path within `public/`
+* `@layout` - Get/set a file path to use as the layout
+* `@source` - Get/set the file path that is being rendered
 
 Continuous Rendering
 --------------------
@@ -159,25 +185,8 @@ In your browser, visit [http://localhost:3000](http://localhost:3000).
 
 In web server mode, Stasis continuously renders (`-c`).
 
-Programmatically Generate Content
----------------------------------
+Other Topics:
+-------------
 
-    require 'rubygems'
-    require 'stasis'
-    
-    stasis = Stasis.new '/path/to/project'
-    
-    # Generate all files
-    stasis.generate '**/*'
-    
-    # Generate one file
-    stasis.generate 'view.erb'
-    
-    # Generate one file with extra callbacks
-    stasis.generate 'view.erb' do
-      before do
-        @path = "/custom/path"
-      end
-    end
-
-Extra callbacks execute before any filters defined in the project.
+* [Callback Execution Order](https://github.com/winton/stasis/wiki/Callback-Execution-Order).
+* [Run Stasis Programmatically](https://github.com/winton/stasis/wiki/Run-Stasis-Programmatically)
