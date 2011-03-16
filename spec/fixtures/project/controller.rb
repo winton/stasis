@@ -1,9 +1,8 @@
-before 'layout.erb' do
-  @ignore = true
-end
+ignore 'layout.html.erb'
+priority /.*erb/ => 1
 
-before 'view.erb' do
-  @layout = 'layout.erb'
+before 'view.html.erb' do
+  @layout = 'layout.html.erb'
   @title = 'My Site'
 end
 

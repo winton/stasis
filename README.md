@@ -41,14 +41,14 @@ Stasis uses [Tilt](https://github.com/rtomayko/tilt) to support the following te
 Example
 -------
 
-Our [spec project](https://github.com/winton/stasis/tree/master/spec/fixtures/project) implements all the features below.
+The [spec project](https://github.com/winton/stasis/tree/master/spec/fixtures/project) implements all of the features in this README.
 
 Get Started
 -----------
 
-Create a directory for your project and a markup file:
+Create a directory for your project, and within that directory, a markup file:
 
-### view.erb
+### view.html.erb
 
     Welcome <%= '!' * 3 %>
 
@@ -63,7 +63,11 @@ You now have a `public` directory with rendered markup:
 
     public/
       view.html
-    view.erb
+    view.html.erb
+
+If the file extension is a supported markup file, it renders into `public`.
+
+If the file extension is unsupported, it copies into `public`.
 
 Controllers
 -----------
@@ -88,58 +92,73 @@ Define `before` and `after` render callbacks within your controller:
     # Call before any file renders
     
     before do
-      @title = 'Default Title'
-    end
-    
-    # Call only before view.erb renders
-    
-    before 'view.erb' do
-      @title = 'My Site'
+      @what_is_rendering = "any file"
     end
 
-### view.erb
+    # Call before any ERB file renders
+    
+    before /.*erb/ do
+      @what_is_rendering = "ERB file"
+    end
+    
+    # Call only before view.html.erb renders
+    
+    before 'view.html.erb' do
+      @what_is_rendering = "the view"
+    end
 
-    Welcome to <%= @title %>!
+### view.html.erb
+
+    <%= @what_is_rendering %>
 
 Change the Destination
 ----------------------
 
-Let's say we want `view.erb` to be our front page:
+Let's say we want `view.html.erb` to be our front page:
 
 ### controller.rb
 
-    before 'view.erb' do
+    destination 'view.html.erb' => '/index.html'
+    
+    # or
+    
+    before 'view.html.erb' do
       @destination = '/index.html'
     end
+
+Ignore
+------
+
+Sometimes you will want to ignore certain files entirely (no render, no copy).
+
+For example, ignore file names with an underscore at the beginning:
+
+### controller.rb
+
+    ignore /_.*/
 
 Layouts
 -------
 
 Create the layout markup:
 
-### layout.erb
+### layout.html.erb
 
     <html>
-      <head>
-        <title><%= @title %></title>
-      </head>
       <body><%= yield %></body>
     </html>
 
 ### controller.rb
 
-    before 'view.erb' do
-      @layout = 'layout.erb'
-      @title = 'My Site'
-    end
+    layout 'view.html.erb' => 'layout.html.erb'
     
-    before 'layout.erb' do
-      @destination = nil
+    # or
+    
+    before 'view.html.erb' do
+      @layout = 'layout.html.erb'
     end
 
-We want `view.erb` to use the layout, so we set `@layout = 'layout.erb'`.
-
-We do not want a `public/layout.html` file, so we set `@destination = nil`.
+Layout files are automatically ignored (don't want to render a `layout.html` file).
 
 Helpers
 -------
@@ -154,18 +173,46 @@ Define helper methods within your controllers.
       end
     end
 
-### layout.erb
+### layout.html.erb
 
-    <%= active?('view.erb') %>
+    <% if active?('view.html.erb') %>
+      Rendering view.html.erb
+    <% end -%>
 
-Class Variables
----------------
+Priority
+--------
 
-To summarize, the following class variables have a special purpose in a Stasis project:
+You may want some files to render or copy before others:
 
-* `@destination` - Get/set the destination path within `public/`
-* `@layout` - Get/set a file path to use as the layout
-* `@source` - Get/set the file path that is being rendered
+### controller.rb
+
+    priority 'view.html.erb' => 1, /.*css/ => 2, /.*js/ => 2
+
+The default priority is `0`.
+
+Summary
+-------
+
+Use the following methods in your controllers:
+
+* `after`
+* `before`
+* `destination`
+* `ignore`
+* `layout`
+* `priority`
+
+Use the following methods within a callback, helper, or view:
+
+* `render`
+
+Use the following class variables in your callbacks, helpers, or views:
+
+* `@destination`
+* `@layout`
+* `@source`
+
+Only alter these class variables from a `before` callback.
 
 Continuous Rendering
 --------------------
@@ -188,5 +235,6 @@ In web server mode, Stasis continuously renders (`-c`).
 Other Topics:
 -------------
 
+* [Asset Packaging](https://github.com/winton/stasis/wiki/Asset-Packaging)
 * [Callback Execution Order](https://github.com/winton/stasis/wiki/Callback-Execution-Order).
 * [Run Stasis Programmatically](https://github.com/winton/stasis/wiki/Run-Stasis-Programmatically)
