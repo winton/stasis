@@ -3,7 +3,11 @@ require File.dirname(__FILE__) + '/lib/gem_template/gems'
 GemTemplate::Gems.activate %w(rake rspec)
 
 require 'rake'
-require 'spec/rake/spectask'
+
+begin
+  require 'spec/rake/spectask'
+rescue Exception => e
+end
 
 def gemspec
   @gemspec ||= begin

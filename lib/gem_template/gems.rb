@@ -39,12 +39,17 @@ unless defined?(GemTemplate::Gems)
           gems.flatten.collect { |g| g.to_sym }.each do |name|
             version = @versions[name]
             vendor = File.expand_path("../../../vendor/#{name}/lib", __FILE__)
+            warning = "#{name} #{"(#{version})" if version} failed to activate"
             if File.exists?(vendor)
               $:.unshift vendor
             elsif defined?(gem)
-              gem name.to_s, version
+              begin
+                gem name.to_s, version
+              rescue Exception => e
+                puts warning if @config.warn
+              end
             else
-              puts "#{name} #{"(#{version})" if version} failed to activate" if @config.warn
+              puts warning if @config.warn
             end
           end
         end
