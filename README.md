@@ -77,10 +77,14 @@ The only reserved filename in a Stasis project is `controller.rb`.
 You can have a `controller.rb` at any directory level:
 
     controller.rb
-    index.erb
+    index.html.erb
     pages/
       controller.rb
-      page.erb
+      page.html.erb
+
+Controllers at the same directory level or above execute for a particular markup file.
+
+For example, `page.html.erb` uses both controllers, but `index.html.erb` only uses the top-level controller.
 
 Callbacks
 ---------
@@ -131,11 +135,17 @@ Ignore
 
 Sometimes you will want to ignore certain files entirely (no render, no copy).
 
-For example, ignore file names with an underscore at the beginning:
+For example, you'll often want to ignore filenames with an underscore at the beginning (partials):
 
 ### controller.rb
 
     ignore /_.*/
+
+    # or
+
+    before /_.*/ do
+      @ignore = true
+    end
 
 Layouts
 -------
@@ -149,6 +159,12 @@ Create the layout markup:
     </html>
 
 ### controller.rb
+
+    # set default layout for all views
+
+    layout 'layout.html.erb'
+
+    # or set layout for specific view
 
     layout 'view.html.erb' => 'layout.html.erb'
     
@@ -189,6 +205,15 @@ You may want some files to render or copy before others:
     priority 'view.html.erb' => 1, /.*css/ => 2, /.*js/ => 2
 
 The default priority is `0`.
+
+Rendering
+---------
+
+Render other files within a callback, helper, or view:
+
+### view.html.erb
+
+    <%= render '_partial.html.erb', :locals => { :x => 'y' } %>
 
 Summary
 -------
