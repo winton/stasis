@@ -9,6 +9,11 @@ Stasis::Gems.activate %w(tilt)
 $:.unshift File.dirname(__FILE__)
 
 require 'stasis/plugin'
+require 'stasis/plugin/helpers'
+
+require 'stasis/context/action'
+require 'stasis/context/controller'
+
 require 'stasis/plugins/after'
 require 'stasis/plugins/before'
 require 'stasis/plugins/destination'
@@ -34,7 +39,7 @@ class Stasis
   def generate(*paths)
     paths = paths.collect { |p| Dir["#{root}/#{p}"] }.flatten
     puts paths.inspect
-    trigger(:before_all, '*', controllers, paths)
+    controllers, paths = trigger(:before_all, '*', controllers, paths)
     puts paths.inspect
     # paths.each do |path|
     #   next unless File.file?(path)
@@ -62,55 +67,17 @@ class Stasis
   def trigger(type, path, *args, &block)
     if path == '*'
       controllers.values.each do |controller|
-        controller._send_to_plugin_by_type(type, *args, &block)
+        args = controller._send_to_plugin_by_type(type, *args, &block)
       end
     else
       dir = File.dirname path
       while dir != File.expand_path('../', root) && dir != '/'
         if controller = controllers[dir]
-          controller._send_to_plugin_by_type(type, *args, &block)
+          args = controller._send_to_plugin_by_type(type, *args, &block)
         end
         dir = File.expand_path('../', dir)
       end
     end
-  end
-  
-  class Context
-    class Controller
-      
-      attr_reader :_
-      include Plugin::Helpers
-      
-      def initialize(path, root)
-        @_ = {
-          :dir => File.dirname(path),
-          :path => path,
-          :rel_dir => File.dirname(path)[root.length+1..-1],
-          :root => root
-        }
-        @_[:plugins] = ::Stasis.constants.collect { |klass|
-          klass = klass.to_s
-          unless %w(Context Gems Plugin).include?(klass)
-            eval("::Stasis::#{klass}").new(@_)
-          end
-        }.compact
-        _bind_plugins(:controller_method)
-        instance_eval File.read(path), path
-      end
-    end
-    
-    class Action
-
-      attr_reader :_, :_controller, :_destination, :_source
-      include Plugin::Helpers
-      
-      def initialize(controller)
-        @_ = controller._
-        @_controller = controller
-        @_destination = _[:rel_path].split('.')[0..-2].join('.')
-        @_source = _[:rel_path]
-        _bind_plugins(:action_method)
-      end
-    end
+    args[1..-1]
   end
 end
