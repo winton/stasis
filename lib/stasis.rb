@@ -25,12 +25,18 @@ require 'stasis/plugins/render'
 
 class Stasis
   
-  attr_reader :controllers, :root
+  attr_reader :controllers, :plugins, :root
   
   def initialize(root)
     @root = root
+    @plugins = self.class.constants.collect { |klass|
+      klass = klass.to_s
+      unless %w(Context Gems Plugin).include?(klass)
+        eval("::Stasis::#{klass}").new
+      end
+    }.compact
     @controllers = Dir["#{root}/**/controller.rb"].inject({}) do |hash, path|
-      context = Context::Controller.new(path, root)
+      context = Context::Controller.new(path, @plugins, root)
       hash[context._[:dir]] = context
       hash
     end
@@ -38,30 +44,28 @@ class Stasis
   
   def generate(*paths)
     paths = paths.collect { |p| Dir["#{root}/#{p}"] }.flatten
-    puts paths.inspect
-    controllers, paths = trigger(:before_all, '*', controllers, paths)
-    puts paths.inspect
-    # paths.each do |path|
-    #   next unless File.file?(path)
-    #   next unless Tilt.mappings.keys.include?(File.extname(path)[1..-1])
-    #   rel_path = path[root.length+1..-1]
-    #   context = Context::Render.new rel_path
-    #   trigger :helpers, context, path
-    #   trigger :before, context, path
-    #   next unless context.destination
-    #   template = Tilt.new path
-    #   view = template.render(context)
-    #   trigger :after, context, path
-    #   if context.layout
-    #     layout_path = "#{root}/#{context.layout}"
-    #     trigger :before, context, layout_path
-    #     template = Tilt.new layout_path
-    #     layout = template.render(context) { view }
-    #     trigger :after, context, layout_path
-    #   end
-    #   puts view.inspect
-    #   puts layout.inspect
-    # end
+    paths.reject! { |p| File.basename(p) == 'controller.rb' }
+    @controllers, paths = trigger(:before_all, '*', controllers, paths)
+    paths.each do |path|
+      action = Context::Action.new(@plugins)
+      each_directory(path) do |dir|
+        if controller = controllers[dir]
+          action._bind_plugins(:action_method)
+        end
+      end
+      trigger(:before_render, path, action, path)
+      view = action.render(path)
+      trigger(:after_render, path, action, path)
+      puts view.inspect
+    end
+  end
+
+  def each_directory(path, &block)
+    dir = File.dirname(path)
+    while dir != File.expand_path('../', root) && dir != '/'
+      yield(dir)
+      dir = File.expand_path('../', dir)
+    end
   end
 
   def trigger(type, path, *args, &block)
@@ -70,12 +74,10 @@ class Stasis
         args = controller._send_to_plugin_by_type(type, *args, &block)
       end
     else
-      dir = File.dirname path
-      while dir != File.expand_path('../', root) && dir != '/'
+      each_directory(path) do |dir|
         if controller = controllers[dir]
           args = controller._send_to_plugin_by_type(type, *args, &block)
         end
-        dir = File.expand_path('../', dir)
       end
     end
     args[1..-1]
