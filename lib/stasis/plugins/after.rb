@@ -18,8 +18,12 @@ class Stasis
     end
 
     def after_render(controller, action, path)
-      if @blocks && @blocks[path]
-        action.instance_eval(@blocks[path])
+      if @blocks && matches = match_key?(@blocks, path)
+        action._[:path] = path
+        matches.flatten.each do |block|
+          action.instance_eval(&block)
+        end
+        action._[:path] = nil
       end
       [ controller, action, path ]
     end

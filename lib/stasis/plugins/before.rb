@@ -18,12 +18,12 @@ class Stasis
     end
 
     def before_render(controller, action, path)
-      if @blocks[path]
-        @blocks[path].each do |block|
-          action._[:path] = path
+      if @blocks && matches = match_key?(@blocks, path)
+        action._[:path] = path
+        matches.flatten.each do |block|
           action.instance_eval(&block)
-          action._[:path] = nil
         end
+        action._[:path] = nil
       end
       [ controller, action, path ]
     end

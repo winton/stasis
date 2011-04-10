@@ -5,6 +5,12 @@ class Stasis
       def _bind_plugins(type)
         _[:plugins].each do |plugin|
           methods = plugin.class._[:methods][type]
+          if methods.is_a?(::Array)
+            methods = methods.inject({}) do |hash, method|
+              hash[method] = method
+              hash
+            end
+          end
           (methods || {}).each do |method, real_method|
             self.instance_eval <<-EVAL
               def #{method}(*args, &block)
@@ -28,9 +34,9 @@ class Stasis
         arg = [ self ].compact + args
         _[:plugins].each do |plugin|
           methods = plugin.class._[:methods][type]
-          (methods || []).each do |method, real_method|
-            if plugin.respond_to?(real_method)
-              arg = plugin.send(real_method, *arg, &block)
+          (methods || []).each do |method|
+            if plugin.respond_to?(method)
+              arg = plugin.send(method, *arg, &block)
             end
           end
         end

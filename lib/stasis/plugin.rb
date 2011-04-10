@@ -15,14 +15,12 @@ class Stasis
         class_eval <<-EVAL, __FILE__, __LINE__ + 1
           def #{method}(*methods)
             self._ ||= { :methods => {}, :priority => 0 }
-            self._[:methods][:#{method}] ||= {}
             if methods[0].is_a?(::Hash)
+              self._[:methods][:#{method}] ||= {}
               self._[:methods][:#{method}].merge!(methods[0])
             else
-              self._[:methods][:#{method}].merge! methods.inject({}) { |hash, method|
-                hash[method] = method
-                hash
-              }
+              self._[:methods][:#{method}] ||= []
+              self._[:methods][:#{method}] += methods
             end
           end
         EVAL
