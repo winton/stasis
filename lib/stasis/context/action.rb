@@ -7,6 +7,7 @@ class Stasis
 
       def initialize(plugins)
         @_ = { :plugins => plugins }
+        _bind_plugins(:action_method)
       end
     end
   end

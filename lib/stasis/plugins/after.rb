@@ -3,6 +3,7 @@ class Stasis
 
     after_render :after_render
     controller_method :after
+    priority 1
 
     def after(controller, path=nil, &block)
       @blocks ||= {}

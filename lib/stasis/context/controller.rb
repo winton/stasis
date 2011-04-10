@@ -26,6 +26,8 @@ class Stasis
           p
         elsif File.file?(p = "#{_[:root]}/#{path}")
           p
+        elsif File.file?(path)
+          path
         else
           false
         end

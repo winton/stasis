@@ -35,6 +35,7 @@ class Stasis
         eval("::Stasis::#{klass}").new
       end
     }.compact
+    @plugins.sort! { |a, b| a.class._[:priority] <=> b.class._[:priority] }
     @controllers = Dir["#{root}/**/controller.rb"].inject({}) do |hash, path|
       context = Context::Controller.new(path, @plugins, root)
       hash[context._[:dir]] = context
@@ -47,15 +48,15 @@ class Stasis
     paths.reject! { |p| File.basename(p) == 'controller.rb' }
     @controllers, paths = trigger(:before_all, '*', controllers, paths)
     paths.each do |path|
-      action = Context::Action.new(@plugins)
-      each_directory(path) do |dir|
-        if controller = controllers[dir]
-          action._bind_plugins(:action_method)
-        end
+      @action = Context::Action.new(@plugins)
+      trigger(:before_render, path, @action, path)
+      if @action._[:layout]
+        view = @action.render(@action._[:layout]) { @action.render(path) }
+      else
+        view = @action.render(path)
       end
-      trigger(:before_render, path, action, path)
-      view = action.render(path)
-      trigger(:after_render, path, action, path)
+      trigger(:after_render, path, @action, path)
+      puts @action._[:layout].inspect
       puts view.inspect
     end
   end
@@ -76,9 +77,11 @@ class Stasis
     else
       each_directory(path) do |dir|
         if controller = controllers[dir]
+          @action._[:controller] = controller
           args = controller._send_to_plugin_by_type(type, *args, &block)
         end
       end
+      @action._[:controller] = nil
     end
     args[1..-1]
   end

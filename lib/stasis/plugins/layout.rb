@@ -1,22 +1,28 @@
 class Stasis
   class Layout < Plugin
 
+    action_method :layout => :layout_action
     before_render :before_render
-    controller_method :layout
+    controller_method :layout => :layout_controller
 
     def before_render(controller, action, path)
-      if @layouts && @layouts[path]
-        unless action.respond_to?(:layout)
-          action.class.send(:attr_reader, :layout)
-        end
-        action.instance_eval <<-RUBY
-          @layout = #{@layouts[path].inspect}
-        RUBY
+      if @layouts && match = match_key?(@layouts, path)[0]
+        action._[:layout] = match
+      else
+        action._[:layout] = nil
       end
       [ controller, action, path ]
     end
 
-    def layout(controller, hash_or_string)
+    def layout_action(action, path)
+      @layouts ||= {}
+      if p = action._[:controller].resolve(path)
+        @layouts[action._[:path]] = p
+        before_render(nil, action, action._[:path])
+      end
+    end
+
+    def layout_controller(controller, hash_or_string)
       if hash_or_string.is_a?(::String)
         hash = {}
         hash[/.*/] = hash_or_string

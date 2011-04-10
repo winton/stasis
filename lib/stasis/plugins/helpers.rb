@@ -5,21 +5,16 @@ class Stasis
     before_render :bind_helpers
 
     def bind_helpers(controller, action, path)
-      if @blocks[path]
-        action.class.class_eval(@blocks[path])
+      (@blocks || []).each do |block|
+        action.class.class_eval(&block)
       end
       [ controller, action, path ]
     end
 
     def helpers(controller, &block)
-      @blocks ||= {}
+      @blocks ||= []
       if block
-        path = controller.resolve(path)
-        return [] if path == false
-        @blocks[path] ||= []
-        @blocks[path] << block
-      else
-        @blocks[path] || []
+        @blocks << block
       end
     end
   end

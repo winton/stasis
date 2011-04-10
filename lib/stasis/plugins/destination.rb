@@ -5,7 +5,7 @@ class Stasis
     controller_method :destination
 
     def before_render(controller, action, path)
-      if @destinations && @destinations[path]
+      if @destinations && match = match_key?(@destinations, path)[0]
         action.instance_eval <<-RUBY
           @destination = #{@destinations[path]}
         RUBY

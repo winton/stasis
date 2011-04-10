@@ -3,6 +3,7 @@ class Stasis
 
     before_render :before_render
     controller_method :before
+    priority 1
 
     def before(controller, path=nil, &block)
       @blocks ||= {}
@@ -19,7 +20,9 @@ class Stasis
     def before_render(controller, action, path)
       if @blocks[path]
         @blocks[path].each do |block|
+          action._[:path] = path
           action.instance_eval(&block)
+          action._[:path] = nil
         end
       end
       [ controller, action, path ]
