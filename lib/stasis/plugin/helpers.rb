@@ -40,7 +40,11 @@ class Stasis
             end
           end
         end
-        arg
+        if arg.length > args.length
+          arg[1..-1]
+        else
+          arg
+        end
       end
     end
   end

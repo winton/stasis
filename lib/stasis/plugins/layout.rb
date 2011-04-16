@@ -32,6 +32,7 @@ class Stasis
       @layouts ||= {}
       @layouts.merge! hash.inject({}) { |hash, (key, value)|
         hash[key] = controller.resolve(value)
+        controller.ignore(hash[key])
         hash
       }
     end

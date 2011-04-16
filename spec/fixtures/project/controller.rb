@@ -1,14 +1,8 @@
-ignore 'layout.html.erb'
-layout 'layout.html.erb'
-priority /.*erb/ => 1
-
-before 'view.html.erb' do
-  #layout 'layout.html.erb'
-  @title = 'My Site'
-end
+# Ignore partials
+ignore /\/_.*/
 
 helpers do
-  def blah
-    '!!!'
+  def link_to(href, value)
+    '<a href="' + href + '">' + value + '</a>'
   end
 end

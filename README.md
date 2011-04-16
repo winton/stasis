@@ -6,9 +6,9 @@ A general-purpose static site generator.
 Philosophy
 ----------
 
-My preferred stack = static markup/assets (Nginx) + services (Node.js).
+I like static web sites + services (Node.js, Sinatra, or Rails).
 
-Stasis helps with the first part of the equation. It can even get fairly dynamic if you need it to.
+Stasis is a static site framework that is almost as powerful as the dynamic frameworks.
 
 Requirements
 ------------

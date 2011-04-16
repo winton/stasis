@@ -5,7 +5,7 @@ class Stasis
     controller_method :priority
 
     def before_all(controller, controllers, paths)
-      priorities = @priorities.sort { |a, b| b[1] <=> a[1] }
+      priorities = (@priorities || []).sort { |a, b| b[1] <=> a[1] }
       priorities = priorities.inject({}) do |hash, (path_or_regexp, priority)|
         paths.each do |path|
           if path_or_regexp.is_a?(::Regexp) && path =~ path_or_regexp

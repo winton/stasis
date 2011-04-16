@@ -5,7 +5,18 @@ class Stasis
     controller_method :ignore
 
     def before_all(controller, controllers, paths)
-      [ controller, controllers, paths - @ignore ]
+      (@ignore || []).each do |ignore|
+        paths.reject! do |path|
+          if ignore.is_a?(::String)
+            ignore == path
+          elsif ignore.is_a?(::Regexp)
+            ignore =~ path
+          else
+            false
+          end
+        end
+      end
+      [ controller, controllers, paths ]
     end
 
     def ignore(controller, *array)

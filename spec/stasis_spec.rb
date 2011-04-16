@@ -4,6 +4,6 @@ describe Stasis do
   
   it "should" do
     stasis = Stasis.new("#{$root}/spec/fixtures/project")
-    stasis.generate("**/*")
+    stasis.generate
   end
 end

@@ -25,9 +25,10 @@ require 'stasis/plugins/render'
 
 class Stasis
   
-  attr_reader :controllers, :plugins, :root
+  attr_reader :controllers, :destination, :plugins, :root
   
-  def initialize(root)
+  def initialize(root, destination=root+'/public')
+    @destination = destination
     @root = root
     @plugins = self.class.constants.collect { |klass|
       klass = klass.to_s
@@ -43,21 +44,49 @@ class Stasis
     end
   end
   
-  def generate(*paths)
-    paths = paths.collect { |p| Dir["#{root}/#{p}"] }.flatten
-    paths.reject! { |p| File.basename(p) == 'controller.rb' }
+  def generate
+    FileUtils.rm_rf(@destination)
+    paths = Dir["#{root}/**/*"]
+    paths.reject! { |p| File.basename(p) == 'controller.rb' || !File.file?(p) }
     @controllers, paths = trigger(:before_all, '*', controllers, paths)
     paths.each do |path|
       @action = Context::Action.new(@plugins)
       trigger(:before_render, path, @action, path)
+      layout_controller = @controllers[File.dirname(@action._[:layout])]
+      path_controller = @controllers[File.dirname(path)]
       if @action._[:layout]
-        view = @action.render(@action._[:layout]) { @action.render(path) }
+        @action._[:controller] = layout_controller
+        view = @action.render(@action._[:layout]) do
+          @action._[:controller] = path_controller
+          output = @action.render(path)
+          @action._[:controller] = layout_controller
+          output
+        end
       else
+        @action._[:controller] = path_controller
         view = @action.render(path)
       end
+      @action._[:controller] = nil
       trigger(:after_render, path, @action, path)
-      puts @action._[:layout].inspect
-      puts view.inspect
+      if @action._[:destination]
+        if @action._[:destination][0..0] == '/'
+          dest = @action._[:destination]
+        else
+          dest = File.dirname(path[root.length..-1]) + @action._[:destination]
+        end
+      else
+        dest = path[root.length..-1]
+      end
+      dest = "#{@destination}#{dest}"
+      Tilt.mappings.keys.each do |ext|
+        if File.extname(dest)[1..-1] == ext
+          dest = dest[0..-1*ext.length-2]
+        end
+      end
+      FileUtils.mkdir_p(File.dirname(dest))
+      File.open(dest, 'w') do |f|
+        f.write(view)
+      end
     end
   end
 
@@ -83,6 +112,6 @@ class Stasis
       end
       @action._[:controller] = nil
     end
-    args[1..-1]
+    args
   end
 end
