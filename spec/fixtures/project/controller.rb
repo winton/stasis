@@ -1,8 +1,14 @@
-# Ignore partials
-ignore /\/_.*/
+# Before
 
-helpers do
-  def link_to(href, value)
-    '<a href="' + href + '">' + value + '</a>'
-  end
+before 'index.html.haml' do
+  @before_index_literal = :root
 end
+
+before /index\.html/ do
+  @before_index_regexp = :root
+end
+
+before do
+  @before_all = :root
+end
+

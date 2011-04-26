@@ -20,6 +20,16 @@ class Stasis
           end
         end
       end
+      
+      def _find_plugins
+        plugins = Stasis.constants.collect { |klass|
+          klass = klass.to_s
+          unless %w(Context Gems Plugin).include?(klass)
+            eval("::Stasis::#{klass}").new
+          end
+        }.compact
+        plugins.sort! { |a, b| a.class._[:priority] <=> b.class._[:priority] }
+      end
 
       def _send_to_plugin_by_method(method, *args, &block)
         args = [ self ] + args

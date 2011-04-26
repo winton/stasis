@@ -2,4 +2,5 @@
 *.gem
 coverage
 pkg
+spec/fixtures/project/public
 tmp

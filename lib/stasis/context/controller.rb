@@ -5,12 +5,11 @@ class Stasis
       attr_reader :_
       include Plugin::Helpers
       
-      def initialize(path, plugins, root)
+      def initialize(path, root)
         @_ = {
           :dir => File.dirname(path),
           :path => path,
-          :plugins => plugins,
-          :rel_dir => File.dirname(path)[root.length+1..-1],
+          :plugins => _find_plugins,
           :root => root
         }
         _bind_plugins(:controller_method)
@@ -22,9 +21,9 @@ class Stasis
           nil
         elsif path.is_a?(Regexp)
           path
-        elsif File.file?(p = "#{_[:dir]}/#{path}")
+        elsif File.file?(p = File.expand_path("#{_[:dir]}/#{path}"))
           p
-        elsif File.file?(p = "#{_[:root]}/#{path}")
+        elsif File.file?(p = File.expand_path("#{_[:root]}/#{path}"))
           p
         elsif File.file?(path)
           path

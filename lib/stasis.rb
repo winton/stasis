@@ -1,6 +1,9 @@
+require 'fileutils'
+
 require 'rubygems'
-require 'slim'
 require 'yaml'
+
+require 'slim' rescue nil
 
 require File.dirname(__FILE__) + '/stasis/gems'
 
@@ -30,15 +33,8 @@ class Stasis
   def initialize(root, destination=root+'/public')
     @destination = destination
     @root = root
-    @plugins = self.class.constants.collect { |klass|
-      klass = klass.to_s
-      unless %w(Context Gems Plugin).include?(klass)
-        eval("::Stasis::#{klass}").new
-      end
-    }.compact
-    @plugins.sort! { |a, b| a.class._[:priority] <=> b.class._[:priority] }
     @controllers = Dir["#{root}/**/controller.rb"].inject({}) do |hash, path|
-      context = Context::Controller.new(path, @plugins, root)
+      context = Context::Controller.new(path, root)
       hash[context._[:dir]] = context
       hash
     end
@@ -50,11 +46,11 @@ class Stasis
     paths.reject! { |p| File.basename(p) == 'controller.rb' || !File.file?(p) }
     @controllers, paths = trigger(:before_all, '*', controllers, paths)
     paths.each do |path|
-      @action = Context::Action.new(@plugins)
-      trigger(:before_render, path, @action, path)
-      layout_controller = @controllers[File.dirname(@action._[:layout])]
       path_controller = @controllers[File.dirname(path)]
+      @action = Context::Action.new(path_controller._[:plugins])
+      trigger(:before_render, path, @action, path)
       if @action._[:layout]
+        layout_controller = @controllers[File.dirname(@action._[:layout])]
         @action._[:controller] = layout_controller
         view = @action.render(@action._[:layout]) do
           @action._[:controller] = path_controller
@@ -91,10 +87,13 @@ class Stasis
   end
 
   def each_directory(path, &block)
-    dir = File.dirname(path)
-    while dir != File.expand_path('../', root) && dir != '/'
-      yield(dir)
-      dir = File.expand_path('../', dir)
+    yield(root)
+    dirs = File.dirname(path)[root.length+1..-1]
+    if dirs
+      dirs = dirs.split('/')
+      dirs.each do |dir|
+        yield("#{root}/#{dir}")
+      end
     end
   end
 
