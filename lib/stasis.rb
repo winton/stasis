@@ -75,8 +75,6 @@ class Stasis
       else
         dest = path[root.length..-1]
       end
-      puts @action._[:destination]
-      puts dest
       dest = "#{@destination}#{dest}"
       Tilt.mappings.keys.each do |ext|
         if File.extname(dest)[1..-1] == ext
