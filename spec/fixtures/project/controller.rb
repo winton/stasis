@@ -12,3 +12,19 @@ before do
   @before_all = :root
 end
 
+before 'fail' do
+  @fail = true
+end
+
+before /fail/ do
+  @fail = true
+end
+
+# Destination
+
+destination 'rename_controller.html.haml' => 'renamed_controller.html'
+destination 'rename_to_subdirectory.html.haml' => 'subdirectory/renamed_to_subdirectory.html'
+
+before 'rename_action.html.haml' do
+  destination 'renamed_action.html'
+end

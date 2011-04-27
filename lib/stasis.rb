@@ -68,11 +68,15 @@ class Stasis
         if @action._[:destination][0..0] == '/'
           dest = @action._[:destination]
         else
-          dest = File.dirname(path[root.length..-1]) + @action._[:destination]
+          rel_dir = File.dirname(path[root.length..-1])
+          rel_dir += '/' unless rel_dir[-1..-1] == '/'
+          dest = rel_dir + @action._[:destination]
         end
       else
         dest = path[root.length..-1]
       end
+      puts @action._[:destination]
+      puts dest
       dest = "#{@destination}#{dest}"
       Tilt.mappings.keys.each do |ext|
         if File.extname(dest)[1..-1] == ext

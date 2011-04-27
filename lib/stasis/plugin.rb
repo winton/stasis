@@ -36,7 +36,9 @@ class Stasis
 
     def match_key?(hash, match_key)
       hash.inject([]) do |array, (key, value)|
-        if key.is_a?(::String) && key == match_key
+        if key.nil?
+          array << value
+        elsif key.is_a?(::String) && key == match_key
           array << value
         elsif key.is_a?(::Regexp) && key =~ match_key
           array << value
