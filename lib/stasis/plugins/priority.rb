@@ -5,33 +5,29 @@ class Stasis
     controller_method :priority
 
     def before_all(controller, controllers, paths)
-      priorities = (@priorities || []).sort { |a, b| b[1] <=> a[1] }
-      priorities = priorities.inject({}) do |hash, (path_or_regexp, priority)|
-        paths.each do |path|
-          if path_or_regexp.is_a?(::Regexp) && path =~ path_or_regexp
-            hash[path] = priority
-          elsif path == path_or_regexp
-            hash[path] = priority
+      paths.collect! do |path|
+        priority = 0
+        @@priorities.each do |key, value|
+          if (key.is_a?(::Regexp) && path =~ key) || key == path
+            priority = value
           end
         end
-        hash
+        [ path, priority ]
       end
-      priorities.merge! (paths - priorities.keys).inject({}) { |hash, path|
-        hash[path] = 0
-        hash
-      }
-      priorities = priorities.to_a.sort { |a, b| b[1] <=> a[1] }
-      paths = priorities.collect { |(path, priority)| path }
+      paths.sort! { |a, b| b[1] <=> a[1] }
+      paths.collect! { |(path, priority)| path }
+      @@priorities = {}
       [ controller, controllers, paths ]
     end
 
     def priority(controller, hash)
-      @priorities ||= []
-      @priorities += hash.to_a.collect do |pair|
-        pair[0] = controller.resolve(pair[0])
-        pair[0] ? pair : nil
+      @@priorities ||= {}
+      hash = hash.inject({}) do |hash, (key, value)|
+        key = controller.resolve(key)
+        hash[key] = value if key
+        hash
       end
-      @priorities.compact!
+      @@priorities.merge!(hash)
     end
   end
 end

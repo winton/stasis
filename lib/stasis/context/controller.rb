@@ -21,7 +21,7 @@ class Stasis
           nil
         elsif path.is_a?(Regexp)
           path
-        elsif File.file?(p = File.expand_path("#{_[:dir]}/#{path}"))
+        elsif path[0..0] != '/' && File.file?(p = File.expand_path("#{_[:dir]}/#{path}"))
           p
         elsif File.file?(p = File.expand_path("#{_[:root]}/#{path}"))
           p

@@ -5,8 +5,8 @@ class Stasis
       attr_reader :_
       include Plugin::Helpers
 
-      def initialize(plugins)
-        @_ = { :plugins => plugins }
+      def initialize(options)
+        @_ = options
         _bind_plugins(:action_method)
       end
     end

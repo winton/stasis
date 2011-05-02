@@ -47,7 +47,10 @@ class Stasis
     @controllers, paths = trigger(:before_all, '*', controllers, paths)
     paths.each do |path|
       path_controller = @controllers[File.dirname(path)]
-      @action = Context::Action.new(path_controller._[:plugins])
+      @action = Context::Action.new(
+        :path => path,
+        :plugins => path_controller._[:plugins]
+      )
       trigger(:before_render, path, @action, path)
       if @action._[:layout]
         layout_controller = @controllers[File.dirname(@action._[:layout])]
