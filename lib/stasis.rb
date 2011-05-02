@@ -52,33 +52,23 @@ class Stasis
         :plugins => path_controller._[:plugins]
       )
       trigger(:before_render, path, @action, path)
-      if @action._[:layout]
-        layout_controller = @controllers[File.dirname(@action._[:layout])]
-        @action._[:controller] = layout_controller
-        view = @action.render(@action._[:layout]) do
-          @action._[:controller] = path_controller
-          output = @action.render(path)
-          @action._[:controller] = layout_controller
-          output
-        end
-      else
-        @action._[:controller] = path_controller
-        view = @action.render(path)
-      end
-      @action._[:controller] = nil
-      trigger(:after_render, path, @action, path)
-      if @action._[:destination]
-        if @action._[:destination][0..0] == '/'
-          dest = @action._[:destination]
+      view =
+        if @action._[:layout]
+          layout_controller = @controllers[File.dirname(@action._[:layout])]
+          controller(layout_controller) do
+            @action.render(@action._[:layout]) do
+              controller(path_controller) do
+                @action.render(path)
+              end
+            end
+          end
         else
-          rel_dir = File.dirname(path[root.length..-1])
-          rel_dir += '/' unless rel_dir[-1..-1] == '/'
-          dest = rel_dir + @action._[:destination]
+          controller(path_controller) do
+            @action.render(path)
+          end
         end
-      else
-        dest = path[root.length..-1]
-      end
-      dest = "#{@destination}#{dest}"
+      trigger(:after_render, path, @action, path)
+      dest = destination(path)
       Tilt.mappings.keys.each do |ext|
         if File.extname(dest)[1..-1] == ext
           dest = dest[0..-1*ext.length-2]
@@ -89,6 +79,31 @@ class Stasis
         f.write(view)
       end
     end
+  end
+
+  private
+
+  def controller(controller, &block)
+    old_controller = @action._[:controller]
+    @action._[:controller] = controller
+    output = yield
+    @action._[:controller] = old_controller
+    output
+  end
+
+  def destination(path)
+    if @action._[:destination]
+      if @action._[:destination][0..0] == '/'
+        dest = @action._[:destination]
+      else
+        rel_dir = File.dirname(path[root.length..-1])
+        rel_dir += '/' unless rel_dir[-1..-1] == '/'
+        dest = rel_dir + @action._[:destination]
+      end
+    else
+      dest = path[root.length..-1]
+    end
+    "#{@destination}#{dest}"
   end
 
   def each_directory(path, &block)
