@@ -15,4 +15,11 @@ describe Stasis::Before do
     $files['subdirectory/index.html'].should =~ /@before_all\nsubdirectory/
     $files['subdirectory/index.html'].should =~ /@fail\nfalse/
   end
+
+  it "should set class variables for no_controller/index.html" do
+    $files['no_controller/index.html'].should =~ /@before_index_literal\nno_controller/
+    $files['no_controller/index.html'].should =~ /@before_index_regexp\nroot/
+    $files['no_controller/index.html'].should =~ /@before_all\nroot/
+    $files['no_controller/index.html'].should =~ /@fail\nfalse/
+  end
 end

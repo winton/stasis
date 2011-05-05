@@ -15,4 +15,9 @@ describe Stasis::Render do
     $files['subdirectory/index.html'].should =~ /render from root\nroot/
     $files['subdirectory/index.html'].should =~ /render from subdirectory\nsubdirectory/
   end
+
+  it "should render partials into no_controller/index.html" do
+    $files['no_controller/index.html'].should =~ /render from root\nroot/
+    $files['no_controller/index.html'].should =~ /render from subdirectory\nsubdirectory/
+  end
 end

@@ -33,7 +33,7 @@ class Stasis
   def initialize(root, destination=root+'/public')
     @destination = destination
     @root = root
-    @controllers = Dir["#{root}/**/controller.rb"].inject({}) do |hash, path|
+    @controllers = Dir["#{root}/**/"].inject({}) do |hash, path|
       context = Context::Controller.new(path, root)
       hash[context._[:dir]] = context
       hash
@@ -53,30 +53,31 @@ class Stasis
       )
       trigger(:before_render, path, @action, path)
       view =
-        if @action._[:layout]
-          layout_controller = @controllers[File.dirname(@action._[:layout])]
-          controller(layout_controller) do
-            @action.render(@action._[:layout]) do
-              controller(path_controller) do
-                @action.render(path)
+        if ext = extension(path)
+          if @action._[:layout]
+            layout_controller = @controllers[File.dirname(@action._[:layout])]
+            controller(layout_controller) do
+              @action.render(@action._[:layout]) do
+                controller(path_controller) do
+                  @action.render(path)
+                end
               end
             end
-          end
-        else
-          controller(path_controller) do
-            @action.render(path)
+          else
+            controller(path_controller) do
+              @action.render(path)
+            end
           end
         end
       trigger(:after_render, path, @action, path)
-      dest = destination(path)
-      Tilt.mappings.keys.each do |ext|
-        if File.extname(dest)[1..-1] == ext
-          dest = dest[0..-1*ext.length-2]
-        end
-      end
+      dest = destination(path, ext)
       FileUtils.mkdir_p(File.dirname(dest))
-      File.open(dest, 'w') do |f|
-        f.write(view)
+      if view
+        File.open(dest, 'w') do |f|
+          f.write(view)
+        end
+      else
+        FileUtils.cp(path, dest)
       end
     end
   end
@@ -91,7 +92,7 @@ class Stasis
     output
   end
 
-  def destination(path)
+  def destination(path, ext)
     if @action._[:destination]
       if @action._[:destination][0..0] == '/'
         dest = @action._[:destination]
@@ -103,7 +104,12 @@ class Stasis
     else
       dest = path[root.length..-1]
     end
-    "#{@destination}#{dest}"
+    dest = "#{@destination}#{dest}"
+    if ext && File.extname(dest) == ".#{ext}"
+      dest[0..-1*ext.length-2]
+    else
+      dest
+    end
   end
 
   def each_directory(path, &block)
@@ -114,6 +120,12 @@ class Stasis
       dirs.each do |dir|
         yield("#{root}/#{dir}")
       end
+    end
+  end
+
+  def extension(path)
+    Tilt.mappings.keys.detect do |ext|
+      File.extname(path)[1..-1] == ext
     end
   end
 

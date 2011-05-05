@@ -5,15 +5,18 @@ class Stasis
       attr_reader :_
       include Plugin::Helpers
       
-      def initialize(path, root)
+      def initialize(dir, root)
+        dir = File.expand_path(dir)
+        path = "#{dir}/controller.rb"
+        path = nil unless File.file?(path)
         @_ = {
-          :dir => File.dirname(path),
+          :dir => dir,
           :path => path,
           :plugins => _find_plugins,
           :root => root
         }
         _bind_plugins(:controller_method)
-        instance_eval File.read(path), path
+        instance_eval(File.read(path), path) if path
       end
 
       def resolve(path)

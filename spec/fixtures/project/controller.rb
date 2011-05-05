@@ -7,6 +7,10 @@ before 'index.html.haml' do
   @before_index_literal = :root
 end
 
+before 'no_controller/index.html.haml' do
+  @before_index_literal = :no_controller
+end
+
 before /index\.html/ do
   @before_index_regexp = :root
 end
