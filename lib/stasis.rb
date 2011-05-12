@@ -45,8 +45,11 @@ class Stasis
     paths = Dir["#{root}/**/*"]
     paths.reject! { |p| File.basename(p) == 'controller.rb' || !File.file?(p) }
     @controllers, paths = trigger(:before_all, '*', controllers, paths)
-    paths.each do |path|
-      path_controller = @controllers[File.dirname(path)]
+    paths.uniq.each do |path|
+      dir = File.dirname(path)
+      path_controller = @controllers[dir]
+      # Sometimes the path doesn't actually exist, which means a controller instance is not created yet.
+      path_controller ||= Context::Controller.new(dir, root)
       @action = Context::Action.new(
         :path => path,
         :plugins => path_controller._[:plugins]
@@ -59,15 +62,17 @@ class Stasis
             controller(layout_controller) do
               @action.render(@action._[:layout]) do
                 controller(path_controller) do
-                  @action.render(path)
+                  @action._[:captured_render] || @action.render(path)
                 end
               end
             end
           else
             controller(path_controller) do
-              @action.render(path)
+              @action._[:captured_render] || @action.render(path)
             end
           end
+        elsif @action._[:captured_render]
+          @action._[:captured_render]
         end
       trigger(:after_render, path, @action, path)
       dest = destination(path, ext)
@@ -76,7 +81,7 @@ class Stasis
         File.open(dest, 'w') do |f|
           f.write(view)
         end
-      else
+      elsif File.exists?(path)
         FileUtils.cp(path, dest)
       end
     end
@@ -123,6 +128,13 @@ class Stasis
     end
   end
 
+  def each_priority(&block)
+    priorities = Context::Controller.find_plugins.collect do |klass|
+      klass._[:priority]
+    end
+    priorities.uniq.sort.each(&block)
+  end
+
   def extension(path)
     Tilt.mappings.keys.detect do |ext|
       File.extname(path)[1..-1] == ext
@@ -130,18 +142,20 @@ class Stasis
   end
 
   def trigger(type, path, *args, &block)
-    if path == '*'
-      controllers.values.each do |controller|
-        args = controller._send_to_plugin_by_type(type, *args, &block)
-      end
-    else
-      each_directory(path) do |dir|
-        if controller = controllers[dir]
-          @action._[:controller] = controller
-          args = controller._send_to_plugin_by_type(type, *args, &block)
+    each_priority do |priority|
+      if path == '*'
+        controllers.values.each do |controller|
+          args = controller._send_to_plugin_by_type(priority, type, *args, &block)
         end
+      else
+        each_directory(path) do |dir|
+          if controller = controllers[dir]
+            @action._[:controller] = controller
+            args = controller._send_to_plugin_by_type(priority, type, *args, &block)
+          end
+        end
+        @action._[:controller] = nil
       end
-      @action._[:controller] = nil
     end
     args
   end

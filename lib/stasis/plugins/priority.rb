@@ -3,6 +3,7 @@ class Stasis
 
     before_all :before_all
     controller_method :priority
+    priority 2
 
     def before_all(controller, controllers, paths)
       paths.collect! do |path|

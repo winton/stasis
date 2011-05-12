@@ -23,6 +23,18 @@ before /fail/ do
   @fail = true
 end
 
+before 'before_render_text.html.haml' do
+  render :text => 'subdirectory'
+end
+
+before 'before_render_partial.html.haml' do
+  render :path => '_partial.html.haml'
+end
+
+before 'before_non_existent.html' do
+  render :path => '_partial.html.haml'
+end
+
 # Destination
 
 destination 'rename_controller.html.haml' => 'renamed_controller.html'

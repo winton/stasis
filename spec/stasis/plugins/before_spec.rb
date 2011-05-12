@@ -22,4 +22,28 @@ describe Stasis::Before do
     $files['no_controller/index.html'].should =~ /@before_all\nroot/
     $files['no_controller/index.html'].should =~ /@fail\nfalse/
   end
+
+  it "should render text to before_render_text.html" do
+    $files['before_render_text.html'].should =~ /root/
+  end
+
+  it "should render text to subdirectory/before_render_text.html" do
+    $files['subdirectory/before_render_text.html'].should =~ /subdirectory/
+  end
+
+  it "should render partial to before_render_text.html" do
+    $files['before_render_partial.html'].should =~ /root/
+  end
+
+  it "should render partial to subdirectory/before_render_text.html" do
+    $files['subdirectory/before_render_partial.html'].should =~ /subdirectory/
+  end
+
+  it "should render partial to before_non_existent.html" do
+    $files['before_non_existent.html'].should =~ /root/
+  end
+
+  it "should render partial to subdirectory/before_non_existent.html" do
+    $files['subdirectory/before_non_existent.html'].should =~ /subdirectory/
+  end
 end
