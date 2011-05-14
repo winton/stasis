@@ -21,7 +21,7 @@ class Stasis
       new_paths = (@blocks || {}).keys.select do |path|
         path.is_a?(::String)
       end
-      [ controller, controllers, paths + new_paths ]
+      [ controller, controllers, (paths + new_paths).uniq ]
     end
 
     def before_render(controller, action, path)

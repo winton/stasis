@@ -39,15 +39,6 @@ before 'before_non_existent.html' do
   render :path => '_partial.html.haml'
 end
 
-# Destination
-
-destination 'rename_controller.html.haml' => 'renamed_controller.html'
-destination 'rename_to_subdirectory.html.haml' => 'subdirectory/renamed_to_subdirectory.html'
-
-before 'rename_action.html.haml' do
-  destination 'renamed_action.html'
-end
-
 # Helpers
 
 helpers do
@@ -75,7 +66,7 @@ end
 
 # Priority
 
-priority 'subdirectory/rename_to_root.html.haml' => 1
+priority 'subdirectory/before_render_partial.html.haml' => 1
 priority 'index.html.haml' => -1
 
 before do

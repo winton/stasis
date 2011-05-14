@@ -8,8 +8,8 @@ describe Stasis::Priority do
   
   it "should prioritize to top" do
     top_2 = $render_order[0..1]
-    top_2.any? { |p| p == "#{@fixture}/subdirectory/rename_to_root.html.haml" }.should == true
-    top_2.any? { |p| p == "#{@fixture}/rename_to_subdirectory.html.haml" }.should == true
+    top_2.any? { |p| p == "#{@fixture}/subdirectory/before_render_partial.html.haml" }.should == true
+    top_2.any? { |p| p == "#{@fixture}/before_render_partial.html.haml" }.should == true
   end
 
   it "should prioritize to bottom" do

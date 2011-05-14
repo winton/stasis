@@ -1,8 +1,9 @@
 require File.dirname(__FILE__) + '/lib/stasis/gems'
 
-Stasis::Gems.activate %w(rake rspec)
+Stasis::Gems.activate %w(rake rocco rspec)
 
 require 'rake'
+require 'rocco/tasks'
 require 'spec/rake/spectask'
 
 def gemspec
@@ -88,3 +89,6 @@ desc "Validate the gemspec"
 task :gemspec do
   gemspec.validate
 end
+
+desc "Build Rocco Docs"
+Rocco::make 'docs/'
