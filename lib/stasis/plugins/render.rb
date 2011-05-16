@@ -30,7 +30,7 @@ class Stasis
           File.read(path)
         end
       if action._[:capture_render]
-        action._[:captured_render] = output
+        action._[:render] = output
       end
       output
     end

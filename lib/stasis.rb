@@ -1,11 +1,14 @@
 # **Stasis** is an extensible static site generator.
 #
-# Usually Stasis is coupled with a dynamic framework like [Sinatra][si] or [Node][no].
+# Stasis is a perfect complement to modern dynamic frameworks:
 #
-# However, when coupled with `cron`, Stasis can be almost as dynamic as any framework.
+# 1. Use Stasis to generate your HTML and other assets.
+# 2. Serve that data in the most performant way possible (usually Nginx).
+# 3. Use your dynamic framework to serve data to the client (usually JSON).
+# 4. Use your dynamic framework (or `cron`) to regenerate Stasis pages as needed.
 #
-# [si]: http://sinatrarb.com/
-# [no]: http://nodejs.org/
+# Stasis is not your typical "one to one" markup renderer. Render to any number of
+# dynamic paths. Access your database. Pull data from an API. Get crazy.
 
 ### Prerequisites
 
@@ -59,43 +62,66 @@ class Stasis
   # `String` -- the destination path passed to `Stasis.new`.
   attr_reader :destination
 
+  # `Array` -- all files in the project that Stasis will act upon.
+  attr_reader :paths
+
   # `String` -- the root path passed to `Stasis.new`.
   attr_reader :root
   
-  def initialize(root, destination=root+'/public')
+  def initialize(root, destination=root+'/public', options={})
     @destination = destination
     @root = root
 
-    # Create a controller instance for each directory in the project.
-    @controllers = Dir["#{root}/**/"].inject({}) do |hash, path|
-      context = Context::Controller.new(path, root)
-      hash[context._[:dir]] = context
-      hash
-    end
-  end
-  
-  def generate
-    # Remove old generated files.
-    FileUtils.rm_rf(@destination)
-    
-    # Get an `Array` of all paths in the project.
-    paths = Dir["#{root}/**/*"]
+    # Resolve paths given via the `:only` option.
+    only =
+      (options[:only] || []).collect { |path|
+        # If `path` is a file...
+        if File.file?(path)
+          path
+        # If `root + path` is a file...
+        elsif path = File.expand_path(path, root) && File.file?(path)
+          path
+        else
+          nil
+        end
+      }.compact
+
+    # Create an array of paths that Stasis will render or copy.
+    @paths =
+      if only.empty?
+        # Remove old generated files.
+        FileUtils.rm_rf(@destination)
+        # Return an array of all files in the project.
+        Dir["#{root}/**/*"]
+      else
+        # Use the paths specified in the `:only` option.
+        only
+      end
     
     # Reject paths that are controllers or directories.
-    paths.reject! { |p| File.basename(p) == 'controller.rb' || !File.file?(p) }
+    @paths.reject! { |p| File.basename(p) == 'controller.rb' || !File.file?(p) }
+
+    # Create a controller instance for each directory in the project.
+    @controllers = @paths.inject({}) do |hash, path|
+      unless hash[dir = File.dirname(path)]
+        context = Context::Controller.new(dir, root)
+        hash[dir] = context
+      end
+      hash
+    end
     
     # Trigger all plugin `before_all` events, passing all controller instances and paths.
-    @controllers, paths = trigger(:before_all, '*', controllers, paths)
+    @controllers, @paths = trigger(:before_all, '*', @controllers, @paths)
 
-    paths.uniq.each do |path|
+    @paths.uniq.each do |path|
       dir = File.dirname(path)
       path_controller = @controllers[dir]
       
-      # Sometimes the path doesn't actually exist, which means a controller instance is
-      # not created yet.
+      # Sometimes the path doesn't actually exist (dynamic), which means a controller
+      # instance does not exist yet.
       path_controller ||= Context::Controller.new(dir, root)
 
-      # Create a `Context::Action` instance which is the scope for rendering the view.
+      # Create a `Context::Action` instance, the scope for rendering the view.
       @action = Context::Action.new(
         :path => path,
         :plugins => path_controller._[:plugins]
@@ -128,28 +154,28 @@ class Stasis
                 # for the duration of the block.
                 controller(path_controller) do
                   # If the controller calls `render` within the `before` block for this
-                  # path, `_[:captured_render]` is set to the output of that `render`.
+                  # path, `_[:render]` is set to the output of that `render`.
                   #
-                  # Use `_[:captured_render]` if present, otherwise render the file
+                  # Use `_[:render]` if present, otherwise render the file
                   # located at `path`.
-                  @action._[:captured_render] || @action.render(path)
+                  @action._[:render] || @action.render(path)
                 end
               end
             end
-          # If a layout was not specified via the `layout` method...
+          # If a layout was not specified...
           else
             # Set the `Context::Action` instance's controller to the path controller
             # for the duration block.
             controller(path_controller) do
-              # Use `_[:captured_render]` if present, otherwise render the file
+              # Use `_[:render]` if present, otherwise render the file
               # located at `path`.
-              @action._[:captured_render] || @action.render(path)
+              @action._[:render] || @action.render(path)
             end
           end
         # If the path does not have an extension supported by [Tilt][ti] and `render` was
         # called within the `before` block for this path...
-        elsif @action._[:captured_render]
-          @action._[:captured_render]
+        elsif @action._[:render]
+          @action._[:render]
         end
       
       # Trigger all plugin `after_render` events, passing the `Context::Action` instance

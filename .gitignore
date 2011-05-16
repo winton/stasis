@@ -1,6 +1,7 @@
 .DS_Store
 *.gem
 coverage
+docs
 pkg
 spec/fixtures/project/public
 tmp

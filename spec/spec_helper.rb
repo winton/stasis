@@ -8,8 +8,7 @@ Stasis::Gems.activate :rspec
 require "#{$root}/lib/stasis"
 
 unless $files
-  stasis = Stasis.new("#{$root}/spec/fixtures/project")
-  stasis.generate
+  Stasis.new("#{$root}/spec/fixtures/project")
   pub = "#{$root}/spec/fixtures/project/public"
   $files = Dir["#{pub}/**/*"].inject({}) do |hash, path|
     if File.file?(path)
