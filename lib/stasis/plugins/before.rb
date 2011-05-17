@@ -6,8 +6,11 @@ class Stasis
     controller_method :before
     priority 1
 
+    def initialize
+      @blocks = {}
+    end
+
     def before(controller, path=nil, &block)
-      @blocks ||= {}
       if block
         path = controller.resolve(path, true)
         @blocks[path] ||= []

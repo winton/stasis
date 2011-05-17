@@ -5,8 +5,11 @@ class Stasis
     controller_method :after
     priority 1
 
+    def initialize
+      @blocks = {}
+    end
+
     def after(controller, path=nil, &block)
-      @blocks ||= {}
       if block
         path = controller.resolve(path)
         return [] if path == false

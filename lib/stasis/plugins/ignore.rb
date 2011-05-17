@@ -4,8 +4,12 @@ class Stasis
     before_all :before_all
     controller_method :ignore
 
+    def initialize
+      @ignore = []
+    end
+
     def before_all(controller, controllers, paths)
-      (@ignore || []).each do |ignore|
+      @ignore.each do |ignore|
         paths.reject! do |path|
           if ignore.is_a?(::String)
             ignore == path
@@ -20,7 +24,6 @@ class Stasis
     end
 
     def ignore(controller, *array)
-      @ignore ||= []
       @ignore += array.collect do |path|
         path = controller.resolve(path)
         path ? path : nil

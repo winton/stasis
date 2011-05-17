@@ -5,6 +5,10 @@ class Stasis
     controller_method :priority
     priority 2
 
+    def initialize
+      @@priorities ||= {}
+    end
+
     def before_all(controller, controllers, paths)
       paths.collect! do |path|
         priority = 0
@@ -22,7 +26,6 @@ class Stasis
     end
 
     def priority(controller, hash)
-      @@priorities ||= {}
       hash = hash.inject({}) do |hash, (key, value)|
         key = controller.resolve(key)
         hash[key] = value if key

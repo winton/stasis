@@ -4,15 +4,18 @@ class Stasis
     controller_method :helpers
     before_render :bind_helpers
 
+    def initialize
+      @blocks = []
+    end
+
     def bind_helpers(controller, action, path)
-      (@blocks || []).each do |block|
+      @blocks.each do |block|
         action.class.class_eval(&block)
       end
       [ controller, action, path ]
     end
 
     def helpers(controller, &block)
-      @blocks ||= []
       if block
         @blocks << block
       end

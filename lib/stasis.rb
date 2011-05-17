@@ -39,10 +39,10 @@ $:.unshift File.dirname(__FILE__)
 # Require all Stasis library files.
 
 require 'stasis/plugin'
-require 'stasis/plugin/helpers'
 
-require 'stasis/context/action'
-require 'stasis/context/controller'
+require 'stasis/scope'
+require 'stasis/scope/action'
+require 'stasis/scope/controller'
 
 require 'stasis/plugins/after'
 require 'stasis/plugins/before'
@@ -56,11 +56,14 @@ require 'stasis/plugins/render'
 
 class Stasis
   
-  # `Hash` -- keys are directory paths, and values are instances of `Context::Controller`.
+  # `Hash` -- keys are directory paths, and values are instances of `Controller`.
   attr_reader :controllers
 
   # `String` -- the destination path passed to `Stasis.new`.
   attr_reader :destination
+
+  # `Hash` -- options passed to `Stasis.new`.
+  attr_reader :options
 
   # `Array` -- all files in the project that Stasis will act upon.
   attr_reader :paths
@@ -70,32 +73,33 @@ class Stasis
   
   def initialize(root, destination=root+'/public', options={})
     @destination = destination
+    @options = options
     @root = root
 
-    # Resolve paths given via the `:only` option.
-    only =
-      (options[:only] || []).collect { |path|
-        # If `path` is a file...
-        if File.file?(path)
-          path
-        # If `root + path` is a file...
-        elsif path = File.expand_path(path, root) && File.file?(path)
-          path
-        else
-          nil
-        end
-      }.compact
+    options[:only] ||= []
 
-    # Create an array of paths that Stasis will render or copy.
+    # Resolve paths given via the `:only` option.
+    options[:only] = options[:only].inject([]) do |array, path|
+      # If `path` is a file...
+      if File.file?(path)
+        array << path
+      # If `root + path` is a file...
+      elsif path = File.expand_path(path, root) && File.file?(path)
+        array << path
+      end
+      array
+    end
+
+    # Create an array of paths that Stasis will act upon.
     @paths =
-      if only.empty?
+      if options[:only].empty?
         # Remove old generated files.
-        FileUtils.rm_rf(@destination)
+        FileUtils.rm_rf(destination)
         # Return an array of all files in the project.
         Dir["#{root}/**/*"]
       else
         # Use the paths specified in the `:only` option.
-        only
+        options[:only]
       end
     
     # Reject paths that are controllers or directories.
@@ -104,8 +108,8 @@ class Stasis
     # Create a controller instance for each directory in the project.
     @controllers = @paths.inject({}) do |hash, path|
       unless hash[dir = File.dirname(path)]
-        context = Context::Controller.new(dir, root)
-        hash[dir] = context
+        scope = Controller.new(dir, root)
+        hash[dir] = scope
       end
       hash
     end
@@ -119,15 +123,15 @@ class Stasis
       
       # Sometimes the path doesn't actually exist (dynamic), which means a controller
       # instance does not exist yet.
-      path_controller ||= Context::Controller.new(dir, root)
+      path_controller ||= Controller.new(dir, root)
 
-      # Create a `Context::Action` instance, the scope for rendering the view.
-      @action = Context::Action.new(
+      # Create a `Action` instance, the scope for rendering the view.
+      @action = Action.new(
         :path => path,
         :plugins => path_controller._[:plugins]
       )
 
-      # Trigger all plugin `before_render` events, passing the `Context::Action` instance
+      # Trigger all plugin `before_render` events, passing the `Action` instance
       # and the current path.
       trigger(:before_render, path, @action, path)
 
@@ -145,13 +149,13 @@ class Stasis
           if @action._[:layout]
             # Grab the controller at the same directory level as the layout.
             layout_controller = @controllers[File.dirname(@action._[:layout])]
-            # Set the `Context::Action` instance's controller to the layout controller
-            # for the duration block.
+            # Set the `Action` instance's controller to the layout controller for the
+            # duration block.
             controller(layout_controller) do
               # Render the layout with a block for the layout to `yield` to.
               @action.render(@action._[:layout]) do
-                # Set the `Context::Action` instance's controller to the path controller
-                # for the duration of the block.
+                # Set the `Action` instance's controller to the path controller for the
+                # duration of the block.
                 controller(path_controller) do
                   # If the controller calls `render` within the `before` block for this
                   # path, `_[:render]` is set to the output of that `render`.
@@ -164,8 +168,8 @@ class Stasis
             end
           # If a layout was not specified...
           else
-            # Set the `Context::Action` instance's controller to the path controller
-            # for the duration block.
+            # Set the `Action` instance's controller to the path controller for
+            # the duration block.
             controller(path_controller) do
               # Use `_[:render]` if present, otherwise render the file
               # located at `path`.
@@ -178,16 +182,16 @@ class Stasis
           @action._[:render]
         end
       
-      # Trigger all plugin `after_render` events, passing the `Context::Action` instance
+      # Trigger all plugin `after_render` events, passing the `Action` instance
       # and the current path.
       trigger(:after_render, path, @action, path)
 
       # Cut the `root` out of the `path` to get the relative destination.
       dest = path[root.length..-1]
 
-      # Add `@destination` (as specified from `Stasis.new`) to front of relative
+      # Add `destination` (as specified from `Stasis.new`) to front of relative
       # destination.
-      dest = "#{@destination}#{dest}"
+      dest = "#{destination}#{dest}"
 
       # Cut off the extension if the extension is supported by [Tilt][ti].
       dest =
@@ -216,7 +220,7 @@ class Stasis
 
   private
 
-  # Sets `_[:controller]` on the current `Context::Action` instance for the duration of
+  # Sets `_[:controller]` on the current `Action` instance for the duration of
   # the block and returns the output of the block.
   def controller(controller, &block)
     old_controller = @action._[:controller]
@@ -241,7 +245,7 @@ class Stasis
 
   # Iterate through plugin priority integers (sorted) and yield each to a block.
   def each_priority(&block)
-    priorities = Context::Controller.find_plugins.collect do |klass|
+    priorities = Controller.find_plugins.collect do |klass|
       klass._[:priority]
     end
     priorities.uniq.sort.each(&block)
@@ -253,13 +257,13 @@ class Stasis
     each_priority do |priority|
       # Trigger event on all plugins in every controller.
       if path == '*'
-        controllers.values.each do |controller|
+        @controllers.values.each do |controller|
           args = controller._send_to_plugin_by_type(priority, type, *args, &block)
         end
       # Trigger event on all plugins in certain controllers (see `each_directory`).
       else
         each_directory(path) do |dir|
-          if cont = controllers[dir]
+          if cont = @controllers[dir]
             controller(cont) do
               args = cont._send_to_plugin_by_type(priority, type, *args, &block)
             end

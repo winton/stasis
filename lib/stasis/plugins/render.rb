@@ -12,20 +12,20 @@ class Stasis
         options.merge!(path_or_options)
       end
 
-      context = options[:context]
       locals = options[:locals]
       path = options[:path]
+      scope = options[:scope]
       text = options[:text]
       
       output =
         if text
           text
         elsif Tilt.mappings.keys.include?(File.extname(path)[1..-1])
-          context = options[:context] ||= action
+          scope = options[:scope] ||= action
           if action._[:controller]
             path = action._[:controller].resolve(path)
           end
-          Tilt.new(path).render(context, locals, &block)
+          Tilt.new(path).render(scope, locals, &block)
         else
           File.read(path)
         end

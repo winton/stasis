@@ -5,6 +5,10 @@ class Stasis
     before_render :before_render
     controller_method :layout => :layout_controller
 
+    def initialize
+      @layouts = {}
+    end
+
     def before_render(controller, action, path)
       if @layouts && match = match_key?(@layouts, path)[0]
         action._[:layout] = match
@@ -15,7 +19,6 @@ class Stasis
     end
 
     def layout_action(action, path)
-      @layouts ||= {}
       if p = action._[:controller].resolve(path)
         @layouts[action._[:path]] = p
         before_render(nil, action, action._[:path])
@@ -29,7 +32,6 @@ class Stasis
       else
         hash = hash_or_string
       end
-      @layouts ||= {}
       @layouts.merge! hash.inject({}) { |hash, (key, value)|
         key = controller.resolve(key)
         hash[key] = controller.resolve(value)
