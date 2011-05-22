@@ -1,14 +1,19 @@
 Stasis
 ======
 
-A general-purpose static site generator.
+An extensible static site generator.
 
 Philosophy
 ----------
 
-I like static web sites + services (Node.js, Sinatra, or Rails).
+Stasis is a perfect complement to modern dynamic frameworks:
 
-Stasis is a static site framework that is almost as powerful as the dynamic frameworks.
+1. Use Stasis to generate your HTML and other assets.
+2. Serve that data in the most performant way possible (usually Nginx).
+3. Use your dynamic framework to serve data to the client (usually JSON).
+4. Use your dynamic framework (or `cron`) to regenerate Stasis pages as needed.
+
+Stasis is not your typical "one to one" markup renderer. Render to any number of dynamic paths. Access your database. Pull data from an API. Get crazy.
 
 Requirements
 ------------
