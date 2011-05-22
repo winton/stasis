@@ -65,7 +65,7 @@ class Stasis
   # `Hash` -- options passed to `Stasis.new`.
   attr_reader :options
 
-  # `Array` -- all files in the project that Stasis will act upon.
+  # `Array` -- all paths in the project that Stasis will act upon.
   attr_reader :paths
 
   # `String` -- the root path passed to `Stasis.new`.
@@ -90,12 +90,12 @@ class Stasis
       array
     end
 
-    # Create an array of paths that Stasis will act upon.
+    # Create an `Array` of paths that Stasis will act upon.
     @paths =
       if options[:only].empty?
         # Remove old generated files.
         FileUtils.rm_rf(destination)
-        # Return an array of all files in the project.
+        # Return an `Array` of all files in the project.
         Dir["#{root}/**/*"]
       else
         # Use the paths specified in the `:only` option.
@@ -114,18 +114,19 @@ class Stasis
       hash
     end
     
-    # Trigger all plugin `before_all` events, passing all controller instances and paths.
+    # Trigger all plugin `before_all` events, passing all `Controller` instances and
+    # paths.
     @controllers, @paths = trigger(:before_all, '*', @controllers, @paths)
 
     @paths.uniq.each do |path|
       dir = File.dirname(path)
       path_controller = @controllers[dir]
       
-      # Sometimes the path doesn't actually exist (dynamic), which means a controller
-      # instance does not exist yet.
+      # Sometimes the path doesn't actually exist, which means a `Controller` instance
+      # does not exist yet.
       path_controller ||= Controller.new(dir, root)
 
-      # Create a `Action` instance, the scope for rendering the view.
+      # Create an `Action` instance, the scope for rendering the view.
       @action = Action.new(
         :path => path,
         :plugins => path_controller._[:plugins]
@@ -133,7 +134,7 @@ class Stasis
 
       # Trigger all plugin `before_render` events, passing the `Action` instance
       # and the current path.
-      trigger(:before_render, path, @action, path)
+      @action, path = trigger(:before_render, path, @action, path)
 
       # Set the extension if the `path` extension is supported by [Tilt][ti].
       ext =
@@ -149,30 +150,24 @@ class Stasis
           if @action._[:layout]
             # Grab the controller at the same directory level as the layout.
             layout_controller = @controllers[File.dirname(@action._[:layout])]
-            # Set the `Action` instance's controller to the layout controller for the
-            # duration block.
+
             controller(layout_controller) do
               # Render the layout with a block for the layout to `yield` to.
               @action.render(@action._[:layout]) do
-                # Set the `Action` instance's controller to the path controller for the
-                # duration of the block.
                 controller(path_controller) do
                   # If the controller calls `render` within the `before` block for this
-                  # path, `_[:render]` is set to the output of that `render`.
+                  # path, `_[:render]` is set to the output.
                   #
-                  # Use `_[:render]` if present, otherwise render the file
-                  # located at `path`.
+                  # Use `_[:render]` if present, otherwise render the file located at
+                  # `path`.
                   @action._[:render] || @action.render(path)
                 end
               end
             end
           # If a layout was not specified...
           else
-            # Set the `Action` instance's controller to the path controller for
-            # the duration block.
             controller(path_controller) do
-              # Use `_[:render]` if present, otherwise render the file
-              # located at `path`.
+              # Use `_[:render]` if present, otherwise render the file located at `path`.
               @action._[:render] || @action.render(path)
             end
           end
@@ -182,9 +177,9 @@ class Stasis
           @action._[:render]
         end
       
-      # Trigger all plugin `after_render` events, passing the `Action` instance
-      # and the current path.
-      trigger(:after_render, path, @action, path)
+      # Trigger all plugin `after_render` events, passing the `Action` instance and the
+      # current path.
+      @action, path = trigger(:after_render, path, @action, path)
 
       # Cut the `root` out of the `path` to get the relative destination.
       dest = path[root.length..-1]
@@ -216,6 +211,10 @@ class Stasis
         FileUtils.cp(path, dest)
       end
     end
+
+    # Trigger all plugin `after_all` events, passing all `Controller` instances and
+    # paths.
+    @controllers, @paths = trigger(:after_all, '*', @controllers, @paths)
   end
 
   private
@@ -258,14 +257,14 @@ class Stasis
       # Trigger event on all plugins in every controller.
       if path == '*'
         @controllers.values.each do |controller|
-          args = controller._send_to_plugin_by_type(priority, type, *args, &block)
+          args = controller._send_to_plugin(priority, type, *args, &block)
         end
       # Trigger event on all plugins in certain controllers (see `each_directory`).
       else
         each_directory(path) do |dir|
           if cont = @controllers[dir]
             controller(cont) do
-              args = cont._send_to_plugin_by_type(priority, type, *args, &block)
+              args = cont._send_to_plugin(priority, type, *args, &block)
             end
           end
         end

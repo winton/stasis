@@ -11,7 +11,7 @@ class Stasis
 
     def after(controller, path=nil, &block)
       if block
-        path = controller.resolve(path)
+        path = controller._resolve(path)
         return [] if path == false
         @blocks[path] ||= []
         @blocks[path] << block

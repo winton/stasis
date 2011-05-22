@@ -7,40 +7,52 @@
 class Stasis
   class Controller < Scope
     
-    # `Hash` -- Contains four key/value pairs:
-    #
-    # * `dir` -- Directory for which this controller provides a scope.
-    # * `path` -- Path to the `controller.rb` file (if it exists).
-    # * `plugins` -- A new instance of all known plugins.
-    # * `root` -- The root directory path of the user's project.
-    #
-    # The class variable is named `@_` so that there is little likelihood that a
-    # user-defined variable will conflict.
-    attr_reader :_
-    
     def initialize(dir, root)
       dir = File.expand_path(dir)
       path = "#{dir}/controller.rb"
       path = nil unless File.file?(path)
+
       @_ = {
+        # Directory for which this controller provides a scope.
         :dir => dir,
+        # Path to the `controller.rb` file (if it exists).
         :path => path,
+        # A new instance of all known plugins.
         :plugins => self.class.find_plugins.collect { |klass| klass.new },
+        # The root directory path of the user's project.
         :root => root
       }
+
+      # Some plugins define methods to be made available to controller scopes. This call
+      # binds those methods.
       _bind_plugins(:controller_method)
+
+      # Evaluate `controller.rb`.
       instance_eval(File.read(path), path) if path
     end
 
-    def resolve(path, force=false)
+    # Accepts three kinds of paths as the `path` parameter:
+    #
+    # * Absolute: `/project/path/view.haml`
+    # * Relative: `view.haml`
+    # * Root: `/path/view.haml`
+    #
+    # Returns an absolute path.
+    #
+    # Set the `force` parameter to `true` to return the resolved path even if no file
+    # exists at that location.
+    def _resolve(path, force=false)
       if path.nil?
         nil
       elsif path.is_a?(Regexp)
         path
+      # If the path is relative...
       elsif path[0..0] != '/' && (File.file?(p = File.expand_path("#{_[:dir]}/#{path}")) || force)
         p
+      # If the path is root...
       elsif File.file?(p = File.expand_path("#{_[:root]}/#{path}")) || force
         p
+      # If the path is absolute...
       elsif File.file?(path)
         path
       else
@@ -50,6 +62,7 @@ class Stasis
 
     class <<self
 
+      # Returns an `Array` of `Plugin` classes within the `Stasis` namespace.
       def find_plugins
         Stasis.constants.inject([]) do |array, klass|
           klass = eval(klass.to_s)

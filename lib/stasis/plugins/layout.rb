@@ -19,7 +19,7 @@ class Stasis
     end
 
     def layout_action(action, path)
-      if p = action._[:controller].resolve(path)
+      if p = action._[:controller]._resolve(path)
         @layouts[action._[:path]] = p
         before_render(nil, action, action._[:path])
       end
@@ -33,8 +33,8 @@ class Stasis
         hash = hash_or_string
       end
       @layouts.merge! hash.inject({}) { |hash, (key, value)|
-        key = controller.resolve(key)
-        hash[key] = controller.resolve(value)
+        key = controller._resolve(key)
+        hash[key] = controller._resolve(value)
         controller.ignore(hash[key])
         hash
       }

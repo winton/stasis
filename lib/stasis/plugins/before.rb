@@ -12,7 +12,7 @@ class Stasis
 
     def before(controller, path=nil, &block)
       if block
-        path = controller.resolve(path, true)
+        path = controller._resolve(path, true)
         @blocks[path] ||= []
         @blocks[path] << block
       else

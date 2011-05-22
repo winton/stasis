@@ -23,7 +23,7 @@ class Stasis
         elsif Tilt.mappings.keys.include?(File.extname(path)[1..-1])
           scope = options[:scope] ||= action
           if action._[:controller]
-            path = action._[:controller].resolve(path)
+            path = action._[:controller]._resolve(path)
           end
           Tilt.new(path).render(scope, locals, &block)
         else

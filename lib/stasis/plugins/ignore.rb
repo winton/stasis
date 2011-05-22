@@ -25,7 +25,7 @@ class Stasis
 
     def ignore(controller, *array)
       @ignore += array.collect do |path|
-        path = controller.resolve(path)
+        path = controller._resolve(path)
         path ? path : nil
       end
       @ignore.compact!

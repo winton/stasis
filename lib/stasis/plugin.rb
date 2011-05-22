@@ -12,18 +12,20 @@ class Stasis
         before_render
         controller_method
       ).each do |method|
-        class_eval <<-EVAL, __FILE__, __LINE__ + 1
-          def #{method}(*methods)
-            self._ ||= { :methods => {}, :priority => 0 }
-            if methods[0].is_a?(::Hash)
-              self._[:methods][:#{method}] ||= {}
-              self._[:methods][:#{method}].merge!(methods[0])
-            else
-              self._[:methods][:#{method}] ||= []
-              self._[:methods][:#{method}] += methods
+        method = method.to_sym
+        define_method(method) do |*methods|
+          self._ ||= { :methods => {}, :priority => 0 }
+          self._[:methods][method] ||= {}
+          if methods[0].is_a?(::Hash)
+            self._[:methods][method].merge!(methods[0])
+          else
+            methods = methods.inject({}) do |hash, m|
+              hash[m] = m
+              hash
             end
+            self._[:methods][method].merge!(methods)
           end
-        EVAL
+        end
       end
 
       def priority(number)

@@ -27,7 +27,7 @@ class Stasis
 
     def priority(controller, hash)
       hash = hash.inject({}) do |hash, (key, value)|
-        key = controller.resolve(key)
+        key = controller._resolve(key)
         hash[key] = value if key
         hash
       end

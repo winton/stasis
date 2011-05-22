@@ -6,16 +6,11 @@
 class Stasis
   class Action < Scope
 
-    # `Hash` -- Contains two key/value pairs:
-    #
-    # * `path` -- Path of the view that this instance provides a scope for.
-    # * `plugins` -- `Array` of `Plugin` instances.
-    #
-    # The class variable is named `@_` so that there is little likelihood that a
-    # user-defined variable will conflict.
-    attr_reader :_
-
     def initialize(options)
+      # `Hash` -- Contains two key/value pairs:
+      #
+      # * `path` -- Path of the view that this instance provides a scope for.
+      # * `plugins` -- `Array` of `Plugin` instances.
       @_ = options
 
       # Some plugins define methods to be made available to action scopes. This call
