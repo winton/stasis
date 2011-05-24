@@ -10,7 +10,7 @@ class Stasis
     end
 
     def before_render(controller, action, path)
-      if @layouts && match = match_key?(@layouts, path)[0]
+      if @layouts && match = _match_key?(@layouts, path)[0]
         action._[:layout] = match
       else
         action._[:layout] = nil

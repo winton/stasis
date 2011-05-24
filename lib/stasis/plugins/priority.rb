@@ -1,12 +1,18 @@
 class Stasis
   class Priority < Plugin
 
+    after_all :after_all
     before_all :before_all
     controller_method :priority
     priority 2
 
     def initialize
       @@priorities ||= {}
+    end
+
+    def after_all(controller, controllers, paths)
+      @@priorities = {}
+      [ controller, controllers, paths ]
     end
 
     def before_all(controller, controllers, paths)

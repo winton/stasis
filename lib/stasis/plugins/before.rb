@@ -28,16 +28,23 @@ class Stasis
     end
 
     def before_render(controller, action, path)
-      if @blocks && matches = match_key?(@blocks, path)
+      if @blocks && matches = _match_key?(@blocks, path)
         action._[:path] = path
         matches.flatten.each do |block|
-          action._[:capture_render] = true
-          action.instance_eval(&block)
-          action._.delete(:capture_render)
+          capture_render(action) do
+            action.instance_eval(&block)
+          end
         end
         action._[:path] = nil
       end
       [ controller, action, path ]
+    end
+
+    def capture_render(action, &block)
+      old = action._[:capture_render]
+      action._[:capture_render] = true
+      yield
+      action._[:capture_render] = old
     end
   end
 end

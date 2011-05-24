@@ -11,6 +11,7 @@ class Stasis
       #
       # * `path` -- Path of the view that this instance provides a scope for.
       # * `plugins` -- `Array` of `Plugin` instances.
+      # * `stasis` -- A reference to the `Stasis` instance that created this `Action`.
       @_ = options
 
       # Some plugins define methods to be made available to action scopes. This call

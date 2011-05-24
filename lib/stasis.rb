@@ -129,18 +129,19 @@ class Stasis
       # Create an `Action` instance, the scope for rendering the view.
       @action = Action.new(
         :path => path,
-        :plugins => path_controller._[:plugins]
+        :plugins => path_controller._[:plugins],
+        :stasis => self
       )
-
-      # Trigger all plugin `before_render` events, passing the `Action` instance
-      # and the current path.
-      @action, path = trigger(:before_render, path, @action, path)
 
       # Set the extension if the `path` extension is supported by [Tilt][ti].
       ext =
         Tilt.mappings.keys.detect do |ext|
           File.extname(path)[1..-1] == ext
         end
+      
+      # Trigger all plugin `before_render` events, passing the `Action` instance
+      # and the current path.
+      @action, path = trigger(:before_render, path, @action, path)
 
       # Render the view.
       view =
@@ -160,7 +161,7 @@ class Stasis
                   #
                   # Use `_[:render]` if present, otherwise render the file located at
                   # `path`.
-                  @action._[:render] || @action.render(path)
+                  @action._[:render] || @action.render(path, :callback => false)
                 end
               end
             end
@@ -168,7 +169,7 @@ class Stasis
           else
             controller(path_controller) do
               # Use `_[:render]` if present, otherwise render the file located at `path`.
-              @action._[:render] || @action.render(path)
+              @action._[:render] || @action.render(path, :callback => false)
             end
           end
         # If the path does not have an extension supported by [Tilt][ti] and `render` was
@@ -217,6 +218,29 @@ class Stasis
     @controllers, @paths = trigger(:after_all, '*', @controllers, @paths)
   end
 
+  # Trigger an event on every plugin in certain controllers (depending on the `path`
+  # parameter).
+  def trigger(type, path, *args, &block)
+    each_priority do |priority|
+      # Trigger event on all plugins in every controller.
+      if path == '*'
+        @controllers.values.each do |controller|
+          args = controller._send_to_plugin(priority, type, *args, &block)
+        end
+      # Trigger event on all plugins in certain controllers (see `each_directory`).
+      else
+        each_directory(path) do |dir|
+          if cont = @controllers[dir]
+            controller(cont) do
+              args = cont._send_to_plugin(priority, type, *args, &block)
+            end
+          end
+        end
+      end
+    end
+    args
+  end
+
   private
 
   # Sets `_[:controller]` on the current `Action` instance for the duration of
@@ -248,28 +272,5 @@ class Stasis
       klass._[:priority]
     end
     priorities.uniq.sort.each(&block)
-  end
-
-  # Trigger an event on every plugin in certain controllers (depending on the `path`
-  # parameter).
-  def trigger(type, path, *args, &block)
-    each_priority do |priority|
-      # Trigger event on all plugins in every controller.
-      if path == '*'
-        @controllers.values.each do |controller|
-          args = controller._send_to_plugin(priority, type, *args, &block)
-        end
-      # Trigger event on all plugins in certain controllers (see `each_directory`).
-      else
-        each_directory(path) do |dir|
-          if cont = @controllers[dir]
-            controller(cont) do
-              args = cont._send_to_plugin(priority, type, *args, &block)
-            end
-          end
-        end
-      end
-    end
-    args
   end
 end

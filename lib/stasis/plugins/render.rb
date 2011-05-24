@@ -12,26 +12,38 @@ class Stasis
         options.merge!(path_or_options)
       end
 
+      callback = options[:callback]
       locals = options[:locals]
       path = options[:path]
       scope = options[:scope]
       text = options[:text]
+
+      if action._[:controller]
+        path = action._[:controller]._resolve(path)
+      end
       
       output =
         if text
           text
-        elsif Tilt.mappings.keys.include?(File.extname(path)[1..-1])
-          scope = options[:scope] ||= action
-          if action._[:controller]
-            path = action._[:controller]._resolve(path)
+        elsif File.file?(path)
+          unless callback == false
+            # Trigger all plugin `before_render` events, passing the `Action` instance
+            # and the current path.
+            action, path = action._[:stasis].trigger(:before_render, path, action, path)
           end
-          Tilt.new(path).render(scope, locals, &block)
-        else
-          File.read(path)
+
+          if Tilt.mappings.keys.include?(File.extname(path)[1..-1])
+            scope = options[:scope] ||= action
+            Tilt.new(path).render(scope, locals, &block)
+          else
+            File.read(path)
+          end
         end
+      
       if action._[:capture_render]
         action._[:render] = output
       end
+      
       output
     end
   end
