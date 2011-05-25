@@ -9,8 +9,8 @@ class Stasis
       @blocks = {}
     end
 
-    # This method is bound to all controllers. Stores a `block` to `@blocks` using the
-    # resolved path as a key.
+    # This method is bound to all controllers. Stores a block in the `@blocks` `Hash`,
+    # where the key is a path and the value is an `Array` of blocks.
     def after(controller, path=nil, &block)
       if block
         path = controller._resolve(path)
@@ -22,7 +22,7 @@ class Stasis
       end
     end
 
-    # This event triggers after any file renders through Stasis. It finds matching blocks
+    # This event triggers after each file renders through Stasis. It finds matching blocks
     # for the `path` and evaluates those blocks using the `action` as a scope.
     def after_render(controller, action, path)
       if @blocks && matches = _match_key?(@blocks, path)

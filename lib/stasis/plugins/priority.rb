@@ -10,11 +10,14 @@ class Stasis
       @@priorities ||= {}
     end
 
+    # This event triggers after all files render through Stasis. Reset `@@priorities`.
     def after_all(controller, controllers, paths)
       @@priorities = {}
       [ controller, controllers, paths ]
     end
 
+    # This event triggers before all files render through Stasis. Collect matching
+    # `paths` and sort those `paths` by priority.
     def before_all(controller, controllers, paths)
       paths.collect! do |path|
         priority = 0
@@ -31,6 +34,8 @@ class Stasis
       [ controller, controllers, paths ]
     end
 
+    # This method is bound to all controllers. Stores a priority integer in the
+    # `@@priorities` `Hash`, where the key is a path and the value is the priority.
     def priority(controller, hash)
       hash = hash.inject({}) do |hash, (key, value)|
         key = controller._resolve(key)
