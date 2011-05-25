@@ -77,7 +77,7 @@ namespace :gems do
     
     gems.each do |name|
       name = name.to_s
-      version = GemTemplate::Gems.versions[name]
+      version = GemTemplate::Gems.versions[name.to_sym]
       if Gem.source_index.find_name(name, version).empty?
         version = version ? "-v #{version}" : ''
         system "#{sudo} gem install #{name} #{version} #{docs}"
