@@ -1,6 +1,10 @@
 require 'spec_helper'
 
 describe Stasis::Ignore do
+
+  before(:all) do
+    generate
+  end
   
   it "should ignore partials" do
     $files['_partial.html'].should == nil

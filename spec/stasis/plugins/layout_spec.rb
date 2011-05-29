@@ -1,6 +1,10 @@
 require 'spec_helper'
 
 describe Stasis::Layout do
+
+  before(:all) do
+    generate
+  end
   
   it "should render root layouts" do
     $files['layout_action.html'].should =~ /layout\nroot\npass/

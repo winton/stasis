@@ -7,13 +7,18 @@ Stasis::Gems.activate :rspec
 
 require "#{$root}/lib/stasis"
 
-unless $files
-  Stasis.new("#{$root}/spec/fixtures/project")
-  pub = "#{$root}/spec/fixtures/project/public"
-  $files = Dir["#{pub}/**/*"].inject({}) do |hash, path|
-    if File.file?(path)
-      hash[path[pub.length+1..-1]] = File.read(path)
+def generate(options={})
+  $files = nil if options[:reload]
+  $fixture = "#{$root}/spec/fixtures/project"
+  unless $files
+    $stasis ||= Stasis.new($fixture)
+    $stasis.generate(options)
+    pub = "#{$fixture}/public"
+    $files = Dir["#{pub}/**/*"].inject({}) do |hash, path|
+      if File.file?(path)
+        hash[path[pub.length+1..-1]] = File.read(path)
+      end
+      hash
     end
-    hash
   end
 end

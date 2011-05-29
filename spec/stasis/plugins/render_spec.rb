@@ -3,7 +3,7 @@ require 'spec_helper'
 describe Stasis::Render do
 
   before(:all) do
-    @fixture = "#{$root}/spec/fixtures/project"
+    generate
   end
   
   it "should render partials into index.html" do

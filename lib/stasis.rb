@@ -76,34 +76,13 @@ class Stasis
     @options = options
     @root = root
 
-    options[:only] ||= []
-
-    # Resolve paths given via the `:only` option.
-    options[:only] = options[:only].inject([]) do |array, path|
-      # If `path` is a file...
-      if File.file?(path)
-        array << path
-      # If `root + path` is a file...
-      elsif path = File.expand_path(path, root) && File.file?(path)
-        array << path
-      end
-      array
-    end
-
     # Create an `Array` of paths that Stasis will act upon.
-    @paths =
-      if options[:only].empty?
-        # Remove old generated files.
-        FileUtils.rm_rf(destination)
-        # Return an `Array` of all files in the project.
-        Dir["#{root}/**/*"]
-      else
-        # Use the paths specified in the `:only` option.
-        options[:only]
-      end
+    @paths = Dir["#{root}/**/*"]
     
-    # Reject paths that are controllers or directories.
-    @paths.reject! { |p| File.basename(p) == 'controller.rb' || !File.file?(p) }
+    # Reject paths that are directories or within the destination directory.
+    @paths.reject! do |path|
+      !File.file?(path) || path[0..destination.length-1] == destination
+    end
 
     # Create a controller instance for each directory in the project.
     @controllers = @paths.inject({}) do |hash, path|
@@ -113,6 +92,34 @@ class Stasis
       end
       hash
     end
+  end
+
+  def generate(options={})
+    options[:only] ||= []
+    options[:only] = [ options[:only] ].flatten
+
+    # Resolve paths given via the `:only` option.
+    options[:only] = options[:only].inject([]) do |array, path|
+      # If `path` is a regular expression...
+      if path.is_a?(::Regexp)
+        array << path
+      # If `path` is a file...
+      elsif File.file?(path)
+        array << path
+      # If `root + path` is a file...
+      elsif (path = File.expand_path(path, root)) && File.file?(path)
+        array << path
+      end
+      array
+    end
+
+    if options[:only].empty?
+      # Remove old generated files.
+      FileUtils.rm_rf(destination)
+    end
+
+    # Reject paths that are controllers.
+    @paths.reject! { |p| File.basename(p) == 'controller.rb' }
     
     # Trigger all plugin `before_all` events, passing all `Controller` instances and
     # paths.
@@ -121,6 +128,15 @@ class Stasis
     @paths.uniq.each do |path|
       dir = File.dirname(path)
       path_controller = @controllers[dir]
+
+      # If `:only` option specified...
+      unless options[:only].empty?
+        # Skip iteration unless there is a match.
+        next unless options[:only].any? do |only|
+          (only.is_a?(::Regexp) && path =~ only) ||
+          (only.is_a?(::String) && path == only)
+        end
+      end
       
       # Sometimes the path doesn't actually exist, which means a `Controller` instance
       # does not exist yet.

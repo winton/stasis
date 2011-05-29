@@ -1,6 +1,10 @@
 require 'spec_helper'
 
 describe Stasis::Before do
+
+  before(:all) do
+    generate
+  end
   
   it "should set class variables for index.html" do
     $files['index.html'].should =~ /@before_index_literal\nroot/

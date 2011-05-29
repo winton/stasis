@@ -1,6 +1,10 @@
 require 'spec_helper'
 
 describe Stasis::Helpers do
+
+  before(:all) do
+    generate
+  end
   
   it "should display the helper in index.html" do
     $files['index.html'].should =~ /helpers\nroot/
