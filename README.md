@@ -1,24 +1,162 @@
 Stasis
 ======
 
-An extensible static site generator.
+Static sites made powerful.
 
-Philosophy
-----------
+Stasis is not your typical static site generator. Access your database. Pull data from an API. Render to any number of dynamic paths. Get crazy.
 
-Stasis is a perfect complement to modern dynamic frameworks:
-
-1. Use Stasis to generate your HTML and other assets.
-2. Serve that data in the most performant way possible (usually Nginx).
-3. Use your dynamic framework to serve data to the client (usually JSON).
-4. Use your dynamic framework (or `cron`) to regenerate Stasis pages as needed.
-
-Stasis is not your typical "one to one" markup renderer. Render to any number of dynamic paths. Access your database. Pull data from an API. Get crazy.
-
-Requirements
-------------
+Install
+-------
 
     gem install stasis
+
+One-to-One Example
+------------------
+
+Example project:
+
+    project/
+        index.html.haml
+        subdirectory/
+            index.html.haml
+            other.txt
+
+Open terminal and run `stasis` on the project:
+
+    cd project
+    stasis
+
+This generates a `public` directory:
+
+    project/
+        public/
+            index.html
+            subdirectory/
+                index.html
+                other.txt
+
+Templates (`index.html.haml`) are rendered and the template extension is removed.
+
+Since `.txt` is not a supported template extension, Stasis copies `other.txt` and does nothing further to it.
+
+Controllers
+-----------
+
+Let's add controllers to the project:
+
+    project/
+        controller.rb
+        index.html.haml
+        subdirectory/
+            controller.rb
+            index.html.haml
+            other.txt
+
+Each controller executes once before rendering templates at the same directory level or below.
+
+Before Filters
+--------------
+
+In your controller:
+
+    before 'index.html.haml' do
+      # any class variables set here will be available to your template
+      @something = true
+    end
+
+The `before` method can take any number of paths and/or regular expressions.
+
+Layouts
+-------
+
+Create a `layout.html.haml` file:
+
+    %html
+      %body= yield
+
+Set the default layout:
+
+    layout 'layout.html.haml'
+
+Set the layout for a particular file:
+
+    layout 'index.html.haml' => 'layout.html.haml'
+
+Or use a regular expression:
+
+    layout /.*.html.haml/ => 'layout.html.haml'
+
+Set the layout from a before filter if you like:
+
+    before 'index.html.haml' do
+      layout 'layout.html.haml'
+    end
+
+Ignore
+------
+
+Use the `ignore` method in your controller to ignore certain files.
+
+For example, to ignore files with an underscore at the beginning (partials):
+
+    ignore /_.*/
+
+Rendering
+---------
+
+Render within a template:
+
+    %html
+      %body= render '_partial.html.haml'
+
+Render within a `before` block:
+
+    before 'index.html.haml' do
+      @partial = render '_partial.html.haml'
+    end
+
+Render text:
+
+    render :text => 'Hello'
+
+Render with local variables:
+
+    render 'index.html.haml', :locals => { :x => true }
+
+Render with a block for the template to `yield` to:
+
+    render 'index.html.haml' { 'Hello' }
+
+Instead
+-------
+
+The `instead` method changes the output of the file being rendered:
+
+    before 'index.html.haml' do
+      instead render('subdirectory/index.html.haml')
+    end
+
+Helpers
+-------
+
+The `helpers` method allows you to make methods available to `before` callbacks and templates:
+
+    helpers do
+      def say_hello
+        'Hello'
+      end
+    end
+
+Priority
+--------
+
+Change the order in which files are rendered or copied:
+
+    priority 'index.html.erb' => 1, /.*\.txt/ => 2
+
+In this example, text files are copied to `public` before `index.html.erb` renders.
+
+The default priority is `0`.
 
 Supported Template Engines
 --------------------------
@@ -43,228 +181,9 @@ Stasis uses [Tilt](https://github.com/rtomayko/tilt) to support the following te
     CoffeeScript               .coffee           coffee-script (+node coffee)
     Slim                       .slim             slim (>= 0.7)
 
-Example
--------
-
-The [spec project](https://github.com/winton/stasis/tree/master/spec/fixtures/project) implements all of the features in this README.
-
-Get Started
------------
-
-Create a directory for your project, and within that directory, a markup file:
-
-### view.html.erb
-
-    Welcome <%= '!' * 3 %>
-
-Generate Static Files
----------------------
-
-Open your terminal, `cd` into your project directory, and run the `stasis` command:
-
-    stasis
-
-You now have a `public` directory with rendered markup:
-
-    public/
-      view.html
-    view.html.erb
-
-If the file extension is a supported markup file, it renders into `public`.
-
-If the file extension is unsupported, it copies into `public`.
-
-Controllers
------------
-
-The only reserved filename in a Stasis project is `controller.rb`.
-
-You can have a `controller.rb` at any directory level:
-
-    controller.rb
-    index.html.erb
-    pages/
-      controller.rb
-      page.html.erb
-
-Controllers at the same directory level or above execute for a particular markup file.
-
-For example, `page.html.erb` uses both controllers, but `index.html.erb` only uses the top-level controller.
-
-Callbacks
----------
-
-Define `before` and `after` render callbacks within your controller:
-
-### controller.rb
-
-    # Call before any file renders
-    
-    before do
-      @what_is_rendering = "any file"
-    end
-
-    # Call before any ERB file renders
-    
-    before /.*erb/ do
-      @what_is_rendering = "ERB file"
-    end
-    
-    # Call only before view.html.erb renders
-    
-    before 'view.html.erb' do
-      @what_is_rendering = "the view"
-    end
-
-### view.html.erb
-
-    <%= @what_is_rendering %>
-
-Change the Destination
-----------------------
-
-Let's say we want `view.html.erb` to be our front page:
-
-### controller.rb
-
-    destination 'view.html.erb' => '/index.html'
-    
-    # or
-    
-    before 'view.html.erb' do
-      @destination = '/index.html'
-    end
-
-Ignore
-------
-
-Sometimes you will want to ignore certain files entirely (no render, no copy).
-
-For example, you'll often want to ignore filenames with an underscore at the beginning (partials):
-
-### controller.rb
-
-    ignore /_.*/
-
-    # or
-
-    before /_.*/ do
-      @ignore = true
-    end
-
-Layouts
--------
-
-Create the layout markup:
-
-### layout.html.erb
-
-    <html>
-      <body><%= yield %></body>
-    </html>
-
-### controller.rb
-
-    # set default layout for all views
-
-    layout 'layout.html.erb'
-
-    # or set layout for specific view
-
-    layout 'view.html.erb' => 'layout.html.erb'
-    
-    # or
-    
-    before 'view.html.erb' do
-      @layout = 'layout.html.erb'
-    end
-
-Layout files are automatically ignored (don't want to render a `layout.html` file).
-
-Helpers
--------
-
-Define helper methods within your controllers.
-
-### controller.rb
-
-    helpers do
-      def active?(path)
-        @source == path
-      end
-    end
-
-### layout.html.erb
-
-    <% if active?('view.html.erb') %>
-      Rendering view.html.erb
-    <% end -%>
-
-Priority
---------
-
-You may want some files to render or copy before others:
-
-### controller.rb
-
-    priority 'view.html.erb' => 1, /.*css/ => 2, /.*js/ => 2
-
-The default priority is `0`.
-
-Rendering
----------
-
-Render other files within a callback, helper, or view:
-
-### view.html.erb
-
-    <%= render '_partial.html.erb', :locals => { :x => 'y' } %>
-
-Summary
--------
-
-Use the following methods in your controllers:
-
-* `after`
-* `before`
-* `destination`
-* `ignore`
-* `layout`
-* `priority`
-
-Use the following methods within a callback, helper, or view:
-
-* `render`
-
-Use the following class variables in your callbacks, helpers, or views:
-
-* `@destination`
-* `@layout`
-* `@source`
-
-Only alter these class variables from a `before` callback.
-
 Continuous Rendering
 --------------------
 
 To continuously render files as you change them, run:
 
     stasis -c
-
-Web Server
-----------
-
-To start Stasis in web server mode, run:
-
-    stasis -p 3000
-
-In your browser, visit [http://localhost:3000](http://localhost:3000).
-
-In web server mode, Stasis continuously renders (`-c`).
-
-Other Topics:
--------------
-
-* [Asset Packaging](https://github.com/winton/stasis/wiki/Asset-Packaging)
-* [Callback Execution Order](https://github.com/winton/stasis/wiki/Callback-Execution-Order).
-* [Run Stasis Programmatically](https://github.com/winton/stasis/wiki/Run-Stasis-Programmatically)
