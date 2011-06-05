@@ -1,11 +1,11 @@
 Stasis
 ======
 
-Stasis is not your typical static site generator:
+Stasis is a dynamic framework for static sites.
 
-* Execute any Ruby code before each template is rendered
-* Use cron (or any Ruby code) to regenerate pieces of your site
-* Render to any number of dynamic paths
+When coupled with [metastasis](https://github.com/winton/metastasis), Stasis can even respond to dynamic user input.
+
+The end goal? Making a high-performance web framework that serves pages solely through Nginx.
 
 Install
 -------
