@@ -1,7 +1,11 @@
 Stasis
 ======
 
-Stasis is not your typical static site generator. Access your database. Pull data from an API. Render to any number of dynamic paths. Get crazy.
+Stasis is not your typical static site generator:
+
+* Execute any Ruby code before each template is rendered
+* Use cron (or any Ruby code) to regenerate pieces of your site
+* Render to any number of dynamic paths
 
 Install
 -------
@@ -19,8 +23,8 @@ Example Project
 
 Open terminal and run `stasis` on the project:
 
-    cd project
-    stasis
+    $ cd project
+    $ stasis
 
 This generates a `public` directory:
 
@@ -31,9 +35,9 @@ This generates a `public` directory:
                 index.html
                 other.txt
 
-Templates (`index.html.haml`) are rendered and the template extension is removed.
+Templates (`*.html.haml`) are rendered and the template extension is removed.
 
-Since `.txt` is not a supported template extension, Stasis copies `other.txt` and does nothing further to it.
+Because `.txt` is not a supported template extension, Stasis copies `other.txt` and does nothing further to it.
 
 Controllers
 -----------
@@ -56,9 +60,10 @@ Before Filters
 In your controller:
 
     before 'index.html.haml' do
-      # class variables created here will be available to your template
       @something = true
     end
+
+The class variable `@something` is made available to the `index.html.haml` template.
 
 The `before` method can take any number of paths and/or regular expressions.
 
