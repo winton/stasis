@@ -28,15 +28,15 @@ before /fail/ do
 end
 
 before 'before_render_text.html.haml' do
-  render :text => 'root'
+  instead render(:text => 'root')
 end
 
 before 'before_render_partial.html.haml' do
-  render :path => '_partial.html.haml'
+  instead render(:path => '_partial.html.haml')
 end
 
 before 'before_non_existent.html' do
-  render :path => '_partial.html.haml'
+  instead render(:path => '_partial.html.haml')
 end
 
 # Helpers

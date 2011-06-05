@@ -12,11 +12,14 @@ class Stasis
 
     # This method is bound to all controllers. Stores a block in the `@blocks` `Hash`,
     # where the key is a path and the value is an `Array` of blocks.
-    def before(controller, path=nil, &block)
+    def before(controller, *paths, &block)
+      paths = [ nil ] if paths.empty?
       if block
-        path = controller._resolve(path, true)
-        @blocks[path] ||= []
-        @blocks[path] << block
+        paths.each do |path|
+          path = controller._resolve(path, true)
+          @blocks[path] ||= []
+          @blocks[path] << block
+        end
       else
         @blocks[path] || []
       end
@@ -38,22 +41,11 @@ class Stasis
       if @blocks && matches = _match_key?(@blocks, path)
         action._[:path] = path
         matches.flatten.each do |block|
-          capture_render(action) do
-            action.instance_eval(&block)
-          end
+          action.instance_eval(&block)
         end
         action._[:path] = nil
       end
       [ controller, action, path ]
-    end
-
-    # Lets the `action` know that we want to capture any render that occurs within the
-    # `block`.
-    def capture_render(action, &block)
-      old = action._[:capture_render]
-      action._[:capture_render] = true
-      yield
-      action._[:capture_render] = old
     end
   end
 end

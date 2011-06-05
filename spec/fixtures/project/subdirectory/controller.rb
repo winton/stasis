@@ -24,15 +24,11 @@ before /fail/ do
 end
 
 before 'before_render_text.html.haml' do
-  render :text => 'subdirectory'
+  instead render(:text => 'subdirectory')
 end
 
-before 'before_render_partial.html.haml' do
-  render :path => '_partial.html.haml'
-end
-
-before 'before_non_existent.html' do
-  render :path => '_partial.html.haml'
+before 'before_render_partial.html.haml', 'before_non_existent.html' do
+  instead render(:path => '_partial.html.haml')
 end
 
 # Helpers
@@ -49,8 +45,10 @@ ignore 'ignore.html.haml'
 
 # Layout
 
-layout 'layout_controller.html.haml' => 'layout.html.haml'
-layout 'layout_controller_from_root.html.haml' => '/layout.html.haml'
+layout(
+  'layout_controller.html.haml' => 'layout.html.haml',
+  'layout_controller_from_root.html.haml' => '/layout.html.haml'
+)
 
 before 'layout_action.html.haml' do
   layout 'layout.html.haml'
@@ -62,5 +60,7 @@ end
 
 # Priority
 
-priority '/before_render_partial.html.haml' => 1
-priority 'index.html.haml' => -1
+priority(
+  '/before_render_partial.html.haml' => 1,
+  'index.html.haml' => -1
+)

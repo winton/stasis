@@ -1,8 +1,6 @@
 Stasis
 ======
 
-Static sites made powerful.
-
 Stasis is not your typical static site generator. Access your database. Pull data from an API. Render to any number of dynamic paths. Get crazy.
 
 Install
@@ -10,10 +8,8 @@ Install
 
     gem install stasis
 
-One-to-One Example
-------------------
-
-Example project:
+Example Project
+---------------
 
     project/
         index.html.haml
@@ -60,7 +56,7 @@ Before Filters
 In your controller:
 
     before 'index.html.haml' do
-      # any class variables set here will be available to your template
+      # class variables created here will be available to your template
       @something = true
     end
 
@@ -69,16 +65,16 @@ The `before` method can take any number of paths and/or regular expressions.
 Layouts
 -------
 
-Create a `layout.html.haml` file:
+Create a `layout.html.haml` template:
 
     %html
       %body= yield
 
-Set the default layout:
+In your controller, set the default layout:
 
     layout 'layout.html.haml'
 
-Set the layout for a particular file:
+Set the layout for a particular template:
 
     layout 'index.html.haml' => 'layout.html.haml'
 
@@ -86,7 +82,7 @@ Or use a regular expression:
 
     layout /.*.html.haml/ => 'layout.html.haml'
 
-Set the layout from a before filter if you like:
+Set the layout from a `before` filter if you like:
 
     before 'index.html.haml' do
       layout 'layout.html.haml'
@@ -95,9 +91,9 @@ Set the layout from a before filter if you like:
 Ignore
 ------
 
-Use the `ignore` method in your controller to ignore certain files.
+Use the `ignore` method in your controller to ignore certain paths.
 
-For example, to ignore files with an underscore at the beginning (partials):
+For example, to ignore paths with an underscore at the beginning (partials):
 
     ignore /_.*/
 
@@ -130,7 +126,7 @@ Render with a block for the template to `yield` to:
 Instead
 -------
 
-The `instead` method changes the output of the file being rendered:
+The `instead` method changes the output of the template being rendered:
 
     before 'index.html.haml' do
       instead render('subdirectory/index.html.haml')
@@ -139,7 +135,7 @@ The `instead` method changes the output of the file being rendered:
 Helpers
 -------
 
-The `helpers` method allows you to make methods available to `before` callbacks and templates:
+To make methods available to `before` callbacks and templates, add a `helpers` block to your controller:
 
     helpers do
       def say_hello
@@ -181,9 +177,9 @@ Stasis uses [Tilt](https://github.com/rtomayko/tilt) to support the following te
     CoffeeScript               .coffee           coffee-script (+node coffee)
     Slim                       .slim             slim (>= 0.7)
 
-Continuous Rendering
---------------------
+Automatic Regeneration
+----------------------
 
-To continuously render files as you change them, run:
+To continuously regenerate your project as you modify files, run:
 
-    stasis -c
+    stasis -a

@@ -31,16 +31,17 @@ $:.unshift File.dirname(__FILE__)
 
 # Require all Stasis library files.
 
+require 'stasis/auto'
 require 'stasis/plugin'
 
 require 'stasis/scope'
 require 'stasis/scope/action'
 require 'stasis/scope/controller'
 
-require 'stasis/plugins/after'
 require 'stasis/plugins/before'
 require 'stasis/plugins/helpers'
 require 'stasis/plugins/ignore'
+require 'stasis/plugins/instead'
 require 'stasis/plugins/layout'
 require 'stasis/plugins/priority'
 require 'stasis/plugins/render'

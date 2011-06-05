@@ -50,10 +50,6 @@ class Stasis
           output
         end
       
-      if action._[:capture_render]
-        action._[:render] = output
-      end
-      
       output
     end
   end

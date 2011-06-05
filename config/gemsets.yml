@@ -1,5 +1,7 @@
 stasis:
+  directory_watcher: ~>1.4.0
   rake: >=0.8.7
   rocco: ~>0.6
   rspec: ~>1.0
+  slop: ~>1.6.0
   tilt: ~>1.2
