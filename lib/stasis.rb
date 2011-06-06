@@ -1,7 +1,10 @@
-# **Stasis** makes static sites powerful.
+# **Stasis** is a dynamic framework for static sites.
 #
-# Stasis is not your typical static site generator. Access your database. Pull data from
-# an API. Render to any number of dynamic paths. Get crazy.
+# When coupled with [metastasis](https://github.com/winton/metastasis), Stasis can even
+# respond to dynamic user input.
+#
+# The end goal? Making a high-performance web framework that serves pages solely through
+# Nginx.
 
 ### Prerequisites
 
@@ -91,6 +94,7 @@ class Stasis
   def generate(options={})
     options[:only] ||= []
     options[:only] = [ options[:only] ].flatten
+    options[:params] ||= {}
 
     # Resolve paths given via the `:only` option.
     options[:only] = options[:only].inject([]) do |array, path|
@@ -139,6 +143,7 @@ class Stasis
       # Create an `Action` instance, the scope for rendering the view.
       @action = Action.new(
         :path => path,
+        :params => options[:params],
         :plugins => path_controller._[:plugins],
         :stasis => self
       )
