@@ -5,3 +5,4 @@ stasis:
   rspec: ~>1.0
   slop: ~>1.6.0
   tilt: ~>1.2
+  yajl-ruby: ~>0.8.2

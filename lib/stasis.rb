@@ -26,7 +26,7 @@ require 'slim' rescue nil
 
 # Activate the [Tilt][ti] gem.
 
-Stasis::Gems.activate %w(tilt)
+Stasis::Gems.activate %w(tilt yajl-ruby)
 
 # Add the project directory to the load paths.
 
@@ -35,6 +35,7 @@ $:.unshift File.dirname(__FILE__)
 # Require all Stasis library files.
 
 require 'stasis/auto'
+require 'stasis/daemon'
 require 'stasis/plugin'
 
 require 'stasis/scope'
@@ -146,7 +147,7 @@ class Stasis
         :params => options[:params],
         :plugins => path_controller._[:plugins],
         :stasis => self
-      )
+        )
 
       # Set the extension if the `path` extension is supported by [Tilt][ti].
       ext =
@@ -231,6 +232,16 @@ class Stasis
     # Trigger all plugin `after_all` events, passing all `Controller` instances and
     # paths.
     @controllers, @paths = trigger(:after_all, '*', @controllers, @paths)
+  end
+
+  # Add a plugin to all existing controller instances. This method should be called by
+  # all external plugins.
+  def self.register(plugin)
+    ObjectSpace.each_object(::Stasis::Controller) do |controller|
+      plugin = plugin.new
+      controller._[:plugins] << plugin
+      controller._bind_plugin(plugin, :controller_method)
+    end
   end
 
   # Trigger an event on every plugin in certain controllers (depending on the `path`

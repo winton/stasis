@@ -1,6 +1,8 @@
 # Root controller
 # ---------------
 
+require "#{File.dirname(__FILE__)}/plugin"
+
 # Before
 
 before 'index.html.haml' do

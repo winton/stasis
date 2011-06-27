@@ -25,7 +25,9 @@ class Stasis
 
       # Some plugins define methods to be made available to controller scopes. This call
       # binds those methods.
-      _bind_plugins(:controller_method)
+      @_[:plugins].each do |plugin|
+        _bind_plugin(plugin, :controller_method)
+      end
 
       # Evaluate `controller.rb`.
       instance_eval(File.read(path), path) if path
@@ -62,15 +64,15 @@ class Stasis
 
     class <<self
 
-      # Returns an `Array` of `Plugin` classes within the `Stasis` namespace.
+      # Returns an `Array` of `Stasis::Plugin` classes.
       def find_plugins
-        Stasis.constants.inject([]) do |array, klass|
-          klass = eval(klass.to_s)
-          if klass < Plugin
-            array << klass
+        plugins = []
+        ObjectSpace.each_object(Class) do |klass|
+          if klass < ::Stasis::Plugin
+            plugins << klass
           end
-          array
         end
+        plugins
       end
     end
   end

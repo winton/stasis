@@ -21,7 +21,9 @@ class Stasis
 
       # Some plugins define methods to be made available to action scopes. This call
       # binds those methods.
-      _bind_plugins(:action_method)
+      @_[:plugins].each do |plugin|
+        _bind_plugin(plugin, :action_method)
+      end
     end
   end
 end
