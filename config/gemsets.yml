@@ -1,4 +1,5 @@
 stasis:
+  beanstalk-client: ~>1.1.0
   directory_watcher: ~>1.4.0
   rake: >=0.8.7
   rocco: ~>0.6

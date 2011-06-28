@@ -26,7 +26,7 @@ require 'slim' rescue nil
 
 # Activate the [Tilt][ti] gem.
 
-Stasis::Gems.activate %w(tilt yajl-ruby)
+Stasis::Gems.activate %w(tilt)
 
 # Add the project directory to the load paths.
 

@@ -10,6 +10,10 @@ describe Stasis do
     $files['not_dynamic.html'].should =~ /pass/
   end
 
+  it "should use the custom plugin" do
+    $files['custom_plugin.html'].should =~ /pass/
+  end
+
   describe 'generate with :only option' do
     
     before(:each) do

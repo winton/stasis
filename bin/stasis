@@ -7,8 +7,8 @@ require 'slop'
 
 opts = Slop.parse :help => true do
   on :a, :auto, 'Auto-regenerate'
+  on :b, :beanstalk, 'Beanstalk addresses (comma-separated, default: localhost:11300)', :optional => true, :as => Array, :default => "localhost:11300"
   on :o, :only, 'Only generate specific files (comma-separated)', :as => Array
-  on :p, :port, 'Port (daemon mode)', :optional => true, :as => Integer, :default => 7000
 end
 
 args = []
@@ -20,8 +20,8 @@ if opts.auto?
   Stasis::Auto.new(dir)
 elsif opts.only?
   Stasis.new(dir).generate(:only => opts[:only])
-elsif opts.port?
-  Stasis::Daemon.new(dir, opts[:port])
+elsif opts.beanstalk?
+  Stasis::Daemon.new(opts)
 else
   Stasis.new(dir).generate
 end

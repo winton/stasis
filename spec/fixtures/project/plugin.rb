@@ -4,7 +4,7 @@ class Plugin < Stasis::Plugin
   def plugin(controller, controllers, paths)
     if controller._[:root] == controller._[:dir]
       controller.before("custom_plugin.html") do
-        instead render(:text => 'root')
+        instead "pass"
       end
     end
     [ controller, controllers, paths ]
