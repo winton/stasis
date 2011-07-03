@@ -9,8 +9,7 @@ class Stasis
 
       puts "\nAuto-regenerating enabled: #{dir}"
 
-      @stasis = Stasis.new(dir)
-      generate
+      generate(dir)
 
       dw = DirectoryWatcher.new(@stasis.root)
       dw.interval = 1
@@ -28,7 +27,7 @@ class Stasis
 
       dw.add_observer do |*events|
         modified = events.detect { |e| e[:type] == :modified }
-        generate if modified
+        generate(dir) if modified
       end
 
       dw.start
@@ -37,9 +36,10 @@ class Stasis
 
     private
 
-    def generate
+    def generate(dir)
       puts "\n[#{Time.now.strftime("%Y-%m-%d %H:%M:%S")}] Auto-regenerating project..."
       begin
+        @stasis = Stasis.new(dir)
         @stasis.generate
       rescue Exception => e
         puts "\n[#{Time.now.strftime("%Y-%m-%d %H:%M:%S")}] Error: #{e.message}`"

@@ -3,5 +3,7 @@
 coverage
 docs
 pkg
+site/.sass-cache
+site/public
 spec/fixtures/project/public
 tmp
