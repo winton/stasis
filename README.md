@@ -10,10 +10,24 @@ The end goal? Making a high-performance web framework that serves pages solely t
 Install
 -------
 
-    gem install stasis
+Install via RubyGems:
 
-Example Project
----------------
+<!-- language:console -->
+
+    $ gem install stasis
+
+Verify the install:
+
+<!-- language:console -->
+
+    $ stasis -h
+
+Templates
+---------
+
+Example directory structure:
+
+<!-- language:console -->
 
     project/
         index.html.haml
@@ -21,12 +35,16 @@ Example Project
             index.html.haml
             other.txt
 
-Open terminal and run `stasis` on the project:
+Open terminal and run `stasis`:
+
+<!-- language:console -->
 
     $ cd project
     $ stasis
 
-This generates a `public` directory:
+You now have a `public` directory:
+
+<!-- language:console -->
 
     project/
         public/
@@ -44,6 +62,8 @@ Controllers
 
 Let's add controllers to the project:
 
+<!-- language:console -->
+
     project/
         controller.rb
         index.html.haml
@@ -54,8 +74,8 @@ Let's add controllers to the project:
 
 Each controller executes once before rendering templates at the same directory level or below.
 
-Before Filters
---------------
+Before
+------
 
 In your controller:
 
@@ -102,29 +122,29 @@ For example, to ignore paths with an underscore at the beginning (partials):
 
     ignore /_.*/
 
-Rendering
----------
+Render
+------
 
-Render within a template:
+Within a template:
 
     %html
       %body= render '_partial.html.haml'
 
-Render within a `before` block:
+Within a `before` block:
 
     before 'index.html.haml' do
       @partial = render '_partial.html.haml'
     end
 
-Render text:
+Text:
 
     render :text => 'Hello'
 
-Render with local variables:
+Local variables:
 
     render 'index.html.haml', :locals => { :x => true }
 
-Render with a block for the template to `yield` to:
+Include a block for the template to `yield` to:
 
     render 'index.html.haml' { 'Hello' }
 
@@ -159,32 +179,44 @@ In this example, text files are copied to `public` before `index.html.erb` rende
 
 The default priority is `0`.
 
-Supported Template Engines
---------------------------
+More
+----
 
-Stasis uses [Tilt](https://github.com/rtomayko/tilt) to support the following template engines:
-
-    ENGINE                     FILE EXTENSIONS   REQUIRED LIBRARIES
-    -------------------------- ----------------- ----------------------------
-    ERB                        .erb              none (included ruby stdlib)
-    Interpolated String        .str              none (included ruby core)
-    Haml                       .haml             haml
-    Sass                       .sass             haml
-    Less CSS                   .less             less
-    Builder                    .builder          builder
-    Liquid                     .liquid           liquid
-    RDiscount                  .markdown         rdiscount
-    RedCloth                   .textile          redcloth
-    RDoc                       .rdoc             rdoc
-    Radius                     .radius           radius
-    Markaby                    .mab              markaby
-    Nokogiri                   .nokogiri         nokogiri
-    CoffeeScript               .coffee           coffee-script (+node coffee)
-    Slim                       .slim             slim (>= 0.7)
-
-Automatic Regeneration
-----------------------
+### Automatic Regeneration
 
 To continuously regenerate your project as you modify files, run:
 
-    stasis -a
+<!-- language:console -->
+
+    $ stasis -a
+
+### Supported Markup Languages
+
+Stasis uses [Tilt](https://github.com/rtomayko/tilt) to support the following template engines:
+
+<!-- language:console -->
+
+    ENGINE                     FILE EXTENSIONS
+    -------------------------- ----------------------
+    ERB                        .erb, .rhtml
+    Interpolated String        .str
+    Erubis                     .erb, .rhtml, .erubis
+    Haml                       .haml
+    Sass                       .sass
+    Scss                       .scss
+    Less CSS                   .less
+    Builder                    .builder
+    Liquid                     .liquid
+    RDiscount                  .markdown, .mkd, .md
+    Redcarpet                  .markdown, .mkd, .md
+    BlueCloth                  .markdown, .mkd, .md
+    Kramdown                   .markdown, .mkd, .md
+    Maruku                     .markdown, .mkd, .md
+    RedCloth                   .textile
+    RDoc                       .rdoc
+    Radius                     .radius
+    Markaby                    .mab
+    Nokogiri                   .nokogiri
+    CoffeeScript               .coffee
+    Creole (Wiki markup)       .creole
+    Yajl                       .yajl

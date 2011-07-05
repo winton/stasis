@@ -6,31 +6,14 @@
     %link{ :href => "http://fonts.googleapis.com/css?family=Amaranth|Open+Sans:400,600,700&v2", :rel => "stylesheet", :type => "text/css" }
   %body
     %ul
-      %li
-        %a{ :href => '#install' } Install
-      %li
-        %a{ :href => '#templates' } Templates
-      %li
-        %a{ :href => '#controllers' } Controllers
-      %li
-        %a{ :href => '#before' } Before
-      %li
-        %a{ :href => '#layouts' } Layouts
-      %li
-        %a{ :href => '#ignore' } Ignore
-      %li
-        %a{ :href => '#render' } Render
-      %li
-        %a{ :href => '#instead' } Instead
-      %li
-        %a{ :href => '#helpers' } Helpers
-      %li
-        %a{ :href => '#priority' } Priority
-      %li
-        %a{ :href => '#more' } More
+      - @links.each do |link|
+        %li
+          %a{ :href => "##{link[:href]}" }= link[:name]
     #title
       %img{ :src => 'stasis.png' }>
       stasis
       %img.reverse{ :src => 'stasis.png' }>
     #tm Static Sites Made Powerful
-    #body~ @readme
+    #body
+      ~ @readme
+      .clear
