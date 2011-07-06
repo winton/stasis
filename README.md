@@ -16,14 +16,10 @@ Install via RubyGems:
 
     $ gem install stasis
 
-Verify the install:
-
-<!-- language:console -->
-
-    $ stasis -h
-
 Templates
 ---------
+
+At its most essential, Stasis takes a directory tree with [supported template files](#supported_markup_languages) and renders them.
 
 Example directory structure:
 
@@ -31,38 +27,38 @@ Example directory structure:
 
     project/
         index.html.haml
-        subdirectory/
-            index.html.haml
-            other.txt
+        other.txt
 
-Open terminal and run `stasis`:
+Run `stasis`:
 
-<!-- language:console -->
+<!-- highlight:stasis language:console -->
 
     $ cd project
     $ stasis
 
-You now have a `public` directory:
+Stasis creates a `public` directory:
 
-<!-- language:console -->
+<!-- highlight:public/ language:console -->
 
     project/
+        index.html.haml
+        other.txt
         public/
             index.html
-            subdirectory/
-                index.html
-                other.txt
+            other.txt
 
-Templates (`*.html.haml`) are rendered and the template extension is removed.
+`index.html.haml` renders to `public/index.html`.
 
-Because `.txt` is not a supported template extension, Stasis copies `other.txt` and does nothing further to it.
+`other.txt` is copied as-is because `.txt` is an unrecognized template extension.
 
 Controllers
 -----------
 
-Let's add controllers to the project:
+Controllers contain Ruby code that is evaluated once before all templates render.
 
-<!-- language:console -->
+Example directory structure:
+
+<!-- highlight:controller.rb language:console -->
 
     project/
         controller.rb
@@ -70,32 +66,35 @@ Let's add controllers to the project:
         subdirectory/
             controller.rb
             index.html.haml
-            other.txt
-
-Each controller executes once before rendering templates at the same directory level or below.
 
 Before
 ------
 
-In your controller:
+Use `before` blocks within your `controller.rb` to execute code before templates render.
+
+`controller.rb`:
 
     before 'index.html.haml' do
       @something = true
     end
 
-The class variable `@something` is made available to the `index.html.haml` template.
+`@something` is now available to the `index.html.haml` template.
 
-The `before` method can take any number of paths and/or regular expressions.
+The `before` method can take any number of paths and/or regular expressions:
+
+    before 'index.html.haml', /.*html.erb/ do
+      @something = true
+    end
 
 Layouts
 -------
 
-Create a `layout.html.haml` template:
+`layout.html.haml`:
 
     %html
       %body= yield
 
-In your controller, set the default layout:
+In your `controller.rb`, set the default layout:
 
     layout 'layout.html.haml'
 
@@ -103,24 +102,15 @@ Set the layout for a particular template:
 
     layout 'index.html.haml' => 'layout.html.haml'
 
-Or use a regular expression:
+Use a regular expression:
 
-    layout /.*.html.haml/ => 'layout.html.haml'
+    layout /.*html.haml/ => 'layout.html.haml'
 
-Set the layout from a `before` filter if you like:
+Set the layout from a `before` block:
 
     before 'index.html.haml' do
       layout 'layout.html.haml'
     end
-
-Ignore
-------
-
-Use the `ignore` method in your controller to ignore certain paths.
-
-For example, to ignore paths with an underscore at the beginning (partials):
-
-    ignore /_.*/
 
 Render
 ------
@@ -160,7 +150,7 @@ The `instead` method changes the output of the template being rendered:
 Helpers
 -------
 
-To make methods available to `before` callbacks and templates, add a `helpers` block to your controller:
+`controller.rb`:
 
     helpers do
       def say_hello
@@ -168,27 +158,38 @@ To make methods available to `before` callbacks and templates, add a `helpers` b
       end
     end
 
+The `say_hello` method is now available to all `before` blocks and templates.
+
+Ignore
+------
+
+Use the `ignore` method in your `controller.rb` to ignore certain paths.
+
+Ignore filenames with an underscore at the beginning:
+
+    ignore /_.*/
+
 Priority
 --------
 
-Change the order in which files are rendered or copied:
+Use the `priority` method in your `controller.rb` to change the file process order.
 
-    priority 'index.html.erb' => 1, /.*\.txt/ => 2
+Copy `.txt` files before rendering `index.html.erb`:
 
-In this example, text files are copied to `public` before `index.html.erb` renders.
+    priority /.*txt/ => 2, 'index.html.erb' => 1
 
-The default priority is `0`.
+The default priority is `0` for all files.
 
 More
 ----
 
-### Automatic Regeneration
+### Development Mode
 
 To continuously regenerate your project as you modify files, run:
 
-<!-- language:console -->
+<!-- highlight:-d language:console -->
 
-    $ stasis -a
+    $ stasis -d
 
 ### Supported Markup Languages
 

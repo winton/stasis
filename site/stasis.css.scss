@@ -77,19 +77,23 @@ ul {
   margin: 20px auto 0;
   width: 800px;
 
+  a {
+    color: #3393E4;
+  }
+
   h2 {
     border-bottom: 2px solid #434445;
     clear: both;
     font-size: 19.4px;
     padding: 20px 0 5px;
-
-    a {
-      color: #3393E4;
-    }
   }
 
   h3 {
     font-size: 18px;
+
+    a {
+      color: #CDA869;
+    }
   }
 
   p {
@@ -149,7 +153,7 @@ ul {
     .gh { color: #000080; font-weight: bold } /* Generic.Heading */
     .gi { background: #253B22 } /* Generic.Inserted */
     .go {  } /* Generic.Output */
-    .gp { font-weight: bold; color: #CF6A4C } /* Generic.Prompt */
+    .gp { font-weight: bold; color: #CDA869 } /* Generic.Prompt */
     .gs { font-weight: bold } /* Generic.Strong */
     .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
     .gt {  } /* Generic.Traceback */

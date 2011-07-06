@@ -10,22 +10,32 @@ before 'index.html.haml' do
     node.remove
   end
   
-  # Link <h2> tags
-  @links = @readme.css('h2').collect do |node|
-    href = node.text.downcase
+  # Link <h2> and <h3> tags
+  @links = @readme.css('h2, h3').collect do |node|
+    href = node.text.downcase.gsub(/\s/, '_')
     name = node.text
     node.inner_html = '<a name="' + href + '" href="#' + href + '">' + node.inner_html + '</a>'
-    { :name => name, :href => href }
+    if node.name == 'h2'
+      { :name => name, :href => href }
+    else
+      nil
+    end
   end
+  @links.compact!
   
   @readme.css('pre').each do |pre|
 
     # Retrieve language from comment
+    highlight = nil
     language = nil
     comment = pre.previous.previous
     if comment && comment.comment?
-      language = comment.content.strip.split('language:')[1]
+      highlight = comment.content.match(/highlight:(\S+)/)
+      language = comment.content.match(/language:(\S+)/)
+      highlight = highlight[1].split(',') if highlight
+      language = language[1] if language
     end
+    highlight ||= []
     language ||= :ruby
 
     # Insert <pre> tags before the previous element (because its floated right)
@@ -37,7 +47,15 @@ before 'index.html.haml' do
     pre.add_previous_sibling('<div class="clear"></div>')
 
     # Pygmentize
-    pre.replace Albino.colorize(pre.css('code').text, language)
+    pygmented = Albino.colorize(pre.css('code').text, language)
+
+    # Highlight
+    highlight.each do |str|
+      pygmented = pygmented.gsub(str, '<span class="sr">' + str + '</span>')
+    end
+
+    # Replace <pre>
+    pre.replace pygmented
   end
   
   # Insert <div class="clear"> before each <h3> tag
