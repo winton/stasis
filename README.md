@@ -3,10 +3,6 @@ Stasis
 
 Stasis is a dynamic framework for static sites.
 
-When coupled with [metastasis](https://github.com/winton/metastasis), Stasis can even respond to dynamic user input.
-
-The end goal? Making a high-performance web framework that serves pages solely through Nginx.
-
 Install
 -------
 
@@ -70,7 +66,7 @@ Example directory structure:
 Before
 ------
 
-Use `before` blocks within your `controller.rb` to execute code before templates render.
+Use `before` blocks within `controller.rb` to execute code before templates render.
 
 `controller.rb`:
 
@@ -94,7 +90,7 @@ Layouts
     %html
       %body= yield
 
-In your `controller.rb`, set the default layout:
+In `controller.rb`, set the default layout:
 
     layout 'layout.html.haml'
 
@@ -163,7 +159,7 @@ The `say_hello` method is now available to all `before` blocks and templates.
 Ignore
 ------
 
-Use the `ignore` method in your `controller.rb` to ignore certain paths.
+Use the `ignore` method in `controller.rb` to ignore certain paths.
 
 Ignore filenames with an underscore at the beginning:
 
@@ -172,7 +168,7 @@ Ignore filenames with an underscore at the beginning:
 Priority
 --------
 
-Use the `priority` method in your `controller.rb` to change the file process order.
+Use the `priority` method in `controller.rb` to change the file process order.
 
 Copy `.txt` files before rendering `index.html.erb`:
 

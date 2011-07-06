@@ -17,10 +17,15 @@ body {
   margin: 0 0 50px;
 }
 
+ul, #title, #tm {
+  min-width: 800px;
+}
+
 ul {
   background-color: #CCD7E1;
   font-size: 14px;
   font-weight: 600;
+  height: 25px;
   margin: 0;
   padding: 0;
   position: fixed;
@@ -34,6 +39,15 @@ ul {
     line-height: 25px;
     padding: 0 9px;
   }
+}
+
+#github {
+  position: fixed;
+  height: 141px;
+  right: 0;
+  top: 25px;
+  width: 141px;
+  z-index: 10000;
 }
 
 #title {

@@ -9,6 +9,9 @@
       - @links.each do |link|
         %li
           %a{ :href => "##{link[:href]}" }= link[:name]
+    #github
+      %a{ :href => 'https://github.com/winton/stasis' }
+        %img{ :src => 'github.png', :width => 141, :height => 141 }>
     #title
       %img{ :src => 'stasis.png' }>
       stasis
@@ -18,3 +21,4 @@
       ~ @readme
       .clear
     %script{ :src => "jquery-1.6.2.js", :type => "text/javascript" }
+    %script{ :src => "stasis.js", :type => "text/javascript" }
