@@ -38,16 +38,26 @@ ul {
     display: inline;
     line-height: 25px;
     padding: 0 9px;
+
+    a.selected {
+      color: #06599E;
+      font-weight: 700;
+    }
   }
 }
 
 #github {
   position: fixed;
   height: 141px;
+  opacity: 0.5;
   right: 0;
   top: 25px;
   width: 141px;
   z-index: 10000;
+}
+
+#github:hover {
+  opacity: 1;
 }
 
 #title {
