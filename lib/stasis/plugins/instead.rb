@@ -4,8 +4,8 @@ class Stasis
     action_method :instead
 
     # This method is bound to all actions.
-    def instead(action, string)
-      action._[:render] = string
+    def instead(string)
+      action._render = string
     end
   end
 end

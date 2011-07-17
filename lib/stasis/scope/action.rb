@@ -6,22 +6,18 @@
 class Stasis
   class Action < Scope
 
-    attr_reader :params
+    # `String` -- Path to the layout for this action.
+    attr_accessor :_layout
 
-    def initialize(options)
-      # `Hash` -- Contains two key/value pairs:
-      #
-      # * `path` -- Path of the view that this instance provides a scope for.
-      # * `plugins` -- `Array` of `Plugin` instances.
-      # * `stasis` -- A reference to the `Stasis` instance that created this `Action`.
-      @_ = options
+    # `String` -- If present, render this path instead of the default.
+    attr_accessor :_render
 
-      # `Hash` -- Passed from the `params` option given to `Stasis#generate`.
-      @params = options[:params]
+    def initialize(stasis)
+      @_stasis = stasis
 
       # Some plugins define methods to be made available to action scopes. This call
       # binds those methods.
-      @_[:plugins].each do |plugin|
+      @_stasis.plugins.each do |plugin|
         _bind_plugin(plugin, :action_method)
       end
     end

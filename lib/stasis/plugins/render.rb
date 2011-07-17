@@ -5,8 +5,12 @@ class Stasis
 
     action_method :render
 
+    def initialize(stasis)
+      @stasis = stasis
+    end
+
     # This method is bound to all actions.
-    def render(action, path_or_options={}, options={}, &block)
+    def render(path_or_options={}, options={}, &block)
       if path_or_options.is_a?(::String)
         options[:path] = path_or_options
       else
@@ -19,8 +23,8 @@ class Stasis
       scope = options[:scope]
       text = options[:text]
 
-      if action._[:controller]
-        path = action._[:controller]._resolve(path)
+      if @stasis.controller
+        path = @stasis.controller._resolve(path)
       end
       
       output =
@@ -28,9 +32,10 @@ class Stasis
           text
         elsif File.file?(path)
           unless callback == false
-            # Trigger all plugin `before_render` events, passing the `Action` instance
-            # and the current path.
-            action, path = action._[:stasis].trigger(:before_render, path, action, path)
+            # Trigger all plugin `before_render` events.
+            temporary_path(path) do
+              @stasis.trigger(:before_render)
+            end
           end
 
           output =
@@ -42,15 +47,25 @@ class Stasis
             end
 
           unless callback == false
-            # Trigger all plugin `after_render` events, passing the `Action` instance and the
-            # current path.
-            action, path = action._[:stasis].trigger(:after_render, path, action, path)
+            # Trigger all plugin `after_render` events.
+            temporary_path(path) do
+              action, path = @stasis.trigger(:after_render)
+            end
           end
 
           output
         end
       
       output
+    end
+
+    private
+
+    # Temporarily set `Stasis#path`.
+    def temporary_path(path, &block)
+      @stasis.path, old_path = path, @stasis.path
+      yield
+      @stasis.path = old_path
     end
   end
 end

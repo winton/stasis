@@ -6,6 +6,7 @@ smoothScroll = ->
     $('html, body').animate { scrollTop: target.offset().top - 60 }, 400, ->
       unless ran
         offset = this.scrollTop
+        location.hash = anchor
         this.scrollTop = offset
       ran = true
     false

@@ -7,30 +7,27 @@
 class Stasis
   class Controller < Scope
     
-    def initialize(dir, root)
-      dir = File.expand_path(dir)
-      path = "#{dir}/controller.rb"
-      path = nil unless File.file?(path)
-
-      @_ = {
-        # Directory for which this controller provides a scope.
-        :dir => dir,
-        # Path to the `controller.rb` file (if it exists).
-        :path => path,
-        # A new instance of all known plugins.
-        :plugins => self.class.find_plugins.collect { |klass| klass.new },
-        # The root directory path of the user's project.
-        :root => root
-      }
+    def initialize(stasis)
+      @_stasis = stasis
 
       # Some plugins define methods to be made available to controller scopes. This call
       # binds those methods.
-      @_[:plugins].each do |plugin|
+      @_stasis.plugins.each do |plugin|
         _bind_plugin(plugin, :controller_method)
       end
+    end
 
+    def _add(path)
+      return unless File.file?(path) && File.basename(path) == 'controller.rb'
+
+      # Temporarily set path variables.
+      @_stasis.path = path
+      
       # Evaluate `controller.rb`.
-      instance_eval(File.read(path), path) if path
+      instance_eval(File.read(path), path)
+
+      # Unset temporary path variables.
+      @_stasis.path = nil
     end
 
     # Accepts three kinds of paths as the `path` parameter:
@@ -49,30 +46,16 @@ class Stasis
       elsif path.is_a?(Regexp)
         path
       # If the path is relative...
-      elsif path[0..0] != '/' && (File.file?(p = File.expand_path("#{_[:dir]}/#{path}")) || force)
+      elsif path[0..0] != '/' && (File.file?(p = File.expand_path("#{File.dirname(path)}/#{path}")) || force)
         p
       # If the path is root...
-      elsif File.file?(p = File.expand_path("#{_[:root]}/#{path}")) || force
+      elsif File.file?(p = File.expand_path("#{@_stasis.root}/#{path}")) || force
         p
       # If the path is absolute...
       elsif File.file?(path)
         path
       else
         false
-      end
-    end
-
-    class <<self
-
-      # Returns an `Array` of `Stasis::Plugin` classes.
-      def find_plugins
-        plugins = []
-        ObjectSpace.each_object(Class) do |klass|
-          if klass < ::Stasis::Plugin
-            plugins << klass
-          end
-        end
-        plugins
       end
     end
   end

@@ -54,20 +54,29 @@ require 'stasis/plugins/render'
 
 class Stasis
   
-  # `Hash` -- keys are directory paths, and values are instances of `Controller`.
-  attr_reader :controllers
+  # `Action` -- changes with each iteration of the main loop within `Stasis#generate`.
+  attr_accessor :action
+
+  # `Controller` -- set to the same instance for the lifetime of the `Stasis` instance.
+  attr_accessor :controller
 
   # `String` -- the destination path passed to `Stasis.new`.
-  attr_reader :destination
+  attr_accessor :destination
 
   # `Hash` -- options passed to `Stasis.new`.
-  attr_reader :options
+  attr_accessor :options
+
+  # `String` -- changes with each iteration of the main loop within `Stasis#generate`.
+  attr_accessor :path
 
   # `Array` -- all paths in the project that Stasis will act upon.
-  attr_reader :paths
+  attr_accessor :paths
+
+  # `Array` -- `Plugin` instances.
+  attr_accessor :plugins
 
   # `String` -- the root path passed to `Stasis.new`.
-  attr_reader :root
+  attr_accessor :root
   
   def initialize(root, destination=root+'/public', options={})
     @destination = destination
@@ -82,14 +91,11 @@ class Stasis
       !File.file?(path) || path[0..destination.length-1] == destination
     end
 
-    # Create a controller instance for each directory in the project.
-    @controllers = @paths.inject({}) do |hash, path|
-      unless hash[dir = File.dirname(path)]
-        scope = Controller.new(dir, root)
-        hash[dir] = scope
-      end
-      hash
-    end
+    # Create plugin instances.
+    @plugins = find_plugins.collect { |klass| klass.new(self) }
+
+    # Create a controller instance.
+    @controller = Controller.new(self)
   end
 
   def generate(options={})
@@ -118,88 +124,74 @@ class Stasis
     end
 
     # Reject paths that are controllers.
-    @paths.reject! { |p| File.basename(p) == 'controller.rb' }
+    @paths.reject! do |path|
+      if File.basename(path) == 'controller.rb'
+        # Add controller to `Controller` instance.
+        @controller._add(path) if match
+        true
+      else
+        false
+      end
+    end
     
-    # Trigger all plugin `before_all` events, passing all `Controller` instances and
-    # paths.
-    @controllers, @paths = trigger(:before_all, '*', @controllers, @paths)
+    # Trigger all plugin `before_all` events.
+    trigger(:before_all, '*')
 
     @paths.uniq.each do |path|
-      dir = File.dirname(path)
-      path_controller = @controllers[dir]
+      @path = path
+
+      dir = File.dirname(@path)
 
       # If `:only` option specified...
       unless options[:only].empty?
         # Skip iteration unless there is a match.
         next unless options[:only].any? do |only|
-          (only.is_a?(::Regexp) && path =~ only) ||
-          (only.is_a?(::String) && path == only)
+          (only.is_a?(::Regexp) && @path =~ only) ||
+          (only.is_a?(::String) && @path == only)
         end
       end
-      
-      # Sometimes the path doesn't actually exist, which means a `Controller` instance
-      # does not exist yet.
-      path_controller ||= Controller.new(dir, root)
 
       # Create an `Action` instance, the scope for rendering the view.
-      @action = Action.new(
-        :path => path,
-        :params => options[:params],
-        :plugins => path_controller._[:plugins],
-        :stasis => self
-        )
+      @action = Action.new(self)
 
-      # Set the extension if the `path` extension is supported by [Tilt][ti].
+      # Set the extension if the `@path` extension is supported by [Tilt][ti].
       ext =
         Tilt.mappings.keys.detect do |ext|
-          File.extname(path)[1..-1] == ext
+          File.extname(@path)[1..-1] == ext
         end
       
-      # Trigger all plugin `before_render` events, passing the `Action` instance
-      # and the current path.
-      @action, path = trigger(:before_render, path, @action, path)
+      # Trigger all plugin `before_render` events.
+      trigger(:before_render)
 
       # Render the view.
       view =
         # If the path has an extension supported by [Tilt][ti]...
         if ext
-          # If a layout was specified via the `layout` method...
-          if @action._[:layout]
-            # Grab the controller at the same directory level as the layout.
-            layout_controller = @controllers[File.dirname(@action._[:layout])]
+          # If the controller calls `render` within the `before` block for this
+          # path, receive output from `@action._render`.
+          #
+          # Otherwise, render the file located at `@path`.
+          output = @action._render || @action.render(@path, :callback => false)
 
-            controller(layout_controller) do
-              # Render the layout with a block for the layout to `yield` to.
-              @action.render(@action._[:layout]) do
-                controller(path_controller) do
-                  # If the controller calls `render` within the `before` block for this
-                  # path, `_[:render]` is set to the output.
-                  #
-                  # Use `_[:render]` if present, otherwise render the file located at
-                  # `path`.
-                  @action._[:render] || @action.render(path, :callback => false)
-                end
-              end
-            end
+          # If a layout was specified via the `layout` method...
+          if @action._layout
+            # Render the layout with a block for the layout to `yield` to.
+            @action.render(@action._layout) { output }
           # If a layout was not specified...
           else
-            controller(path_controller) do
-              # Use `_[:render]` if present, otherwise render the file located at `path`.
-              @action._[:render] || @action.render(path, :callback => false)
-            end
+            output
           end
         # If the path does not have an extension supported by [Tilt][ti] and `render` was
         # called within the `before` block for this path...
-        elsif @action._[:render]
-          @action._[:render]
+        elsif @action._render
+          @action._render
         end
       
-      # Trigger all plugin `after_render` events, passing the `Action` instance and the
-      # current path.
-      @action, path = trigger(:after_render, path, @action, path)
+      # Trigger all plugin `after_render` events.
+      trigger(:after_render)
 
       # Cut the `root` out of the `path` to get the relative destination.
-      dest = path[root.length..-1]
+      dest = @path[root.length..-1]
 
       # Add `destination` (as specified from `Stasis.new`) to front of relative
       # destination.
@@ -223,80 +215,54 @@ class Stasis
           f.write(view)
         end
       # If markup was not rendered and the path exists...
-      elsif File.exists?(path)
+      elsif File.exists?(@path)
         # Copy the file located at the path to the destination path.
-        FileUtils.cp(path, dest)
+        FileUtils.cp(@path, dest)
       end
     end
 
-    # Trigger all plugin `after_all` events, passing all `Controller` instances and
-    # paths.
-    @controllers, @paths = trigger(:after_all, '*', @controllers, @paths)
+    # Trigger all plugin `after_all` events, passing the `Stasis` instance.
+    trigger(:after_all, '*')
   end
 
   # Add a plugin to all existing controller instances. This method should be called by
   # all external plugins.
   def self.register(plugin)
-    ObjectSpace.each_object(::Stasis::Controller) do |controller|
-      plugin = plugin.new
-      controller._[:plugins] << plugin
-      controller._bind_plugin(plugin, :controller_method)
+    plugin = plugin.new
+    ObjectSpace.each_object(::Stasis) do |stasis|
+      stasis.plugins << plugin
+      stasis.controllers.each do |controller|
+        controller._bind_plugin(plugin, :controller_method)
+      end
     end
   end
 
-  # Trigger an event on every plugin in certain controllers (depending on the `path`
-  # parameter).
-  def trigger(type, path, *args, &block)
+  # Trigger an event on every plugin in the controller.
+  def trigger(type)
     each_priority do |priority|
-      # Trigger event on all plugins in every controller.
-      if path == '*'
-        @controllers.values.each do |controller|
-          args = controller._send_to_plugin(priority, type, *args, &block)
-        end
-      # Trigger event on all plugins in certain controllers (see `each_directory`).
-      else
-        each_directory(path) do |dir|
-          if cont = @controllers[dir]
-            controller(cont) do
-              args = cont._send_to_plugin(priority, type, *args, &block)
-            end
-          end
-        end
-      end
+      args = @controller._send_to_plugin(priority, type)
     end
     args
   end
 
   private
 
-  # Sets `_[:controller]` on the current `Action` instance for the duration of
-  # the block and returns the output of the block.
-  def controller(controller, &block)
-    old_controller = @action._[:controller]
-    @action._[:controller] = controller
-    output = yield
-    @action._[:controller] = old_controller
-    output
-  end
-
-  # Iterate through every directory between `root` and `path` (inclusive) and yield each
-  # directory to a block.
-  def each_directory(path, &block)
-    yield(root)
-    dirs = File.dirname(path)[root.length+1..-1]
-    if dirs
-      dirs = dirs.split('/')
-      dirs.each do |dir|
-        yield("#{root}/#{dir}")
-      end
-    end
-  end
-
   # Iterate through plugin priority integers (sorted) and yield each to a block.
   def each_priority(&block)
-    priorities = Controller.find_plugins.collect do |klass|
-      klass._[:priority]
+    priorities = @plugins.collect do |klass|
+      klass._priority || 0
     end
     priorities.uniq.sort.each(&block)
+  end
+
+  # Returns an `Array` of `Stasis::Plugin` classes.
+  def find_plugins
+    plugins = []
+    ObjectSpace.each_object(Class) do |klass|
+      if klass < ::Stasis::Plugin
+        plugins << klass
+      end
+    end
+    plugins
   end
 end

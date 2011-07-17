@@ -2,15 +2,16 @@ class Stasis
   class Plugin
     class <<self
 
-      # The class variable is named `@_` so that there is little likelihood that a
-      # user-defined variable will conflict.
-      attr_accessor :_
+      # `Hash` -- Keys are the "bind as" method names and values are the actual method
+      # names on the `Plugin` instance.
+      attr_accessor :_methods
 
-      # Here we define class methods that only exist to store method names. Each method
-      # can accept either an `Array` or a `Hash` of method names. `Hash` parameters only
-      # make sense when used with bind methods (`action_method` and `controller_method`),
-      # i.e. `{ :bind_as_method => :real_method }`. `Array` parameters are stored as a
-      # `Hash` for continuity.
+      # `Fixnum` -- The execution priority for this plugin (defaults to 0).
+      attr_accessor :_priority
+
+      # The methods in this `Array` essentially all take the same kind of parameters.
+      # Either a `Hash` or an `Array` of method names. No matter what, the input is
+      # converted to a `Hash` (see `_methods`).
       %w(
         action_method
         after_all
@@ -23,11 +24,11 @@ class Stasis
         # Define method on the `Plugin` class.
         define_method(method) do |*methods|
           # Set defaults on the `_` class variable.
-          self._ ||= { :methods => {}, :priority => 0 }
-          self._[:methods][method] ||= {}
+          self._methods ||= {}
+          self._methods[method] ||= {}
           # If passing a `Hash`...
           if methods[0].is_a?(::Hash)
-            self._[:methods][method].merge!(methods[0])
+            self._methods[method].merge!(methods[0])
           # If passing an `Array`...
           else
             # Generate `Hash` from `Array`.
@@ -35,15 +36,14 @@ class Stasis
               hash[m] = m
               hash
             end
-            self._[:methods][method].merge!(methods)
+            self._methods[method].merge!(methods)
           end
         end
       end
 
       # Class method to set priority on the `Plugin`.
       def priority(number)
-        self._ ||= { :methods => {}, :priority => 0 }
-        self._[:priority] = number
+        self._priority = number
       end
     end
 
