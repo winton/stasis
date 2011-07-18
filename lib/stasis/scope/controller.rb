@@ -46,7 +46,7 @@ class Stasis
       elsif path.is_a?(Regexp)
         path
       # If the path is relative...
-      elsif path[0..0] != '/' && (File.file?(p = File.expand_path("#{File.dirname(path)}/#{path}")) || force)
+      elsif path[0..0] != '/' && @_stasis.path && (File.file?(p = File.expand_path("#{File.dirname(@_stasis.path)}/#{path}")) || force)
         p
       # If the path is root...
       elsif File.file?(p = File.expand_path("#{@_stasis.root}/#{path}")) || force

@@ -66,7 +66,7 @@ Example directory structure:
 Before
 ------
 
-Use `before` blocks within `controller.rb` to execute code before templates render.
+Use `before` blocks within `controller.rb` to execute code right before a template renders.
 
 `controller.rb`:
 

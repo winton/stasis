@@ -40,7 +40,7 @@ class Stasis
 
           output =
             if Tilt.mappings.keys.include?(File.extname(path)[1..-1])
-              scope = options[:scope] ||= action
+              scope = options[:scope] ||= @stasis.action
               Tilt.new(path).render(scope, locals, &block)
             else
               File.read(path)
@@ -49,7 +49,7 @@ class Stasis
           unless callback == false
             # Trigger all plugin `after_render` events.
             temporary_path(path) do
-              action, path = @stasis.trigger(:after_render)
+              @stasis.trigger(:after_render)
             end
           end
 

@@ -22,7 +22,10 @@ require File.dirname(__FILE__) + '/stasis/gems'
 # [sl]: http://slim-lang.com/
 # [ti]: https://github.com/rtomayko/tilt
 
-require 'slim' rescue nil
+begin
+  require 'slim'
+rescue Exception => e
+end
 
 # Activate the [Tilt][ti] gem.
 
@@ -127,7 +130,7 @@ class Stasis
     @paths.reject! do |path|
       if File.basename(path) == 'controller.rb'
         # Add controller to `Controller` instance.
-        @controller._add(path) if match
+        @controller._add(path)
         true
       else
         false
@@ -135,7 +138,7 @@ class Stasis
     end
     
     # Trigger all plugin `before_all` events.
-    trigger(:before_all, '*')
+    trigger(:before_all)
 
     @paths.uniq.each do |path|
       @path = path
@@ -222,35 +225,32 @@ class Stasis
     end
 
     # Trigger all plugin `after_all` events, passing the `Stasis` instance.
-    trigger(:after_all, '*')
+    trigger(:after_all)
   end
 
   # Add a plugin to all existing controller instances. This method should be called by
   # all external plugins.
   def self.register(plugin)
-    plugin = plugin.new
     ObjectSpace.each_object(::Stasis) do |stasis|
+      plugin = plugin.new(stasis)
       stasis.plugins << plugin
-      stasis.controllers.each do |controller|
-        controller._bind_plugin(plugin, :controller_method)
-      end
+      stasis.controller._bind_plugin(plugin, :controller_method)
     end
   end
 
   # Trigger an event on every plugin in the controller.
   def trigger(type)
     each_priority do |priority|
-      args = @controller._send_to_plugin(priority, type)
+      @controller._send_to_plugin(priority, type)
     end
-    args
   end
 
   private
 
   # Iterate through plugin priority integers (sorted) and yield each to a block.
   def each_priority(&block)
-    priorities = @plugins.collect do |klass|
-      klass._priority || 0
+    priorities = @plugins.collect do |plugin|
+      plugin.class._priority
     end
     priorities.uniq.sort.each(&block)
   end

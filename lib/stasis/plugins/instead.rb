@@ -3,9 +3,13 @@ class Stasis
 
     action_method :instead
 
+    def initialize(stasis)
+      @_stasis = stasis
+    end
+
     # This method is bound to all actions.
     def instead(string)
-      action._render = string
+      @_stasis.action._render = string
     end
   end
 end

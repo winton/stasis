@@ -2,7 +2,7 @@ stasis:
   beanstalk-client: ~>1.1.0
   directory_watcher: ~>1.4.0
   rake: >=0.8.7
-  rocco: ~>0.6
+  rocco: ~>0.8
   rspec: ~>1.0
   slop: ~>1.6.0
   tilt: ~>1.3

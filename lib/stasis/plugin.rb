@@ -7,7 +7,8 @@ class Stasis
       attr_accessor :_methods
 
       # `Fixnum` -- The execution priority for this plugin (defaults to 0).
-      attr_accessor :_priority
+      attr_writer :_priority
+      def _priority; @priority || 0; end
 
       # The methods in this `Array` essentially all take the same kind of parameters.
       # Either a `Hash` or an `Array` of method names. No matter what, the input is

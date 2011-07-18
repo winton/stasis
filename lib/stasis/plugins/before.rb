@@ -13,16 +13,14 @@ class Stasis
 
     # This method is bound to all controllers. Stores a block in the `@blocks` `Hash`,
     # where the key is a path and the value is an `Array` of blocks.
-    def before(&block)
-      paths = [ nil ] if stasis.paths.empty?
+    def before(*paths, &block)
+      paths = [ nil ] if paths.empty?
       if block
-        @stasis.paths.each do |path|
+        paths.each do |path|
           path = @stasis.controller._resolve(path, true)
           @blocks[path] ||= []
           @blocks[path] << block
         end
-      else
-        @blocks[path] || []
       end
     end
 

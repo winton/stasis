@@ -48,7 +48,6 @@ class Stasis
           plugin.send(real_method)
         end
       end
-      args
     end
   end
 end

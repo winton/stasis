@@ -1,13 +1,15 @@
 class Plugin < Stasis::Plugin
+
   before_all :plugin
 
-  def plugin(controller, controllers, paths)
-    if controller._[:root] == controller._[:dir]
-      controller.before("custom_plugin.html") do
-        instead "pass"
-      end
+  def initialize(stasis)
+  	@stasis = stasis
+  end
+
+  def plugin
+    @stasis.controller.before("custom_plugin.html") do
+      instead "pass"
     end
-    [ controller, controllers, paths ]
   end
 end
 
