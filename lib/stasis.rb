@@ -1,10 +1,4 @@
 # **Stasis** is a dynamic framework for static sites.
-#
-# When coupled with [metastasis](https://github.com/winton/metastasis), Stasis can even
-# respond to dynamic user input.
-#
-# The end goal? Making a high-performance web framework that serves pages solely through
-# Nginx.
 
 ### Prerequisites
 

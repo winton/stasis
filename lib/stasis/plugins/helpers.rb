@@ -12,15 +12,18 @@ class Stasis
     #  This event triggers before each file renders through Stasis. For each helper
     # `block`, evaluate the `block` in the scope of the `action` class.
     def before_render
-      @blocks.each do |block|
-        @stasis.action.class.class_eval(&block)
+      @blocks.each do |(path, block)|
+        dir = File.dirname(path) if path
+        if path.nil? || @stasis.path[0..dir.length-1] == dir
+          @stasis.action.class.class_eval(&block)
+        end
       end
     end
 
     # This method is bound to all controllers. Stores a block in the `@blocks` `Array`.
     def helpers(&block)
       if block
-        @blocks << block
+        @blocks << [ @stasis.path, block ]
       end
     end
   end
