@@ -19,7 +19,7 @@ class Stasis
         paths.each do |path|
           path = @stasis.controller._resolve(path, true)
           @blocks[path] ||= []
-          @blocks[path] << block
+          @blocks[path] << [ @stasis.path, block ]
         end
       end
     end
@@ -31,14 +31,20 @@ class Stasis
       new_paths = (@blocks || {}).keys.select do |path|
         path.is_a?(::String)
       end
+      @stasis.paths = (@stasis.paths + new_paths).uniq
     end
 
     # This event triggers before each file renders through Stasis. It finds matching
     # blocks for the `path` and evaluates those blocks using the `action` as a scope.
     def before_render
       if @blocks && matches = _match_key?(@blocks, @stasis.path)
-        matches.flatten.each do |block|
-          @stasis.action.instance_eval(&block)
+        matches.each do |group|
+          group.each do |(path, block)|
+            dir = File.dirname(path) if path
+            if path.nil? || @stasis.path[0..dir.length-1] == dir
+              @stasis.action.instance_eval(&block)
+            end
+          end
         end
       end
     end

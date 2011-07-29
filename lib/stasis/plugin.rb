@@ -7,7 +7,6 @@ class Stasis
       attr_accessor :_methods
 
       # `Fixnum` -- The execution priority for this plugin (defaults to 0).
-      attr_writer :_priority
       def _priority; @priority || 0; end
 
       # The methods in this `Array` essentially all take the same kind of parameters.
@@ -44,7 +43,7 @@ class Stasis
 
       # Class method to set priority on the `Plugin`.
       def priority(number)
-        self._priority = number
+        @priority = number
       end
     end
 

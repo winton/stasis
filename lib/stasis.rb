@@ -143,8 +143,6 @@ class Stasis
     @paths.uniq.each do |path|
       @path = path
 
-      dir = File.dirname(@path)
-
       # If `:only` option specified...
       unless options[:only].empty?
         # Skip iteration unless there is a match.
