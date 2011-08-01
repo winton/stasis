@@ -6,9 +6,9 @@ Stasis::Gems.activate %w(slop)
 require 'slop'
 
 opts = Slop.parse :help => true do
-  on :b, :beanstalk, "Beanstalk addresses\t\t(comma-separated, default: localhost:11300)", :optional => true, :as => Array, :default => "localhost:11300"
   on :d, :development, "Development mode\t\t(auto-regenerate)"
   on :o, :only, "Only generate specific files\t(comma-separated)", :as => Array
+  on :r, :redis, "Redis address\t\t(default: localhost:6379)", :optional => true, :default => "localhost:6379"
 end
 
 args = []
@@ -20,7 +20,7 @@ if opts.development?
   Stasis::Auto.new(dir)
 elsif opts.only?
   Stasis.new(dir).generate(:only => opts[:only])
-elsif opts.beanstalk?
+elsif opts.redis?
   Stasis::Daemon.new(opts)
 else
   Stasis.new(dir).generate

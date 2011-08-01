@@ -1,23 +1,25 @@
-Stasis::Gems.activate %w(beanstalk-client yajl-ruby)
+Stasis::Gems.activate %w(redis yajl-ruby)
 
-require 'beanstalk-client'
+require 'redis'
 require 'yajl'
 
 class Stasis
   class Daemon
 
     def initialize(options={})
-      puts "\nStarting Stasis daemon (beanstalk @ #{options[:beanstalk].join(', ')})..."
+      puts "\nStarting Stasis daemon (redis @ #{options[:redis]})..."
 
-      beanstalk = Beanstalk::Pool.new(options[:beanstalk])
+      host, port = options[:redis].split(':')
+      redis = Redis.new(:host => host, :port => port)
 
       begin
         while true
           sleep(1.0 / 1000.0)
-          job = beanstalk.reserve
-          data = Yajl::Parser.parse(job.body)
-          puts data.inspect
-          job.delete
+          data = redis.lpop('stasis:requests')
+          if data
+            data = Yajl::Parser.parse(data)
+            puts data.inspect
+          end
         end
       rescue Interrupt
         shut_down
