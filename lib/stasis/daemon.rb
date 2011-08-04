@@ -11,6 +11,7 @@ class Stasis
 
       host, port = options[:redis].split(':')
       redis = Redis.new(:host => host, :port => port)
+      stasis = Stasis.new(Dir.pwd)
 
       begin
         while true

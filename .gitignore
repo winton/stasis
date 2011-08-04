@@ -2,6 +2,7 @@
 *.gem
 coverage
 docs
+dump.rdb
 pkg
 site/.sass-cache
 site/public
