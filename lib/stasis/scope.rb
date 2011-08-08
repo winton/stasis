@@ -26,7 +26,8 @@ class Stasis
       # Retrieve plugin `methods`: a `Hash` whose keys are the method name to bind to
       # `self`, and whose values are the method name on the `Plugin` class we are
       # binding from.
-      methods = plugin.class._methods[type] || {}
+      methods = plugin.class._methods ? plugin.class._methods[type] : nil
+      methods ||= {}
       methods.each do |method, real_method|
         yield(plugin, method, real_method)
       end
