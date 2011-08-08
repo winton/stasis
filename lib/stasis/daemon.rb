@@ -11,6 +11,7 @@ class Stasis
 
       host, port = options[:redis].split(':')
       redis = Redis.new(:host => host, :port => port)
+      stasis = Stasis.new(Dir.pwd)
 
       begin
         while true
@@ -18,6 +19,9 @@ class Stasis
           data = redis.lpop('stasis:requests')
           if data
             data = Yajl::Parser.parse(data)
+            # stasis.generate(
+            #   :only => data['request_uri']
+            # )
             puts data.inspect
           end
         end

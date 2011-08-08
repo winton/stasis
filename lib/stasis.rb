@@ -98,7 +98,6 @@ class Stasis
   def generate(options={})
     options[:only] ||= []
     options[:only] = [ options[:only] ].flatten
-    options[:params] ||= {}
 
     # Resolve paths given via the `:only` option.
     options[:only] = options[:only].inject([]) do |array, path|
