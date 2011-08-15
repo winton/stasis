@@ -37,13 +37,11 @@ class Stasis
     # This event triggers before each file renders through Stasis. It finds matching
     # blocks for the `path` and evaluates those blocks using the `action` as a scope.
     def before_render
-      if @blocks && matches = _match_key?(@blocks, @stasis.path)
-        matches.each do |group|
-          group.each do |(path, block)|
-            dir = File.dirname(path) if path
-            if path.nil? || @stasis.path[0..dir.length-1] == dir
-              @stasis.action.instance_eval(&block)
-            end
+      matches = _match_key?(@blocks, @stasis.path)
+      matches.each do |group|
+        group.each do |(path, block)|
+          if _within?(path)
+            @stasis.action.instance_eval(&block)
           end
         end
       end

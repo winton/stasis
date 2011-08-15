@@ -13,17 +13,17 @@ class Stasis
     # This event triggers before each file renders through Stasis. It sets the `action`
     # layout from the matching layout for `path`.
     def before_render
-      if @layouts && match = _match_key?(@layouts, @stasis.path)[0]
-        @stasis.action._layout = match
-      else
-        @stasis.action._layout = nil
+      @stasis.action._layout = nil
+      matches = _match_key?(@layouts, @stasis.path)
+      matches.each do |(within, layout)|
+        @stasis.action._layout = layout if _within?(within)
       end
     end
 
     # This method is bound to all actions. Set the `action` layout.
     def layout_action(path)
-      if p = @stasis.controller._resolve(path)
-        @stasis.action._layout = p
+      if path = @stasis.controller._resolve(path)
+        @stasis.action._layout = path
       end
     end
 
@@ -37,10 +37,11 @@ class Stasis
       else
         hash = hash_or_string
       end
-      @layouts.merge! hash.inject({}) { |hash, (key, value)|
-        key = @stasis.controller._resolve(key)
-        hash[key] = @stasis.controller._resolve(value)
-        @stasis.controller.ignore(hash[key])
+      @layouts.merge! hash.inject({}) { |hash, (path, layout)|
+        path = @stasis.controller._resolve(path)
+        layout = @stasis.controller._resolve(layout)
+        hash[path] = [ @stasis.path, layout ]
+        @stasis.controller.ignore(layout)
         hash
       }
     end

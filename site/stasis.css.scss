@@ -37,7 +37,7 @@ ul {
   li {
     display: inline;
     line-height: 25px;
-    padding: 0 9px;
+    padding: 0 6px;
 
     a.selected {
       color: #06599E;
@@ -156,11 +156,12 @@ ul {
 
   code {
     background-color: #282929;
+    font-size: 14px;
     padding: 4px 4px 2px;
   }
 
   .highlight pre {
-    font-size: 13px;
+    font-size: 12px;
 
     * { font-family: Consolas, Monaco,"Lucida Console"; }
     .hll { background-color: #ffffcc }

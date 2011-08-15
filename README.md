@@ -66,7 +66,7 @@ Example directory structure:
 Before
 ------
 
-Use `before` blocks within `controller.rb` to execute code right before a template renders.
+Use `before` blocks within `controller.rb` to execute code before a template renders.
 
 `controller.rb`:
 
@@ -170,22 +170,57 @@ Priority
 
 Use the `priority` method in `controller.rb` to change the file process order.
 
-Copy `.txt` files before rendering `index.html.erb`:
+Copy `.txt` files before rendering the `index.html.erb` template:
 
     priority /.*txt/ => 2, 'index.html.erb' => 1
 
 The default priority is `0` for all files.
 
-More
-----
+Usage
+-----
 
-### Development Mode
+### Command Line
 
-To continuously regenerate your project as you modify files, run:
+Always execute the `stasis` command in the root directory of your project.
+
+Only render specific files or directories:
+
+<!-- highlight:-o language:console -->
+
+    $ stasis -o index.html.haml,subdirectory
+
+Continuously regenerate modified files (development mode):
+
+<!-- highlight:-r language:console -->
+
+    $ stasis -r
+
+Change destination directory:
 
 <!-- highlight:-d language:console -->
 
-    $ stasis -d
+    $ stasis -d /path/to/public
+
+### Programmatic
+
+Instanciate a `Stasis` object:
+
+    stasis = Stasis.new('/path/to/project/root')
+
+Render all templates:
+
+    stasis.render
+
+Render a specific template or directory:
+
+    stasis.render('index.html.haml', 'subdirectory')
+
+Define local variables for `before` callbacks and `helpers`:
+
+    stasis.render(:locals => { :x => 'y' })
+
+More
+----
 
 ### Supported Markup Languages
 

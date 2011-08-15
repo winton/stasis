@@ -47,6 +47,17 @@ class Stasis
       end
     end
 
+    # Helper method provided for built-in Stasis plugins. Returns a boolean value denoting
+    # whether or not a path is within another path.
+    def _within?(within_path, path=@stasis.path)
+      if within_path && path
+        dir = File.dirname(within_path)
+        path[0..dir.length-1] == dir
+      else
+        true
+      end
+    end
+
     # Helper method provided for built-in Stasis plugins. Returns an `Array` of values
     # of a `Hash` whose keys are `nil`, a literal match, or a pattern match.
     def _match_key?(hash, match_key)

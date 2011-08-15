@@ -157,6 +157,9 @@ class Stasis
       # Trigger all plugin `before_render` events.
       trigger(:before_render)
 
+      # Skip if `@path` set to `nil`.
+      next unless @path
+
       # Render the view.
       view =
         # If the path has an extension supported by [Tilt][ti]...
@@ -217,6 +220,9 @@ class Stasis
 
     # Trigger all plugin `after_all` events, passing the `Stasis` instance.
     trigger(:after_all)
+
+    # Unset class-level instance variables.
+    @action, @path = nil, nil
   end
 
   # Add a plugin to all existing controller instances. This method should be called by
