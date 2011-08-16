@@ -92,6 +92,7 @@ class Stasis
   end
 
   def render(*only)
+    collect = {}
     options = {}
 
     if only.last.is_a?(::Hash)
@@ -103,17 +104,17 @@ class Stasis
       # If `path` is a regular expression...
       if path.is_a?(::Regexp)
         array << path
-      # If `path` exists...
-      elsif File.exists?(path)
-        array << path
       # If `root + path` exists...
       elsif (path = File.expand_path(path, root)) && File.exists?(path)
+        array << path
+      # If `path` exists...
+      elsif File.exists?(path)
         array << path
       end
       array
     end
 
-    if options[:only].empty?
+    if only.empty?
       # Remove old generated files.
       FileUtils.rm_rf(destination)
     end
@@ -135,10 +136,10 @@ class Stasis
     @paths.uniq.each do |path|
       @path = path
 
-      # If `:only` option specified...
-      unless options[:only].empty?
+      # If `only` parameters given...
+      unless only.empty?
         # Skip iteration unless there is a match.
-        next unless options[:only].any? do |only|
+        next unless only.any? do |only|
           # Regular expression match.
           (only.is_a?(::Regexp) && @path =~ only) ||
           (
@@ -195,7 +196,7 @@ class Stasis
       trigger(:after_render)
 
       # Cut the `root` out of the `path` to get the relative destination.
-      dest = @path[root.length..-1]
+      relative = @path[root.length..-1]
 
       # Add `destination` (as specified from `Stasis.new`) to front of relative
       # destination.
@@ -218,6 +219,10 @@ class Stasis
         File.open(dest, 'w') do |f|
           f.write(view)
         end
+        # Collect render output.
+        if options[:collect]
+          collect[relative] = view
+        end
       # If markup was not rendered and the path exists...
       elsif File.exists?(@path)
         # Copy the file located at the path to the destination path.
@@ -230,6 +235,9 @@ class Stasis
 
     # Unset class-level instance variables.
     @action, @path = nil, nil
+
+    # Respond with collected render output if `collect` option given.
+    collect if options[:collect]
   end
 
   # Add a plugin to all existing controller instances. This method should be called by

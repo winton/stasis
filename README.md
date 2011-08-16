@@ -255,7 +255,7 @@ Stasis server that uses redis on port 6379:
 
 <!-- highlight:-s language:console -->
 
-    $ stasis -s localhost:6379
+    $ stasis -s localhost:6379/0
 
 Push to the server (in Ruby):
 

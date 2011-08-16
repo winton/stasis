@@ -9,7 +9,10 @@ class Stasis
 
       puts "\nDevelopment mode enabled: #{dir}"
 
-      generate(dir)
+      @dir = dir
+      @options = options
+
+      render
 
       dw = DirectoryWatcher.new(@stasis.root)
       dw.interval = 1
@@ -27,7 +30,7 @@ class Stasis
 
       dw.add_observer do |*events|
         modified = events.detect { |e| e[:type] == :modified }
-        generate(dir) if modified
+        render if modified
       end
 
       dw.start
@@ -36,11 +39,11 @@ class Stasis
 
     private
 
-    def generate(dir)
-      puts "\n[#{Time.now.strftime("%Y-%m-%d %H:%M:%S")}] Regenerating project..."
+    def render
+      puts "\n[#{Time.now.strftime("%Y-%m-%d %H:%M:%S")}] Regenerating #{@options[:only].empty? ? 'project' : @options[:only].join(', ')}..."
       begin
-        @stasis = Stasis.new(dir)
-        @stasis.generate
+        @stasis = Stasis.new(@dir)
+        @stasis.render(*@options[:only])
       rescue Exception => e
         puts "\n[#{Time.now.strftime("%Y-%m-%d %H:%M:%S")}] Error: #{e.message}`"
         puts "\t#{e.backtrace.join("\n\t")}"
