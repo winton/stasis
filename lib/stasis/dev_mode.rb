@@ -2,12 +2,12 @@ Stasis::Gems.activate %w(directory_watcher)
 require 'directory_watcher'
 
 class Stasis
-  class Auto
+  class DevMode
 
-    def initialize(dir)
+    def initialize(dir, options={})
       trap("INT") { exit }
 
-      puts "\nAuto-regenerating enabled: #{dir}"
+      puts "\nDevelopment mode enabled: #{dir}"
 
       generate(dir)
 
@@ -37,7 +37,7 @@ class Stasis
     private
 
     def generate(dir)
-      puts "\n[#{Time.now.strftime("%Y-%m-%d %H:%M:%S")}] Auto-regenerating project..."
+      puts "\n[#{Time.now.strftime("%Y-%m-%d %H:%M:%S")}] Regenerating project..."
       begin
         @stasis = Stasis.new(dir)
         @stasis.generate

@@ -43,7 +43,7 @@ Stasis creates a `public` directory:
             index.html
             other.txt
 
-`index.html.haml` renders to `public/index.html`.
+`index.html.haml` becomes `public/index.html`.
 
 `other.txt` is copied as-is because `.txt` is an unrecognized template extension.
 
@@ -183,24 +183,18 @@ Usage
 
 Always execute the `stasis` command in the root directory of your project.
 
+Development mode (auto-regenerate on save):
+
+<!-- highlight:-d language:console -->
+
+    $ stasis -d
+
 Only render specific files or directories:
 
 <!-- highlight:-o language:console -->
 
     $ stasis -o index.html.haml,subdirectory
-
-Continuously regenerate modified files (development mode):
-
-<!-- highlight:-r language:console -->
-
-    $ stasis -r
-
-Change destination directory:
-
-<!-- highlight:-d language:console -->
-
-    $ stasis -d /path/to/public
-
+   
 ### Programmatic
 
 Instanciate a `Stasis` object:
@@ -215,7 +209,7 @@ Render a specific template or directory:
 
     stasis.render('index.html.haml', 'subdirectory')
 
-Define local variables for `before` callbacks and `helpers`:
+Define local variables for `before` callbacks, views, and `helpers`:
 
     stasis.render(:locals => { :x => 'y' })
 
@@ -252,3 +246,32 @@ Stasis uses [Tilt](https://github.com/rtomayko/tilt) to support the following te
     CoffeeScript               .coffee
     Creole (Wiki markup)       .creole
     Yajl                       .yajl
+
+### Server Mode
+
+Stasis can run as a server that uses [redis](http://redis.io) to wait for render jobs.
+
+Stasis server that uses redis on port 6379:
+
+<!-- highlight:-s language:console -->
+
+    $ stasis -s localhost:6379
+
+Push to the server (in Ruby):
+
+    Stasis::Server.push(
+      # Paths to render
+      :paths => [ "index.html.haml", "subdirectory" ],
+
+      # Locals for `before` callbacks, views, and helpers
+      :locals => { :x => 'y' },
+
+      # redis-rb instance
+      :redis => Redis.connect,
+
+      # Return rendered templates (false by default)
+      :return => true,
+
+      # Block until templates generate (false by default)
+      :wait => true
+    )

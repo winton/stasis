@@ -4,7 +4,7 @@ require 'redis'
 require 'yajl'
 
 class Stasis
-  class Daemon
+  class Server
 
     def initialize(options={})
       puts "\nStarting Stasis daemon (redis @ #{options[:redis]})..."

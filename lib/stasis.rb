@@ -31,9 +31,9 @@ $:.unshift File.dirname(__FILE__)
 
 # Require all Stasis library files.
 
-require 'stasis/auto'
-require 'stasis/daemon'
+require 'stasis/dev_mode'
 require 'stasis/plugin'
+require 'stasis/server'
 
 require 'stasis/scope'
 require 'stasis/scope/action'
@@ -60,9 +60,6 @@ class Stasis
   # `String` -- the destination path passed to `Stasis.new`.
   attr_accessor :destination
 
-  # `Hash` -- options passed to `Stasis.new`.
-  attr_accessor :options
-
   # `String` -- changes with each iteration of the main loop within `Stasis#generate`.
   attr_accessor :path
 
@@ -75,9 +72,8 @@ class Stasis
   # `String` -- the root path passed to `Stasis.new`.
   attr_accessor :root
   
-  def initialize(root, destination=root+'/public', options={})
+  def initialize(root, destination=root+'/public')
     @destination = destination
-    @options = options
     @root = root
 
     # Create an `Array` of paths that Stasis will act upon.
@@ -95,20 +91,23 @@ class Stasis
     @controller = Controller.new(self)
   end
 
-  def generate(options={})
-    options[:only] ||= []
-    options[:only] = [ options[:only] ].flatten
+  def render(*only)
+    options = {}
 
-    # Resolve paths given via the `:only` option.
-    options[:only] = options[:only].inject([]) do |array, path|
+    if only.last.is_a?(::Hash)
+      options = only.pop
+    end
+
+    # Resolve paths given via the `only` parameter.
+    only = only.inject([]) do |array, path|
       # If `path` is a regular expression...
       if path.is_a?(::Regexp)
         array << path
-      # If `path` is a file...
-      elsif File.file?(path)
+      # If `path` exists...
+      elsif File.exists?(path)
         array << path
-      # If `root + path` is a file...
-      elsif (path = File.expand_path(path, root)) && File.file?(path)
+      # If `root + path` exists...
+      elsif (path = File.expand_path(path, root)) && File.exists?(path)
         array << path
       end
       array
@@ -140,8 +139,16 @@ class Stasis
       unless options[:only].empty?
         # Skip iteration unless there is a match.
         next unless options[:only].any? do |only|
+          # Regular expression match.
           (only.is_a?(::Regexp) && @path =~ only) ||
-          (only.is_a?(::String) && @path == only)
+          (
+            only.is_a?(::String) && (
+              # File match.
+              @path == only ||
+              # Directory match.
+              @path[0..only.length-1] == only
+            )
+          )
         end
       end
 
