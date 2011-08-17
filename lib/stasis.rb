@@ -200,7 +200,7 @@ class Stasis
 
       # Add `destination` (as specified from `Stasis.new`) to front of relative
       # destination.
-      dest = "#{destination}#{dest}"
+      dest = "#{destination}#{relative}"
 
       # Cut off the extension if the extension is supported by [Tilt][ti].
       dest =

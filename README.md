@@ -266,8 +266,8 @@ Push to the server (in Ruby):
       # Locals for `before` callbacks, views, and helpers
       :locals => { :x => 'y' },
 
-      # redis-rb instance
-      :redis => Redis.connect,
+      # Redis address
+      :redis => "localhost:6379/0",
 
       # Return rendered templates (false by default)
       :return => true,

@@ -20,18 +20,15 @@ class Stasis
 
           if request
             request = Yajl::Parser.parse(request)
-            files = nil
 
             puts request.inspect
-            stasis.render(*request['paths'], :locals => request['locals'])
+            files = stasis.render(
+              *request['paths'],
+              :collect => request['return'],
+              :locals => request['locals']
+            )
 
             if request['return'] && request['paths'] && !request['paths'].empty?
-              files = request['paths'].inject({}) do |hash, path|
-                path = "#{root}/public/#{path}"
-                puts path
-                hash[path] = File.read(path) if File.file?(path)
-                hash
-              end
               request['wait'] = true
             end
 
@@ -63,23 +60,29 @@ class Stasis
     class <<self
       def push(options)
         options[:id] = Digest::SHA1.hexdigest("#{options['paths']}#{Random.rand}")
-        redis = options.delete(:redis)
+        redis_url = "redis://#{options.delete(:redis) || "localhost:6379/0"}"
         response = nil
 
-        redis.rpush("stasis:requests", Yajl::Encoder.encode(options))
+        redis_1 = Redis.connect(:url => redis_url)
+        redis_2 = Redis.connect(:url => redis_url)
 
         if options[:return] || options[:wait]
-          redis.subscribe(response_key(options[:id])) do |on|
+          redis_1.subscribe(response_key(options[:id])) do |on|
             on.subscribe do |channel, subscriptions|
-              
+              redis_2.rpush("stasis:requests", Yajl::Encoder.encode(options))
             end
 
             on.message do |channel, message|
               response = Yajl::Parser.parse(message)
-              redis.unsubscribe
+              redis_1.unsubscribe
             end
           end
+        else
+          redis_1.rpush("stasis:requests", Yajl::Encoder.encode(options))
         end
+
+        redis_1.quit
+        redis_2.quit
 
         response
       end
