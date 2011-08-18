@@ -73,5 +73,7 @@ priority 'index.html.haml' => -1
 
 before do
   $render_order ||= []
-  $render_order << _stasis.path
+  if _stasis.path
+    $render_order << _stasis.path
+  end
 end

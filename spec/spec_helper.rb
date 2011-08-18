@@ -12,13 +12,17 @@ def generate(options={})
   $fixture = "#{$root}/spec/fixtures/project"
   unless $files
     $stasis ||= Stasis.new($fixture)
-    $stasis.generate(options)
-    pub = "#{$fixture}/public"
-    $files = Dir["#{pub}/**/*"].inject({}) do |hash, path|
-      if File.file?(path)
-        hash[path[pub.length+1..-1]] = File.read(path)
-      end
-      hash
+    $stasis.render(*options[:only])
+    generate_files
+  end
+end
+
+def generate_files
+  pub = "#{$fixture}/public"
+  $files = Dir["#{pub}/**/*"].inject({}) do |hash, path|
+    if File.file?(path)
+      hash[path[pub.length+1..-1]] = File.read(path)
     end
+    hash
   end
 end

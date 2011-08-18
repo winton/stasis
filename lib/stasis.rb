@@ -51,7 +51,7 @@ require 'stasis/plugins/render'
 
 class Stasis
   
-  # `Action` -- changes with each iteration of the main loop within `Stasis#generate`.
+  # `Action` -- changes with each iteration of the main loop within `Stasis#render`.
   attr_accessor :action
 
   # `Controller` -- set to the same instance for the lifetime of the `Stasis` instance.
@@ -60,7 +60,7 @@ class Stasis
   # `String` -- the destination path passed to `Stasis.new`.
   attr_accessor :destination
 
-  # `String` -- changes with each iteration of the main loop within `Stasis#generate`.
+  # `String` -- changes with each iteration of the main loop within `Stasis#render`.
   attr_accessor :path
 
   # `Array` -- all paths in the project that Stasis will act upon.
@@ -221,7 +221,7 @@ class Stasis
         end
         # Collect render output.
         if options[:collect]
-          collect[relative] = view
+          collect[relative[1..-1]] = view
         end
       # If markup was not rendered and the path exists...
       elsif File.exists?(@path)

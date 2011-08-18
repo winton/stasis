@@ -21,7 +21,6 @@ class Stasis
           if request
             request = Yajl::Parser.parse(request)
 
-            puts request.inspect
             files = stasis.render(
               *request['paths'],
               :collect => request['return'],
@@ -39,8 +38,6 @@ class Stasis
               }
               redis.publish(self.class.response_key(request['id']), Yajl::Encoder.encode(response))
             end
-
-            puts response.inspect
           end
         end
       rescue Interrupt
