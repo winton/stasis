@@ -11,7 +11,7 @@ class Stasis
       puts "\nStarting Stasis server (redis @ #{options[:server]})..."
 
       redis = Redis.connect(:url => "redis://#{options[:server]}")
-      stasis = Stasis.new(root)
+      stasis = Stasis.new(*[ root, options[:public] ].compact)
 
       begin
         while true

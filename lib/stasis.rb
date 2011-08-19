@@ -73,6 +73,9 @@ class Stasis
   attr_accessor :root
   
   def initialize(root, destination=root+'/public')
+    root = File.expand_path(root)
+    destination = File.expand_path(destination, root)
+
     @destination = destination
     @root = root
 

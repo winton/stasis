@@ -8,13 +8,18 @@ require 'slop'
 opts = Slop.parse :help => true do
   on :d, :development, "Development mode\t\t(auto-regenerate)"
   on :o, :only, "Only generate specific files\t(comma-separated)", :optional => true, :as => Array
+  on :p, :public, "Public directory path", :optional => true
   on :s, :server, "Server mode\t\t\t(default redis host: localhost:6379/0)", :optional => true, :default => "localhost:6379/0"
 end
 
 if opts.development?
   Stasis::DevMode.new(Dir.pwd, opts)
+elsif opts.only? && opts.public?
+  Stasis.new(Dir.pwd, opts[:public]).render(*opts[:only])
 elsif opts.only?
   Stasis.new(Dir.pwd).render(*opts[:only])
+elsif opts.public?
+  Stasis.new(Dir.pwd, opts[:public]).render(*opts[:only])
 elsif opts.server?
   Stasis::Server.new(Dir.pwd, opts)
 else

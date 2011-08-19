@@ -194,12 +194,22 @@ Only render specific files or directories:
 <!-- highlight:-o language:console -->
 
     $ stasis -o index.html.haml,subdirectory
+
+Change the public (destination) directory:
+
+<!-- highlight:-o language:console -->
+
+    $ stasis -p ../public
    
 ### Programmatic
 
 Instanciate a `Stasis` object:
 
     stasis = Stasis.new('/path/to/project/root')
+
+Optionally specify a destination directory:
+
+    stasis = Stasis.new('/project', '/html')
 
 Render all templates:
 
