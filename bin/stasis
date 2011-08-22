@@ -15,13 +15,13 @@ end
 if opts.development?
   Stasis::DevMode.new(Dir.pwd, opts)
 elsif opts.only? && opts.public?
-  Stasis.new(Dir.pwd, opts[:public]).render(*opts[:only])
+  Stasis.new(Dir.pwd, opts[:public], opts).render(*opts[:only])
 elsif opts.only?
-  Stasis.new(Dir.pwd).render(*opts[:only])
-elsif opts.public?
-  Stasis.new(Dir.pwd, opts[:public]).render(*opts[:only])
+  Stasis.new(Dir.pwd, opts).render(*opts[:only])
 elsif opts.server?
   Stasis::Server.new(Dir.pwd, opts)
+elsif opts.public?
+  Stasis.new(Dir.pwd, opts[:public], opts).render(*opts[:only])
 else
-  Stasis.new(Dir.pwd).render
+  Stasis.new(Dir.pwd, opts).render
 end

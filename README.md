@@ -163,7 +163,7 @@ Use the `ignore` method in `controller.rb` to ignore certain paths.
 
 Ignore filenames with an underscore at the beginning:
 
-    ignore /_.*/
+    ignore /\/_.*/
 
 Priority
 --------

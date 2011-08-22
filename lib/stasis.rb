@@ -66,25 +66,29 @@ class Stasis
   # `Array` -- all paths in the project that Stasis will act upon.
   attr_accessor :paths
 
+  # `Options` -- options passed to `Stasis.new`.
+  attr_accessor :options
+
   # `Array` -- `Plugin` instances.
   attr_accessor :plugins
 
   # `String` -- the root path passed to `Stasis.new`.
   attr_accessor :root
   
-  def initialize(root, destination=root+'/public')
-    root = File.expand_path(root)
-    destination = File.expand_path(destination, root)
-
-    @destination = destination
-    @root = root
+  def initialize(root, *args)
+    @options = {}
+    @options = args.pop if args.last.is_a?(::Hash)
+    
+    @root = File.expand_path(root)
+    @destination = args[0] || @root + '/public'
+    @destination = File.expand_path(@destination, @root)
 
     # Create an `Array` of paths that Stasis will act upon.
-    @paths = Dir["#{root}/**/*"]
+    @paths = Dir["#{@root}/**/*"]
     
     # Reject paths that are directories or within the destination directory.
     @paths.reject! do |path|
-      !File.file?(path) || path[0..destination.length-1] == destination
+      !File.file?(path) || path[0..@destination.length-1] == @destination
     end
 
     # Create plugin instances.

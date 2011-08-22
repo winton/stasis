@@ -11,7 +11,7 @@ class Stasis
       puts "\nStarting Stasis server (redis @ #{options[:server]})..."
 
       redis = Redis.connect(:url => "redis://#{options[:server]}")
-      stasis = Stasis.new(*[ root, options[:public] ].compact)
+      stasis = Stasis.new(*[ root, options[:public], options ].compact)
 
       begin
         while true
@@ -32,10 +32,7 @@ class Stasis
             end
 
             if request['wait']
-              response = {
-                :id => request['id'],
-                :files => files
-              }
+              response = files
               redis.publish(self.class.response_key(request['id']), Yajl::Encoder.encode(response))
             end
           end

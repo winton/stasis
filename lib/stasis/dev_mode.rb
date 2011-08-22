@@ -42,7 +42,7 @@ class Stasis
     def render
       puts "\n[#{Time.now.strftime("%Y-%m-%d %H:%M:%S")}] Regenerating #{@options[:only].empty? ? 'project' : @options[:only].join(', ')}..."
       begin
-        @stasis = Stasis.new(@dir)
+        @stasis = Stasis.new(@dir, @options)
         @stasis.render(*@options[:only])
       rescue Exception => e
         puts "\n[#{Time.now.strftime("%Y-%m-%d %H:%M:%S")}] Error: #{e.message}`"

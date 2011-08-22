@@ -19,7 +19,7 @@ describe Stasis::Server do
       :paths => [ 'time.html.haml' ],
       :redis => 'localhost:6379/0',
       :return => true
-    )['files']['time.html.haml'].split("time")[1].strip
+    )['time.html.haml'].split("time")[1].strip
     time.should_not == new_time
     generate_files
     new_time_from_file = $files['time.html'].split("time")[1].strip
