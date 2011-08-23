@@ -66,10 +66,14 @@ before 'layout_action_from_subdirectory.html.haml' do
   layout 'subdirectory/layout.html.haml'
 end
 
+layout 'does_not_exist.html.haml'
+layout 'index.html.haml' => 'does_not_exist.html.haml'
+
 # Priority
 
 priority 'subdirectory/before_render_partial.html.haml' => 1
 priority 'index.html.haml' => -1
+priority 'does_not_exist.html.haml' => -1
 
 before do
   $render_order ||= []

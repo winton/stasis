@@ -40,8 +40,10 @@ class Stasis
       @layouts.merge! hash.inject({}) { |hash, (path, layout)|
         path = @stasis.controller._resolve(path)
         layout = @stasis.controller._resolve(layout)
-        hash[path] = [ @stasis.path, layout ]
-        @stasis.controller.ignore(layout)
+        if layout
+          hash[path] = [ @stasis.path, layout ]
+          @stasis.controller.ignore(layout)
+        end
         hash
       }
     end

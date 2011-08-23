@@ -30,7 +30,7 @@ class Stasis
       output =
         if text
           text
-        elsif File.file?(path)
+        elsif path && File.file?(path)
           unless callback == false
             # Trigger all plugin `before_render` events.
             temporary_path(path) do
