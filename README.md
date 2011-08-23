@@ -273,15 +273,15 @@ Push to the server (in Ruby):
       # Paths to render
       :paths => [ "index.html.haml", "subdirectory" ],
 
-      # Locals for `before` callbacks, views, and helpers
-      :locals => { :x => 'y' },
-
       # Redis address
       :redis => "localhost:6379/0",
 
       # Return rendered templates (false by default)
-      :return => true,
+      :return => false,
 
       # Block until templates generate (false by default)
-      :wait => true
+      :wait => false,
+
+      # Write to the filesystem (true by default)
+      :write => true
     )
