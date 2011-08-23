@@ -62,7 +62,6 @@
         
         
         
-        
         <h2><a name="templates" href="#templates">Templates</a></h2>
         
         <p>At its most essential, Stasis takes a directory tree with <a href="#supported_markup_languages">supported template files</a> and renders them.</p>
@@ -77,7 +76,6 @@
         
         
         
-        
         <div class="clear"></div>
         <div class="highlight">
         <pre><span class="gp">$</span> <span class="nb">cd </span>project&#x000A;<span class="gp">$</span> <span class="sr">stasis</span></pre>
@@ -88,7 +86,6 @@
         
         
         
-        
         <div class="clear"></div>
         <div class="highlight">
         <pre><span class="go">project/</span>&#x000A;<span class="go">    index.html.haml</span>&#x000A;<span class="go">    other.txt</span>&#x000A;<span class="go">    <span class="sr">public/</span></span>&#x000A;<span class="go">        index.html</span>&#x000A;<span class="go">        other.txt</span></pre>
@@ -96,7 +93,6 @@
         <p>Stasis creates a <code>public</code> directory<img src="arrow.png" class="arrow"></p>
         
         <!-- highlight:public/ language:console -->
-        
         
         
         
@@ -115,7 +111,6 @@
         <p>Example directory structure<img src="arrow.png" class="arrow"></p>
         
         <!-- highlight:controller.rb language:console -->
-        
         
         
         
@@ -290,7 +285,6 @@
         
         
         
-        
         <div class="clear"></div>
         <div class="highlight">
         <pre><span class="gp">$</span> stasis <span class="sr">-o</span> index.html.haml,subdirectory</pre>
@@ -301,7 +295,6 @@
         
         
         
-        
         <div class="clear"></div>
         <div class="highlight">
         <pre><span class="gp">$</span> stasis -p ../public</pre>
@@ -309,7 +302,6 @@
         <p>Change the public (destination) directory<img src="arrow.png" class="arrow"></p>
         
         <!-- highlight:-o language:console -->
-        
         
         
         
@@ -371,7 +363,6 @@
         
         
         
-        
         <div class="clear"></div>
         <h3><a name="server_mode" href="#server_mode">Server Mode</a></h3>
         
@@ -387,10 +378,9 @@
         
         
         
-        
         <div class="clear"></div>
         <div class="highlight">
-        <pre><span class="no">Stasis</span><span class="o">::</span><span class="no">Server</span><span class="o">.</span><span class="n">push</span><span class="p">(</span>&#x000A;  <span class="c1"># Paths to render</span>&#x000A;  <span class="ss">:paths</span> <span class="o">=&gt;</span> <span class="o">[</span> <span class="s2">"index.html.haml"</span><span class="p">,</span> <span class="s2">"subdirectory"</span> <span class="o">]</span><span class="p">,</span>&#x000A;&#x000A;  <span class="c1"># Locals for `before` callbacks, views, and helpers</span>&#x000A;  <span class="ss">:locals</span> <span class="o">=&gt;</span> <span class="p">{</span> <span class="ss">:x</span> <span class="o">=&gt;</span> <span class="s1">'y'</span> <span class="p">},</span>&#x000A;&#x000A;  <span class="c1"># Redis address</span>&#x000A;  <span class="ss">:redis</span> <span class="o">=&gt;</span> <span class="s2">"localhost:6379/0"</span><span class="p">,</span>&#x000A;&#x000A;  <span class="c1"># Return rendered templates (false by default)</span>&#x000A;  <span class="ss">:return</span> <span class="o">=&gt;</span> <span class="kp">true</span><span class="p">,</span>&#x000A;&#x000A;  <span class="c1"># Block until templates generate (false by default)</span>&#x000A;  <span class="ss">:wait</span> <span class="o">=&gt;</span> <span class="kp">true</span>&#x000A;<span class="p">)</span></pre>
+        <pre><span class="no">Stasis</span><span class="o">::</span><span class="no">Server</span><span class="o">.</span><span class="n">push</span><span class="p">(</span>&#x000A;  <span class="c1"># Paths to render</span>&#x000A;  <span class="ss">:paths</span> <span class="o">=&gt;</span> <span class="o">[</span> <span class="s2">"index.html.haml"</span><span class="p">,</span> <span class="s2">"subdirectory"</span> <span class="o">]</span><span class="p">,</span>&#x000A;&#x000A;  <span class="c1"># Redis address</span>&#x000A;  <span class="ss">:redis</span> <span class="o">=&gt;</span> <span class="s2">"localhost:6379/0"</span><span class="p">,</span>&#x000A;&#x000A;  <span class="c1"># Return rendered templates (false by default)</span>&#x000A;  <span class="ss">:return</span> <span class="o">=&gt;</span> <span class="kp">false</span><span class="p">,</span>&#x000A;&#x000A;  <span class="c1"># Block until templates generate (false by default)</span>&#x000A;  <span class="ss">:wait</span> <span class="o">=&gt;</span> <span class="kp">false</span><span class="p">,</span>&#x000A;&#x000A;  <span class="c1"># Write to the filesystem (true by default)</span>&#x000A;  <span class="ss">:write</span> <span class="o">=&gt;</span> <span class="kp">true</span>&#x000A;<span class="p">)</span></pre>
         </div>
         <p>Push to the server (in Ruby)<img src="arrow.png" class="arrow"></p>
       <div class='clear'></div>
