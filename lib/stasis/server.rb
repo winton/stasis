@@ -24,7 +24,8 @@ class Stasis
             files = stasis.render(
               *request['paths'],
               :collect => request['return'],
-              :locals => request['locals']
+              :locals => request['locals'],
+              :write => request['write']
             )
 
             if request['return'] && request['paths'] && !request['paths'].empty?
