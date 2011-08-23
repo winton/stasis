@@ -17,8 +17,8 @@ class Stasis
       @stasis.paths.collect! do |path|
         priority = 0
         matches = _match_key?(@priorities, path)
-        matches.each do |(within, value)|
-          priority = value if _within?(within, path)
+        matches.each do |(within, value, force)|
+          priority = value if _within?(within, path) || force
         end
         [ path, priority ]
       end
@@ -30,8 +30,9 @@ class Stasis
     # `@@priorities` `Hash`, where the key is a path and the value is the priority.
     def priority(hash)
       hash = hash.inject({}) do |hash, (key, value)|
+        force = key[0..0] == '/'
         key = @stasis.controller._resolve(key)
-        hash[key] = [ @stasis.path, value ] if key
+        hash[key] = [ @stasis.path, value, force ] if key
         hash
       end
       @priorities.merge!(hash)
