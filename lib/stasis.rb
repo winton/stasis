@@ -100,10 +100,10 @@ class Stasis
 
   def render(*only)
     collect = {}
-    options = {}
+    render_options = {}
 
     if only.last.is_a?(::Hash)
-      options = only.pop
+      render_options = only.pop
     end
 
     # Resolve paths given via the `only` parameter.
@@ -223,17 +223,21 @@ class Stasis
       # If markup was rendered...
       if view
         # Write the rendered markup to the destination.
-        File.open(dest, 'w') do |f|
-          f.write(view)
+        if render_options[:write] != false
+          File.open(dest, 'w') do |f|
+            f.write(view)
+          end
         end
         # Collect render output.
-        if options[:collect]
+        if render_options[:collect]
           collect[relative[1..-1]] = view
         end
       # If markup was not rendered and the path exists...
       elsif File.exists?(@path)
         # Copy the file located at the path to the destination path.
-        FileUtils.cp(@path, dest)
+        if render_options[:write] != false
+          FileUtils.cp(@path, dest)
+        end
       end
     end
 
@@ -244,7 +248,7 @@ class Stasis
     @action, @path = nil, nil
 
     # Respond with collected render output if `collect` option given.
-    collect if options[:collect]
+    collect if render_options[:collect]
   end
 
   # Add a plugin to all existing controller instances. This method should be called by

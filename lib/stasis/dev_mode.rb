@@ -40,9 +40,9 @@ class Stasis
     private
 
     def render
-      puts "\n[#{Time.now.strftime("%Y-%m-%d %H:%M:%S")}] Regenerating #{@options[:only].empty? ? 'project' : @options[:only].join(', ')}..."
+      puts "\n[#{Time.now.strftime("%Y-%m-%d %H:%M:%S")}] Regenerating #{@options[:only] ? @options[:only].join(', ') : 'project'}..."
       begin
-        @stasis = Stasis.new(@dir, @options)
+        @stasis = Stasis.new(*[ @dir, @options[:public], @options ].compact)
         @stasis.render(*@options[:only])
       rescue Exception => e
         puts "\n[#{Time.now.strftime("%Y-%m-%d %H:%M:%S")}] Error: #{e.message}`"
