@@ -3,7 +3,7 @@ version: 0.1.0
 authors:
   - Winton Welsh
 email: mail@wintoni.us
-homepage: http://wintoni.us
+homepage: http://stasis.me
 summary: Markup-agnostic static site generator
 description: A markup-agnostic static site generator.
 dependencies:

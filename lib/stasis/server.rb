@@ -21,12 +21,14 @@ class Stasis
           if request
             request = Yajl::Parser.parse(request)
 
-            files = stasis.render(
-              *request['paths'],
-              :collect => request['return'],
-              :locals => request['locals'],
-              :write => request['write']
-            )
+            params = request['paths'] + [
+              {
+                :collect => request['return'],
+                :locals => request['locals'],
+                :write => request['write']
+              }
+            ]
+            files = stasis.render(*params)
 
             if request['return'] && request['paths'] && !request['paths'].empty?
               request['wait'] = true
