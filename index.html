@@ -11,7 +11,7 @@
         <a href='#install'>Install</a>
       </li>
       <li>
-        <a href='#templates'>Templates</a>
+        <a href='#example'>Example</a>
       </li>
       <li>
         <a href='#controllers'>Controllers</a>
@@ -56,19 +56,19 @@
         <div class="highlight">
         <pre><span class="gp">$</span> gem install stasis</pre>
         </div>
-        <p>Install via RubyGems<img src="arrow.png" class="arrow"></p>
+        <p>Install via <a href="http://rubygems.org/pages/download">RubyGems</a><img src="arrow.png" class="arrow"></p>
         
         <!-- language:console -->
         
         
         
-        <h2><a name="templates" href="#templates">Templates</a></h2>
+        <h2><a name="example" href="#example">Example</a></h2>
         
         <p>At its most essential, Stasis takes a directory tree with <a href="#supported_markup_languages">supported template files</a> and renders them.</p>
         
         <div class="clear"></div>
         <div class="highlight">
-        <pre><span class="go">project/</span>&#x000A;<span class="go">    index.html.haml</span>&#x000A;<span class="go">    other.txt</span></pre>
+        <pre><span class="go">project/</span>&#x000A;<span class="go">    index.html.haml</span>&#x000A;<span class="go">    images/</span>&#x000A;<span class="go">        image.png</span></pre>
         </div>
         <p>Example directory structure<img src="arrow.png" class="arrow"></p>
         
@@ -88,7 +88,7 @@
         
         <div class="clear"></div>
         <div class="highlight">
-        <pre><span class="go">project/</span>&#x000A;<span class="go">    index.html.haml</span>&#x000A;<span class="go">    other.txt</span>&#x000A;<span class="go">    <span class="sr">public/</span></span>&#x000A;<span class="go">        index.html</span>&#x000A;<span class="go">        other.txt</span></pre>
+        <pre><span class="go">project/</span>&#x000A;<span class="go">    index.html.haml</span>&#x000A;<span class="go">    images/</span>&#x000A;<span class="go">        image.png</span>&#x000A;<span class="go">    <span class="sr">public/</span></span>&#x000A;<span class="go">        index.html</span>&#x000A;<span class="go">        images/</span>&#x000A;<span class="go">            image.png</span></pre>
         </div>
         <p>Stasis creates a <code>public</code> directory<img src="arrow.png" class="arrow"></p>
         
@@ -98,21 +98,23 @@
         
         <p><code>index.html.haml</code> becomes <code>public/index.html</code>.</p>
         
-        <p><code>other.txt</code> is copied as-is because <code>.txt</code> is an unrecognized template extension.</p>
+        <p>Unrecognized extensions are copied as-is (<code>image.png</code>).</p>
         
         <h2><a name="controllers" href="#controllers">Controllers</a></h2>
         
-        <p>Controllers contain Ruby code that is evaluated once before all templates render.</p>
+        <p>Controllers contain Ruby code that executes once before all templates render.</p>
         
         <div class="clear"></div>
         <div class="highlight">
-        <pre><span class="go">project/</span>&#x000A;<span class="go">    <span class="sr">controller.rb</span></span>&#x000A;<span class="go">    index.html.haml</span>&#x000A;<span class="go">    subdirectory/</span>&#x000A;<span class="go">        <span class="sr">controller.rb</span></span>&#x000A;<span class="go">        index.html.haml</span></pre>
+        <pre><span class="go">project/</span>&#x000A;<span class="go">    <span class="sr">controller.rb</span></span>&#x000A;<span class="go">    index.html.haml</span>&#x000A;<span class="go">    styles/</span>&#x000A;<span class="go">        <span class="sr">controller.rb</span></span>&#x000A;<span class="go">        style.css.sass</span></pre>
         </div>
         <p>Example directory structure<img src="arrow.png" class="arrow"></p>
         
         <!-- highlight:controller.rb language:console -->
         
         
+        
+        <p>You may have a controller at any directory level.</p>
         
         <h2><a name="before" href="#before">Before</a></h2>
         
@@ -130,7 +132,7 @@
         
         <div class="clear"></div>
         <div class="highlight">
-        <pre><span class="n">before</span> <span class="s1">'index.html.haml'</span><span class="p">,</span><span class="sr"> /.*html.erb/</span> <span class="k">do</span>&#x000A;  <span class="vi">@something</span> <span class="o">=</span> <span class="kp">true</span>&#x000A;<span class="k">end</span></pre>
+        <pre><span class="n">before</span> <span class="s1">'index.html.haml'</span><span class="p">,</span><span class="sr"> /.*html\.erb/</span> <span class="k">do</span>&#x000A;  <span class="vi">@something</span> <span class="o">=</span> <span class="kp">true</span>&#x000A;<span class="k">end</span></pre>
         </div>
         <p>The <code>before</code> method can take any number of paths and/or regular expressions<img src="arrow.png" class="arrow"></p>
         
@@ -306,7 +308,7 @@
         
         
         <div class="clear"></div>
-        <h3><a name="programmatic" href="#programmatic">Programmatic</a></h3>
+        <h3><a name="ruby_library" href="#ruby_library">Ruby Library</a></h3>
         
         <div class="clear"></div>
         <div class="highlight">
@@ -355,7 +357,7 @@
         
         <div class="clear"></div>
         <div class="highlight">
-        <pre><span class="go">ENGINE                     FILE EXTENSIONS</span>&#x000A;<span class="go">-------------------------- ----------------------</span>&#x000A;<span class="go">ERB                        .erb, .rhtml</span>&#x000A;<span class="go">Interpolated String        .str</span>&#x000A;<span class="go">Erubis                     .erb, .rhtml, .erubis</span>&#x000A;<span class="go">Haml                       .haml</span>&#x000A;<span class="go">Sass                       .sass</span>&#x000A;<span class="go">Scss                       .scss</span>&#x000A;<span class="go">Less CSS                   .less</span>&#x000A;<span class="go">Builder                    .builder</span>&#x000A;<span class="go">Liquid                     .liquid</span>&#x000A;<span class="go">RDiscount                  .markdown, .mkd, .md</span>&#x000A;<span class="go">Redcarpet                  .markdown, .mkd, .md</span>&#x000A;<span class="go">BlueCloth                  .markdown, .mkd, .md</span>&#x000A;<span class="go">Kramdown                   .markdown, .mkd, .md</span>&#x000A;<span class="go">Maruku                     .markdown, .mkd, .md</span>&#x000A;<span class="go">RedCloth                   .textile</span>&#x000A;<span class="go">RDoc                       .rdoc</span>&#x000A;<span class="go">Radius                     .radius</span>&#x000A;<span class="go">Markaby                    .mab</span>&#x000A;<span class="go">Nokogiri                   .nokogiri</span>&#x000A;<span class="go">CoffeeScript               .coffee</span>&#x000A;<span class="go">Creole (Wiki markup)       .creole</span>&#x000A;<span class="go">Yajl                       .yajl</span></pre>
+        <pre><span class="go">ENGINE                     FILE EXTENSIONS</span>&#x000A;<span class="go">-------------------------- -----------------------</span>&#x000A;<span class="go">ERB                        .erb, .rhtml</span>&#x000A;<span class="go">Interpolated String        .str</span>&#x000A;<span class="go">Erubis                     .erb, .rhtml, .erubis</span>&#x000A;<span class="go">Haml                       .haml</span>&#x000A;<span class="go">Sass                       .sass</span>&#x000A;<span class="go">Scss                       .scss</span>&#x000A;<span class="go">Less CSS                   .less</span>&#x000A;<span class="go">Builder                    .builder</span>&#x000A;<span class="go">Liquid                     .liquid</span>&#x000A;<span class="go">RDiscount                  .markdown, .mkd, .md</span>&#x000A;<span class="go">Redcarpet                  .markdown, .mkd, .md</span>&#x000A;<span class="go">BlueCloth                  .markdown, .mkd, .md</span>&#x000A;<span class="go">Kramdown                   .markdown, .mkd, .md</span>&#x000A;<span class="go">Maruku                     .markdown, .mkd, .md</span>&#x000A;<span class="go">RedCloth                   .textile</span>&#x000A;<span class="go">RDoc                       .rdoc</span>&#x000A;<span class="go">Radius                     .radius</span>&#x000A;<span class="go">Markaby                    .mab</span>&#x000A;<span class="go">Nokogiri                   .nokogiri</span>&#x000A;<span class="go">CoffeeScript               .coffee</span>&#x000A;<span class="go">Creole (Wiki markup)       .wiki, .creole</span>&#x000A;<span class="go">WikiCloth (Wiki markup)    .wiki, .mediawiki, .mw</span>&#x000A;<span class="go">Yajl                       .yajl</span></pre>
         </div>
         <p>Stasis uses <a href="https://github.com/rtomayko/tilt">Tilt</a> to support the following template engines<img src="arrow.png" class="arrow"></p>
         
@@ -383,6 +385,13 @@
         <pre><span class="no">Stasis</span><span class="o">::</span><span class="no">Server</span><span class="o">.</span><span class="n">push</span><span class="p">(</span>&#x000A;  <span class="c1"># Paths to render</span>&#x000A;  <span class="ss">:paths</span> <span class="o">=&gt;</span> <span class="o">[</span> <span class="s2">"index.html.haml"</span><span class="p">,</span> <span class="s2">"subdirectory"</span> <span class="o">]</span><span class="p">,</span>&#x000A;&#x000A;  <span class="c1"># Redis address</span>&#x000A;  <span class="ss">:redis</span> <span class="o">=&gt;</span> <span class="s2">"localhost:6379/0"</span><span class="p">,</span>&#x000A;&#x000A;  <span class="c1"># Return rendered templates (false by default)</span>&#x000A;  <span class="ss">:return</span> <span class="o">=&gt;</span> <span class="kp">false</span><span class="p">,</span>&#x000A;&#x000A;  <span class="c1"># Block until templates generate (false by default)</span>&#x000A;  <span class="ss">:wait</span> <span class="o">=&gt;</span> <span class="kp">false</span><span class="p">,</span>&#x000A;&#x000A;  <span class="c1"># Write to the filesystem (true by default)</span>&#x000A;  <span class="ss">:write</span> <span class="o">=&gt;</span> <span class="kp">true</span>&#x000A;<span class="p">)</span></pre>
         </div>
         <p>Push to the server (in Ruby)<img src="arrow.png" class="arrow"></p>
+        
+        
+        
+        <div class="clear"></div>
+        <h3><a name="this_web_site" href="#this_web_site">This Web Site</a></h3>
+        
+        <p><a href="https://github.com/winton/stasis/tree/master/site">Take a look at the Stasis project</a> that automatically generated this web site from the project <a href="https://github.com/winton/stasis/blob/master/README.md">README</a>.</p>
       <div class='clear'></div>
     </div>
     <script src='jquery-1.6.2.js' type='text/javascript'></script>
