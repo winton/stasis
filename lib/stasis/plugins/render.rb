@@ -18,7 +18,6 @@ class Stasis
       end
 
       callback = options[:callback]
-      locals = options[:locals]
       path = options[:path]
       scope = options[:scope]
       text = options[:text]

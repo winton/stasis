@@ -24,7 +24,6 @@ class Stasis
             params = request['paths'] + [
               {
                 :collect => request['return'],
-                :locals => request['locals'],
                 :write => request['write']
               }
             ]

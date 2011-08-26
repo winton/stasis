@@ -225,10 +225,6 @@ Render a specific template or directory:
 
     stasis.render('index.html.haml', 'subdirectory')
 
-Define local variables for `before` callbacks, views, and `helpers`:
-
-    stasis.render(:locals => { :x => 'y' })
-
 More
 ----
 
