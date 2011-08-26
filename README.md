@@ -6,14 +6,14 @@ Stasis is a dynamic framework for static sites.
 Install
 -------
 
-Install via RubyGems:
+Install via [RubyGems](http://rubygems.org/pages/download):
 
 <!-- language:console -->
 
     $ gem install stasis
 
-Templates
----------
+Example
+-------
 
 At its most essential, Stasis takes a directory tree with [supported template files](#supported_markup_languages) and renders them.
 
@@ -23,7 +23,8 @@ Example directory structure:
 
     project/
         index.html.haml
-        other.txt
+        images/
+            image.png
 
 Run `stasis`:
 
@@ -38,19 +39,21 @@ Stasis creates a `public` directory:
 
     project/
         index.html.haml
-        other.txt
+        images/
+            image.png
         public/
             index.html
-            other.txt
+            images/
+                image.png
 
 `index.html.haml` becomes `public/index.html`.
 
-`other.txt` is copied as-is because `.txt` is an unrecognized template extension.
+Unrecognized extensions are copied as-is (`image.png`).
 
 Controllers
 -----------
 
-Controllers contain Ruby code that is evaluated once before all templates render.
+Controllers contain Ruby code that executes once before all templates render.
 
 Example directory structure:
 
@@ -59,9 +62,12 @@ Example directory structure:
     project/
         controller.rb
         index.html.haml
-        subdirectory/
+        styles/
             controller.rb
-            index.html.haml
+            style.css.sass
+        
+
+You may have a controller at any directory level.
 
 Before
 ------
@@ -78,7 +84,7 @@ Use `before` blocks within `controller.rb` to execute code before a template ren
 
 The `before` method can take any number of paths and/or regular expressions:
 
-    before 'index.html.haml', /.*html.erb/ do
+    before 'index.html.haml', /.*html\.erb/ do
       @something = true
     end
 
@@ -201,7 +207,7 @@ Change the public (destination) directory:
 
     $ stasis -p ../public
    
-### Programmatic
+### Ruby Library
 
 Instanciate a `Stasis` object:
 
@@ -233,7 +239,7 @@ Stasis uses [Tilt](https://github.com/rtomayko/tilt) to support the following te
 <!-- language:console -->
 
     ENGINE                     FILE EXTENSIONS
-    -------------------------- ----------------------
+    -------------------------- -----------------------
     ERB                        .erb, .rhtml
     Interpolated String        .str
     Erubis                     .erb, .rhtml, .erubis
@@ -254,7 +260,8 @@ Stasis uses [Tilt](https://github.com/rtomayko/tilt) to support the following te
     Markaby                    .mab
     Nokogiri                   .nokogiri
     CoffeeScript               .coffee
-    Creole (Wiki markup)       .creole
+    Creole (Wiki markup)       .wiki, .creole
+    WikiCloth (Wiki markup)    .wiki, .mediawiki, .mw
     Yajl                       .yajl
 
 ### Server Mode
@@ -285,3 +292,7 @@ Push to the server (in Ruby):
       # Write to the filesystem (true by default)
       :write => true
     )
+
+### This Web Site
+
+[Take a look at the Stasis project](https://github.com/winton/stasis/tree/master/site) that automatically generated this web site from the project [README](https://github.com/winton/stasis/blob/master/README.md).

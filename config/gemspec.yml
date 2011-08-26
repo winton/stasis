@@ -4,8 +4,8 @@ authors:
   - Winton Welsh
 email: mail@wintoni.us
 homepage: http://stasis.me
-summary: Markup-agnostic static site generator
-description: A markup-agnostic static site generator.
+summary: Static sites made powerful
+description: Stasis is a dynamic framework for static sites.
 dependencies:
   - directory_watcher
   - redis

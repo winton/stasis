@@ -2,7 +2,8 @@ require 'albino'
 require 'nokogiri'
 
 before 'index.html.haml' do
-  @readme = Nokogiri::HTML(render('../README.md')).css('body')
+  @readme = render('../README.md')
+  @readme = Nokogiri::HTML(@readme).css('body')
 
   # Remove everything before the first <h2> tag
   @readme.children.each do |node|
@@ -25,7 +26,7 @@ before 'index.html.haml' do
   
   @readme.css('pre').each do |pre|
 
-    # Retrieve language from comment
+    # Retrieve language and highlight info from comment
     highlight = nil
     language = nil
     comment = pre.previous.previous
