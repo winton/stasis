@@ -96,6 +96,17 @@ class Stasis
 
     # Create a controller instance.
     @controller = Controller.new(self)
+
+    # Reject paths that are controllers.
+    @paths.reject! do |path|
+      if File.basename(path) == 'controller.rb'
+        # Add controller to `Controller` instance.
+        @controller._add(path)
+        true
+      else
+        false
+      end
+    end
   end
 
   def render(*only)
@@ -124,17 +135,6 @@ class Stasis
     if only.empty?
       # Remove old generated files.
       FileUtils.rm_rf(destination)
-    end
-
-    # Reject paths that are controllers.
-    @paths.reject! do |path|
-      if File.basename(path) == 'controller.rb'
-        # Add controller to `Controller` instance.
-        @controller._add(path)
-        true
-      else
-        false
-      end
     end
     
     # Trigger all plugin `before_all` events.
