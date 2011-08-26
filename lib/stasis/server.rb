@@ -55,7 +55,7 @@ class Stasis
 
     class <<self
       def push(options)
-        options[:id] = Digest::SHA1.hexdigest("#{options['paths']}#{Random.rand}")
+        options[:id] = Digest::SHA1.hexdigest("#{options['paths']}#{rand}")
         redis_url = "redis://#{options.delete(:redis) || "localhost:6379/0"}"
         response = nil
 
