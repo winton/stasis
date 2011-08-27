@@ -209,7 +209,7 @@ Change the public (destination) directory:
    
 ### Ruby Library
 
-Instanciate a `Stasis` object:
+Instantiate a `Stasis` object:
 
     stasis = Stasis.new('/path/to/project/root')
 
