@@ -21,9 +21,12 @@ class Stasis
           if request
             files = {}
             request = Yajl::Parser.parse(request)
+            paths = request['paths']
 
-            paths = request['paths'].reject do |path|
-              files[path] = redis.get("stasis:caches:#{root}:#{path}")
+            unless request['force']
+              paths = request['paths'].reject do |path|
+                files[path] = redis.get("stasis:caches:#{root}:#{path}")
+              end
             end
 
             if paths.empty? && !request['paths'].empty?
@@ -31,11 +34,11 @@ class Stasis
             else
               params = request['paths'] + [
                 {
-                  :collect => request['return'],
+                  :collect => request['return'] || request['force'],
                   :write => request['write']
                 }
               ]
-              new_files = stasis.render(*params)
+              new_files = stasis.render(*params) || {}
             end
 
             if request['ttl']

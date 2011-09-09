@@ -282,14 +282,17 @@ Push to the server (in Ruby):
       # Return rendered templates (false by default)
       :return => false,
 
-      # Cache ttl for returned templates (nil by default)
-      :ttl => nil,
-
       # Block until templates generate (false by default)
       :wait => false,
 
       # Write to the filesystem (true by default)
-      :write => true
+      :write => true,
+
+      # Cache ttl for returned templates (nil by default)
+      :ttl => nil,
+
+      # Force write even if cached (false by default)
+      :force => false
     )
 
 ### This Web Site
