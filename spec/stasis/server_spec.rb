@@ -26,4 +26,29 @@ describe Stasis::Server do
     new_time_from_file.should == new_time
     new_time_from_file.should_not == time
   end
+
+  it "should expire after ttl" do
+    time = Stasis::Server.push(
+      :paths => [ 'time.html.haml' ],
+      :redis => 'localhost:6379/0',
+      :return => true,
+      :ttl => 1,
+      :write => false
+    )['time.html.haml'].split("time")[1].strip
+    time2 = Stasis::Server.push(
+      :paths => [ 'time.html.haml' ],
+      :redis => 'localhost:6379/0',
+      :return => true,
+      :write => false
+    )['time.html.haml'].split("time")[1].strip
+    time.should == time2
+    sleep 2
+    time3 = Stasis::Server.push(
+      :paths => [ 'time.html.haml' ],
+      :redis => 'localhost:6379/0',
+      :return => true,
+      :write => false
+    )['time.html.haml'].split("time")[1].strip
+    time2.should_not == time3
+  end
 end

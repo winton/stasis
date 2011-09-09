@@ -19,22 +19,39 @@ class Stasis
           request = redis.lpop('stasis:requests')
 
           if request
+            files = {}
             request = Yajl::Parser.parse(request)
 
-            params = request['paths'] + [
-              {
-                :collect => request['return'],
-                :write => request['write']
-              }
-            ]
-            files = stasis.render(*params)
+            paths = request['paths'].reject do |path|
+              files[path] = redis.get("stasis:caches:#{root}:#{path}")
+            end
 
-            if request['return'] && request['paths'] && !request['paths'].empty?
+            if paths.empty? && !request['paths'].empty?
+              new_files = {}
+            else
+              params = request['paths'] + [
+                {
+                  :collect => request['return'],
+                  :write => request['write']
+                }
+              ]
+              new_files = stasis.render(*params)
+            end
+
+            if request['ttl']
+              new_files.each do |path, body|
+                key = "stasis:caches:#{root}:#{path}"
+                redis.set(key, body)
+                redis.expire(key, request['ttl'])
+              end
+            end
+
+            if request['return']
               request['wait'] = true
             end
 
             if request['wait']
-              response = files
+              response = files.merge(new_files)
               redis.publish(self.class.response_key(request['id']), Yajl::Encoder.encode(response))
             end
           end

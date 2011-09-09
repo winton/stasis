@@ -282,6 +282,9 @@ Push to the server (in Ruby):
       # Return rendered templates (false by default)
       :return => false,
 
+      # Cache ttl for returned templates (nil by default)
+      :ttl => nil,
+
       # Block until templates generate (false by default)
       :wait => false,
 
