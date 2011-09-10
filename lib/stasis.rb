@@ -175,6 +175,9 @@ class Stasis
       # Skip if `@path` set to `nil`.
       next unless @path
 
+      # Change current working directory.
+      Dir.chdir(File.dirname(@path))
+
       # Render the view.
       view =
         # If the path has an extension supported by [Tilt][ti]...
