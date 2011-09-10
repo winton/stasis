@@ -31,6 +31,7 @@ $:.unshift File.dirname(__FILE__)
 
 # Require all Stasis library files.
 
+require 'stasis/resolve'
 require 'stasis/dev_mode'
 require 'stasis/plugin'
 require 'stasis/server'

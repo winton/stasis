@@ -40,26 +40,10 @@ class Stasis
     # * Root: `/path/view.haml`
     #
     # Returns an absolute path.
-    #
-    # Set the `force` parameter to `true` to return the resolved path even if no file
-    # exists at that location.
     def _resolve(path, force=false)
-      if path.nil?
-        nil
-      elsif path.is_a?(Regexp)
-        path
-      # If the path is relative...
-      elsif path[0..0] != '/' && @_stasis.path && (File.file?(p = File.expand_path("#{File.dirname(@_stasis.path)}/#{path}")) || force)
-        p
-      # If the path is root...
-      elsif File.file?(p = File.expand_path("#{@_stasis.root}/#{path}")) || force
-        p
-      # If the path is absolute...
-      elsif File.file?(path)
-        path
-      else
-        false
-      end
+      return nil  if path.nil?
+      return path if path.is_a?(Regexp)
+      Stasis::Resolve.new(@_stasis, path).real_path
     end
   end
 end
