@@ -107,6 +107,13 @@ class Stasis
         false
       end
     end
+
+    # Reject paths that match the patterns in .stasisignore
+    if File.exists?(ignorefile = File.join(@root, ".stasisignore"))
+      File.open(ignorefile).each do |pattern|
+        @paths -= Dir[File.join(@root, pattern.chomp)]
+      end
+    end
   end
 
   def render(*only)
