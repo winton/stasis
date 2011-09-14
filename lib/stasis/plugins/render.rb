@@ -22,6 +22,7 @@ class Stasis
       path = options[:path]
       scope = options[:scope]
       text = options[:text]
+      template_options = options[:template]
 
       if @stasis.controller
         path = @stasis.controller._resolve(path)
@@ -41,7 +42,7 @@ class Stasis
           output =
             if Tilt.mappings.keys.include?(File.extname(path)[1..-1])
               scope = options[:scope] ||= @stasis.action
-              Tilt.new(path).render(scope, locals, &block)
+              Tilt.new(path, nil, template_options).render(scope, locals, &block)
             else
               File.read(path)
             end
