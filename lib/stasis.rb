@@ -33,6 +33,7 @@ $:.unshift File.dirname(__FILE__)
 
 require 'stasis/resolve'
 require 'stasis/dev_mode'
+require 'stasis/options'
 require 'stasis/plugin'
 require 'stasis/server'
 
@@ -187,7 +188,8 @@ class Stasis
           # path, receive output from `@action._render`.
           #
           # Otherwise, render the file located at `@path`.
-          output = @action._render || @action.render(@path, :callback => false)
+          render_opts = {:callback => false}.merge(:template => Options.get_template_option(ext))
+          output = @action._render || @action.render(@path, render_opts)
 
           # If a layout was specified via the `layout` method...
           if @action._layout
