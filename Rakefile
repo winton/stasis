@@ -1,6 +1,7 @@
-require File.dirname(__FILE__) + '/lib/gem_template/gems'
+require 'rubygems'
+require 'bundler'
 
-GemTemplate::Gems.activate %w(rake rspec)
+Bundler.require(:rakefile)
 
 require 'rake'
 
@@ -29,16 +30,11 @@ end
 
 desc "Build gem(s)"
 task :gem do
-  old_gemset = ENV['GEMSET']
   root = File.expand_path('../', __FILE__)
   pkg = "#{root}/pkg"
   system "rm -Rf #{pkg}"
-  GemTemplate::Gems.gemset_names.each do |gemset|
-    ENV['GEMSET'] = gemset.to_s
-    system "cd #{root} && gem build gem_template.gemspec"
-    system "mkdir -p #{pkg} && mv *.gem pkg"
-  end
-  ENV['GEMSET'] = old_gemset
+  system "cd #{root} && gem build gem_template.gemspec"
+  system "mkdir -p #{pkg} && mv *.gem pkg"
 end
 
 namespace :gem do
@@ -55,35 +51,6 @@ namespace :gem do
     Rake::Task['gem'].invoke
     Dir["#{File.dirname(__FILE__)}/pkg/*.gem"].each do |pkg|
       system "gem push #{pkg}"
-    end
-  end
-end
-
-namespace :gems do
-  desc "Install gem dependencies (DEV=0 DOCS=0 GEMSPEC=default SUDO=0)"
-  task :install do
-    dev = ENV['DEV'] == '1'
-    docs = ENV['DOCS'] == '1' ? '' : '--no-ri --no-rdoc'
-    gemset = ENV['GEMSET']
-    sudo = ENV['SUDO'] == '1' ? 'sudo' : ''
-    
-    GemTemplate::Gems.gemset = gemset if gemset
-    
-    if dev
-      gems = GemTemplate::Gems.gemspec.development_dependencies
-    else
-      gems = GemTemplate::Gems.gemspec.dependencies
-    end
-    
-    gems.each do |name|
-      name = name.to_s
-      version = GemTemplate::Gems.versions[name.to_sym]
-      if Gem.source_index.find_name(name, version).empty?
-        version = version ? "-v #{version}" : ''
-        system "#{sudo} gem install #{name} #{version} #{docs}"
-      else
-        puts "already installed: #{name} #{version}"
-      end
     end
   end
 end

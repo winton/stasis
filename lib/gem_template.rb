@@ -1,6 +1,7 @@
-require File.dirname(__FILE__) + '/gem_template/gems'
+require "rubygems"
+require "bundler"
 
-GemTemplate::Gems.activate %w()
+Bundler.require(:default)
 
 $:.unshift File.dirname(__FILE__)
 

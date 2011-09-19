@@ -1,29 +1,18 @@
 # -*- encoding: utf-8 -*-
 root = File.expand_path('../', __FILE__)
 lib = "#{root}/lib"
+
 $:.unshift lib unless $:.include?(lib)
- 
-require 'gem_template/gems'
-GemTemplate::Gems.gemset ||= ENV['GEMSET'] || :default
 
 Gem::Specification.new do |s|
-  GemTemplate::Gems.gemspec.hash.each do |key, value|
-    if key == 'name' && GemTemplate::Gems.gemset != :default
-      s.name = "#{value}-#{GemTemplate::Gems.gemset}"
-    elsif key == 'summary' && GemTemplate::Gems.gemset == :solo
-      s.summary = value + " (no dependencies)"
-    elsif !%w(dependencies development_dependencies).include?(key)
-      s.send "#{key}=", value
-    end
-  end
-
-  GemTemplate::Gems.dependencies.each do |g|
-    s.add_dependency g.to_s, GemTemplate::Gems.versions[g]
-  end
-  
-  GemTemplate::Gems.development_dependencies.each do |g|
-    s.add_development_dependency g.to_s, GemTemplate::Gems.versions[g]
-  end
+  s.name        = "gem_template"
+  s.version     = '0.1.0'
+  s.platform    = Gem::Platform::RUBY
+  s.authors     = []
+  s.email       = []
+  s.homepage    = "http://"
+  s.summary     = %q{}
+  s.description = %q{}
 
   s.executables = `cd #{root} && git ls-files bin/*`.split("\n").collect { |f| File.basename(f) }
   s.files = `cd #{root} && git ls-files`.split("\n")

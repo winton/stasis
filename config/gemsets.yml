@@ -1,3 +1,0 @@
-gem_template:
-  rake: >=0.8.7
-  rspec: ~>1.0
