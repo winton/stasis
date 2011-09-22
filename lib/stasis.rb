@@ -162,7 +162,7 @@ class Stasis
       end
 
       # Create an `Action` instance, the scope for rendering the view.
-      @action = Action.new(self)
+      @action = Action.new(self, :params => render_options[:params])
 
       # Set the extension if the `@path` extension is supported by [Tilt][ti].
       ext =

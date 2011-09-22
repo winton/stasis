@@ -27,6 +27,16 @@ describe Stasis::Server do
     new_time_from_file.should_not == time
   end
 
+  it "should pass params" do
+    params = Stasis::Server.push(
+      :paths => [ 'params.html.haml' ],
+      :params => { :test => true },
+      :redis => 'localhost:6379/0',
+      :return => true
+    )['params.html.haml'].split("params")[1].strip
+    eval(params).should == { :test => true }
+  end
+
   it "should expire after ttl" do
     time = Stasis::Server.push(
       :paths => [ 'time.html.haml' ],

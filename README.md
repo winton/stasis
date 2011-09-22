@@ -276,6 +276,9 @@ Push to the server (in Ruby):
       # Paths to render
       :paths => [ "index.html.haml", "subdirectory" ],
 
+      # Made available to views as `params`
+      :params => {},
+
       # Redis address
       :redis => "localhost:6379/0",
 

@@ -12,8 +12,18 @@ class Stasis
     # `String` -- If present, render this path instead of the default.
     attr_accessor :_render
 
-    def initialize(stasis)
+    # `Hash` -- Parameters to be made available to the scope, usually through
+    # `Stasis::Server`.
+    attr_accessor :params
+
+    def initialize(stasis, options={})
       @_stasis = stasis
+      @params = options[:params] || {}
+
+      @params = @params.inject({}) do |options, (key, value)|
+        options[(key.to_sym rescue key) || key] = value
+        options
+      end
 
       # Some plugins define methods to be made available to action scopes. This call
       # binds those methods.
