@@ -223,7 +223,9 @@ class Stasis
         end
 
       # Create the directories leading up to the destination.
-      FileUtils.mkdir_p(File.dirname(dest))
+      if render_options[:write] != false
+        FileUtils.mkdir_p(File.dirname(dest))
+      end
 
       # If markup was rendered...
       if view
