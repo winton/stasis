@@ -142,15 +142,15 @@ class Stasis
       # If `only` parameters given...
       unless only.empty?
         # Skip iteration unless there is a match.
-        next unless only.any? do |only|
+        next unless only.any? do |o|
           # Regular expression match.
-          (only.is_a?(::Regexp) && @path =~ only) ||
+          (o.is_a?(::Regexp) && @path =~ o) ||
           (
-            only.is_a?(::String) && (
+            o.is_a?(::String) && (
               # File match.
-              @path == only ||
+              @path == o ||
               # Directory match.
-              @path[0..only.length-1] == only
+              @path[0..o.length-1] == o
             )
           )
         end

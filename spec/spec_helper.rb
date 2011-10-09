@@ -12,7 +12,7 @@ def generate(options={})
   $fixture = "#{$root}/spec/fixtures/project"
   unless $files
     $stasis ||= Stasis.new($fixture)
-    $stasis.render(*options[:only])
+    $stasis.render(*[ options[:only] ].flatten.compact)
     generate_files
   end
 end
