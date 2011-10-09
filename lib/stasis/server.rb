@@ -1,4 +1,5 @@
-Stasis::Gems.activate %w(redis yajl-ruby)
+gem "redis", "~> 2.2.1"
+gem "yajl-ruby", "~> 0.8.2"
 
 require 'digest/sha1'
 require 'redis'

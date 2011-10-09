@@ -1,32 +1,31 @@
 # -*- encoding: utf-8 -*-
 root = File.expand_path('../', __FILE__)
 lib = "#{root}/lib"
+
 $:.unshift lib unless $:.include?(lib)
- 
-require 'stasis/gems'
-Stasis::Gems.gemset ||= ENV['GEMSET'] || :default
 
 Gem::Specification.new do |s|
-  Stasis::Gems.gemspec.hash.each do |key, value|
-    if key == 'name' && Stasis::Gems.gemset != :default
-      s.name = "#{value}-#{Stasis::Gems.gemset}"
-    elsif key == 'summary' && Stasis::Gems.gemset == :solo
-      s.summary = value + " (no dependencies)"
-    elsif !%w(dependencies development_dependencies).include?(key)
-      s.send "#{key}=", value
-    end
-  end
-
-  Stasis::Gems.dependencies.each do |g|
-    s.add_dependency g.to_s, Stasis::Gems.versions[g]
-  end
-  
-  Stasis::Gems.development_dependencies.each do |g|
-    s.add_development_dependency g.to_s, Stasis::Gems.versions[g]
-  end
+  s.name        = "stasis"
+  s.version     = '0.1.10'
+  s.platform    = Gem::Platform::RUBY
+  s.authors     = [ 'Winton Welsh' ]
+  s.email       = [ 'mail@wintoni.us' ]
+  s.homepage    = "http://stasis.me"
+  s.summary     = %q{Static sites made powerful}
+  s.description = %q{Stasis is a dynamic framework for static sites.}
 
   s.executables = `cd #{root} && git ls-files bin/*`.split("\n").collect { |f| File.basename(f) }
   s.files = `cd #{root} && git ls-files`.split("\n")
   s.require_paths = %w(lib)
   s.test_files = `cd #{root} && git ls-files -- {features,test,spec}/*`.split("\n")
+
+  s.add_development_dependency "haml"
+  s.add_development_dependency "rocco"
+  s.add_development_dependency "rspec", "~> 1.0"
+
+  s.add_dependency "directory_watcher", "~> 1.4.0"
+  s.add_dependency "redis",             "~> 2.2.1"
+  s.add_dependency "slop",              "~> 2.1.0"
+  s.add_dependency "tilt",              "~> 1.3"
+  s.add_dependency "yajl-ruby",         "~> 0.8.2"
 end

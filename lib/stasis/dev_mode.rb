@@ -1,4 +1,4 @@
-Stasis::Gems.activate %w(directory_watcher)
+gem "directory_watcher", "~> 1.4.0"
 require 'directory_watcher'
 
 class Stasis

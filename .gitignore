@@ -1,8 +1,9 @@
+.bundle
 .DS_Store
 *.gem
-coverage
 docs
 dump.rdb
+Gemfile.lock
 pkg
 site/.sass-cache
 site/public

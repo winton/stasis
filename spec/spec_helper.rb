@@ -1,10 +1,10 @@
-require 'pp'
+require "pp"
+require "bundler"
+
+Bundler.setup(:default)
+Bundler.require(:development)
 
 $root = File.expand_path('../../', __FILE__)
-require "#{$root}/lib/stasis/gems"
-
-Stasis::Gems.activate :rspec
-
 require "#{$root}/lib/stasis"
 
 def generate(options={})

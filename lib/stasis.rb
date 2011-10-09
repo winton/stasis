@@ -4,12 +4,6 @@
 
 require 'fileutils'
 
-# `Stasis::Gems` handles loading of rubygems and gems listed in [config/gemsets.yml][ge].
-#
-# [ge]: https://github.com/winton/stasis/blob/master/config/gemsets.yml
-
-require File.dirname(__FILE__) + '/stasis/gems'
-
 # [Slim][sl] ships with its own [Tilt][ti] integration. If the user has [Slim][sl]
 # installed, require it, otherwise don't worry about it.
 #
@@ -23,7 +17,7 @@ end
 
 # Activate the [Tilt][ti] gem.
 
-Stasis::Gems.activate %w(tilt)
+gem "tilt", "~> 1.3"
 
 # Add the project directory to the load paths.
 
