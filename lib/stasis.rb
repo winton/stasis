@@ -3,6 +3,7 @@
 ### Prerequisites
 
 require 'fileutils'
+require 'rubygems'
 
 # [Slim][sl] ships with its own [Tilt][ti] integration. If the user has [Slim][sl]
 # installed, require it, otherwise don't worry about it.
