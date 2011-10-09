@@ -13,6 +13,7 @@ class Stasis
 
       redis = Redis.connect(:url => "redis://#{options[:server]}")
       stasis = Stasis.new(*[ root, options[:public], options ].compact)
+      retries = 0
 
       begin
         while true
@@ -66,6 +67,8 @@ class Stasis
       rescue Exception => e
         puts "\nError: #{e.message}"
         puts "\t#{e.backtrace.join("\n\t")}"
+        retries += 1
+        shut_down if retries >= 10
         retry
       end
     end
