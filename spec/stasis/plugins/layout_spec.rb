@@ -19,4 +19,10 @@ describe Stasis::Layout do
     $files['subdirectory/layout_controller.html'].should =~ /layout\nsubdirectory\npass/
     $files['subdirectory/layout_controller_from_root.html'].should =~ /layout\nroot\npass/
   end
+
+  it "should use layouts on matching extensions" do
+    $files['erb.html'].should =~ /erb layout/
+    $files['erb.html'].should =~ /erb template/
+    $files['css.css'].should_not =~ /erb layout/
+  end
 end

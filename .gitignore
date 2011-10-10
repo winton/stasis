@@ -7,5 +7,6 @@ Gemfile.lock
 pkg
 site/.sass-cache
 site/public
+spec/fixtures/project/.sass-cache
 spec/fixtures/project/public
 tmp

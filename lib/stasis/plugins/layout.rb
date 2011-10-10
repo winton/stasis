@@ -15,8 +15,20 @@ class Stasis
     def before_render
       @stasis.action._layout = nil
       matches = _match_key?(@layouts, @stasis.path)
-      matches.each do |(within, layout)|
-        @stasis.action._layout = layout if _within?(within)
+      # Find matching layout with same extension.
+      matches.each do |(within, layout, non_specific)|
+        if _within?(within) && File.extname(layout) == File.extname(@stasis.path)
+          @stasis.action._layout = layout
+        end
+      end
+      # If layout not found, try again without extension requirement for specific layout
+      # definitions only.
+      unless @stasis.action._layout
+        matches.each do |(within, layout, non_specific)|
+          if _within?(within) && !non_specific
+            @stasis.action._layout = layout
+          end
+        end
       end
     end
 
@@ -41,7 +53,7 @@ class Stasis
         path = @stasis.controller._resolve(path)
         layout = @stasis.controller._resolve(layout)
         if layout
-          hash[path] = [ @stasis.path, layout ]
+          hash[path] = [ @stasis.path, layout, path == /.*/ ]
           @stasis.controller.ignore(layout)
         end
         hash

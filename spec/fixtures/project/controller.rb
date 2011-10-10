@@ -69,6 +69,8 @@ end
 layout 'does_not_exist.html.haml'
 layout 'index.html.haml' => 'does_not_exist.html.haml'
 
+layout 'layout.html.erb'
+
 # Priority
 
 priority 'subdirectory/before_render_partial.html.haml' => 1
