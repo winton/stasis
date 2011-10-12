@@ -1,4 +1,4 @@
-gem "directory_watcher", "~> 1.4.0"
+gem "directory_watcher", "~> 1.4.1"
 require 'directory_watcher'
 
 class Stasis
