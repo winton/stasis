@@ -12,10 +12,10 @@ class Stasis
       @dir = dir
       @options = options
 
-      render
+      @stasis = Stasis.new(*[ @dir, @options[:public], @options ].compact)
 
       dw = DirectoryWatcher.new(@stasis.root)
-      dw.interval = 1
+      dw.interval = 0.1
 
       Dir.chdir(@stasis.root) do
         within_public = @stasis.destination[0..@stasis.root.length-1] == @stasis.root
@@ -28,12 +28,9 @@ class Stasis
         end
       end
 
-      dw.add_observer do |*events|
-        modified = events.detect { |e| e[:type] == :modified }
-        render if modified
-      end
-
+      dw.add_observer { render }
       dw.start
+
       loop { sleep 1000 }
     end
 
@@ -42,7 +39,6 @@ class Stasis
     def render
       puts "\n[#{Time.now.strftime("%Y-%m-%d %H:%M:%S")}] Regenerating #{@options[:only] ? @options[:only].join(', ') : 'project'}..."
       begin
-        @stasis = Stasis.new(*[ @dir, @options[:public], @options ].compact)
         @stasis.render(*[ @options[:only] ].flatten.compact)
       rescue Exception => e
         puts "\n[#{Time.now.strftime("%Y-%m-%d %H:%M:%S")}] Error: #{e.message}`"
