@@ -6,7 +6,7 @@ $:.unshift lib unless $:.include?(lib)
 
 Gem::Specification.new do |s|
   s.name        = "stasis"
-  s.version     = '0.1.11'
+  s.version     = '0.1.12'
   s.platform    = Gem::Platform::RUBY
   s.authors     = [ 'Winton Welsh' ]
   s.email       = [ 'mail@wintoni.us' ]
@@ -23,9 +23,9 @@ Gem::Specification.new do |s|
   s.add_development_dependency "rocco"
   s.add_development_dependency "rspec", "~> 1.0"
 
-  s.add_dependency "directory_watcher", "~> 1.4.0"
-  s.add_dependency "redis",             "~> 2.2.1"
+  s.add_dependency "directory_watcher", "~> 1.4.1"
+  s.add_dependency "redis",             "~> 2.2.2"
   s.add_dependency "slop",              "~> 2.1.0"
-  s.add_dependency "tilt",              "~> 1.3"
-  s.add_dependency "yajl-ruby",         "~> 0.8.2"
+  s.add_dependency "tilt",              "~> 1.3.3"
+  s.add_dependency "yajl-ruby",         "~> 1.0.0"
 end
