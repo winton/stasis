@@ -13,6 +13,7 @@ class Stasis
     # This event triggers before each file renders through Stasis. It sets the `action`
     # layout from the matching layout for `path`.
     def before_render
+      return unless @stasis.path
       @stasis.action._layout = nil
       matches = _match_key?(@layouts, @stasis.path)
       # Find matching layout with same extension.
