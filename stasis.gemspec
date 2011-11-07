@@ -19,7 +19,10 @@ Gem::Specification.new do |s|
   s.require_paths = %w(lib)
   s.test_files = `cd #{root} && git ls-files -- {features,test,spec}/*`.split("\n")
 
+  s.add_development_dependency "albino"
+  s.add_development_dependency "coffee-script"
   s.add_development_dependency "haml"
+  s.add_development_dependency "nokogiri"
   s.add_development_dependency "rocco"
   s.add_development_dependency "rspec", "~> 1.0"
 
