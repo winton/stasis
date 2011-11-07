@@ -30,7 +30,7 @@ class Stasis
     # `@@priorities` `Hash`, where the key is a path and the value is the priority.
     def priority(hash)
       hash = hash.inject({}) do |hash, (key, value)|
-        force = key[0..0] == '/'
+        force = key[0..0] == '/' if key.is_a?(::String)
         key = @stasis.controller._resolve(key)
         hash[key] = [ @stasis.path, value, force ] if key
         hash
