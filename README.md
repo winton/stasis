@@ -195,6 +195,12 @@ Development mode (auto-regenerate on save):
 
     $ stasis -d
 
+Specify a port to start an HTTP server:
+
+<!-- highlight:-d language:console -->
+
+    $ stasis -d 3000
+
 Only render specific files or directories:
 
 <!-- highlight:-o language:console -->
