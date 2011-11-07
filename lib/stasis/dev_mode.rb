@@ -1,6 +1,9 @@
 gem "directory_watcher", "~> 1.4.1"
 require 'directory_watcher'
 
+require 'logger'
+require 'webrick'
+
 class Stasis
   class DevMode
 
@@ -31,7 +34,26 @@ class Stasis
       dw.add_observer { render }
       dw.start
 
-      loop { sleep 1000 }
+      if options[:development]
+        mime_types = WEBrick::HTTPUtils::DefaultMimeTypes
+        mime_types.store 'js', 'application/javascript'
+
+        server = WEBrick::HTTPServer.new(
+          :AccessLog => [ nil, nil ],
+          :DocumentRoot => @stasis.destination,
+          :Logger => WEBrick::Log.new("/dev/null"),
+          :MimeTypes => mime_types,
+          :Port => options[:development] || 3000
+        )
+        
+        ['INT', 'TERM'].each do |signal|
+          trap(signal) { server.shutdown }
+        end
+
+        server.start
+      else
+        loop { sleep 1000 }
+      end
     end
 
     private
