@@ -79,16 +79,23 @@ class Stasis
     @destination = args[0] || @root + '/public'
     @destination = File.expand_path(@destination, @root)
 
+    load_paths unless options[:development]
+
+    # Create plugin instances.
+    @plugins = find_plugins.collect { |klass| klass.new(self) }
+
+    @controller = Controller.new(self)
+    load_controllers unless options[:development]
+  end
+
+  def load_paths
     # Create an `Array` of paths that Stasis will act upon.
     @paths = Dir["#{@root}/**/*"]
-    
+
     # Reject paths that are directories or within the destination directory.
     @paths.reject! do |path|
       !File.file?(path) || path[0..@destination.length-1] == @destination
     end
-
-    # Create plugin instances.
-    @plugins = find_plugins.collect { |klass| klass.new(self) }
 
     # Reject paths that are controllers.
     @paths.reject! do |path|
@@ -98,9 +105,6 @@ class Stasis
         false
       end
     end
-
-    @controller = Controller.new(self)
-    load_controllers unless options[:development]
   end
 
   def load_controllers

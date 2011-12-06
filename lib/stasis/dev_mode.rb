@@ -61,6 +61,7 @@ class Stasis
     def render
       puts "\n[#{Time.now.strftime("%Y-%m-%d %H:%M:%S")}] Regenerating #{@options[:only] ? @options[:only].join(', ') : 'project'}..."
       begin
+        @stasis.load_paths
         @stasis.trigger(:reset)
         @stasis.load_controllers
         @stasis.render(*[ @options[:only] ].flatten.compact)
