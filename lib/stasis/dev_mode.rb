@@ -43,7 +43,7 @@ class Stasis
           :DocumentRoot => @stasis.destination,
           :Logger => WEBrick::Log.new("/dev/null"),
           :MimeTypes => mime_types,
-          :Port => options[:development] || 3000
+          :Port => options[:development]
         )
         
         ['INT', 'TERM'].each do |signal|
