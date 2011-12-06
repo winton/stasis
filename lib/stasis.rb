@@ -90,18 +90,26 @@ class Stasis
     # Create plugin instances.
     @plugins = find_plugins.collect { |klass| klass.new(self) }
 
-    # Create a controller instance.
-    @controller = Controller.new(self)
-
     # Reject paths that are controllers.
     @paths.reject! do |path|
       if File.basename(path) == 'controller.rb'
-        # Add controller to `Controller` instance.
-        @controller._add(path)
         true
       else
         false
       end
+    end
+
+    @controller = Controller.new(self)
+    load_controllers unless options[:development]
+  end
+
+  def load_controllers
+    # Create a controller instance.
+    @controller = Controller.new(self)
+
+    # Reload controllers
+    Dir["#{@root}/**/controller.rb"].each do |path|
+      @controller._add(path)
     end
   end
 

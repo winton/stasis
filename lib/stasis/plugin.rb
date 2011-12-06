@@ -16,6 +16,7 @@ class Stasis
         action_method
         after_all
         after_render
+        reset
         before_all
         before_render
         controller_method

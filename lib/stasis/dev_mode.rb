@@ -61,6 +61,8 @@ class Stasis
     def render
       puts "\n[#{Time.now.strftime("%Y-%m-%d %H:%M:%S")}] Regenerating #{@options[:only] ? @options[:only].join(', ') : 'project'}..."
       begin
+        @stasis.trigger(:reset)
+        @stasis.load_controllers
         @stasis.render(*[ @options[:only] ].flatten.compact)
       rescue Exception => e
         puts "\n[#{Time.now.strftime("%Y-%m-%d %H:%M:%S")}] Error: #{e.message}`"
