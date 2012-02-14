@@ -19,7 +19,7 @@ end
 
 def generate_files
   pub = "#{$fixture}/public"
-  $files = Dir["#{pub}/**/*"].inject({}) do |hash, path|
+  $files = Dir.glob("#{pub}/**/*", File::FNM_DOTMATCH).inject({}) do |hash, path|
     if File.file?(path)
       hash[path[pub.length+1..-1]] = File.read(path)
     end

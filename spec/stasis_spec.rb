@@ -5,6 +5,10 @@ describe Stasis do
   before(:all) do
     generate
   end
+
+  it "should preserve dotfiles" do
+    $files.keys.include?(".dotfile").should == true
+  end
   
   it "should copy files that are not markup" do
     $files['not_dynamic.html'].should =~ /pass/

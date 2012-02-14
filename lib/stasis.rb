@@ -90,7 +90,7 @@ class Stasis
 
   def load_paths
     # Create an `Array` of paths that Stasis will act upon.
-    @paths = Dir["#{@root}/**/*"]
+    @paths = Dir.glob("#{@root}/**/*", File::FNM_DOTMATCH)
 
     # Reject paths that are directories or within the destination directory.
     @paths.reject! do |path|
