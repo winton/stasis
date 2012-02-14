@@ -23,6 +23,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency "coffee-script"
   s.add_development_dependency "haml"
   s.add_development_dependency "nokogiri"
+  s.add_development_dependency "rake"
   s.add_development_dependency "rocco"
   s.add_development_dependency "rspec", "~> 1.0"
 
