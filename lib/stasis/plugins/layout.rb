@@ -16,11 +16,30 @@ class Stasis
       return unless @stasis.path
       @stasis.action._layout = nil
       matches = _match_key?(@layouts, @stasis.path)
-      # Find matching layout with same extension.
-      matches.each do |(within, layout, non_specific)|
-        if _within?(within) && File.extname(layout) == File.extname(@stasis.path)
-          @stasis.action._layout = layout
+      # Non-HTML extensions.
+      non_html = %w(sass scss less builder coffee yajl)
+      # Find matching layout.
+      [ :same, :similar ].each do |type|
+        matches.each do |(within, layout, non_specific)|
+          layout_ext = File.extname(layout)[1..-1]
+          path_ext = File.extname(@stasis.path)[1..-1]
+
+          match =
+            case type
+            # Same extension?
+            when :same then
+              layout_ext == path_ext
+            # Similar extension?
+            when :similar then
+              non_html.include?(layout_ext) == non_html.include?(path_ext)
+            end
+
+          # Set layout
+          if _within?(within) && match
+            @stasis.action._layout = layout
+          end
         end
+        break if @stasis.action._layout
       end
       # If layout not found, try again without extension requirement for specific layout
       # definitions only.
