@@ -183,7 +183,13 @@ class Stasis
           #
           # Otherwise, render the file located at `@path`.
           render_opts = {:callback => false}.merge(:template => Options.get_template_option(ext))
-          output = @action._render || @action.render(@path, render_opts)
+          begin
+            output = @action._render || @action.render(@path, render_opts)
+          rescue
+            # If rendering the view caused an exception write the path out before exiting.
+            puts "Exception rendering view #{@path}"
+            raise
+          end
 
           # If a layout was specified via the `layout` method...
           if @action._layout
