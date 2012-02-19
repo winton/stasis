@@ -1,15 +1,15 @@
 class Stasis
   class Before < Plugin
 
-    reset :reset
     before_all :before_all
     before_render :before_render
     controller_method :before
     priority 1
+    reset :reset
 
     def initialize(stasis)
       @stasis = stasis
-      @blocks = {}
+      reset
     end
 
     # This method is bound to all controllers. Stores a block in the `@blocks` `Hash`,
@@ -23,11 +23,6 @@ class Stasis
           @blocks[path] << [ @stasis.path, block ]
         end
       end
-    end
-
-    # This event reset the before blocks.
-    def reset
-      @blocks = {}
     end
 
     # This event triggers before all files render. When a `before` call receives a path
@@ -51,6 +46,11 @@ class Stasis
           end
         end
       end
+    end
+
+    # This event resets all instance variables.
+    def reset
+      @blocks = {}
     end
   end
 end

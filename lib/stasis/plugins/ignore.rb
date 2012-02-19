@@ -3,10 +3,11 @@ class Stasis
 
     before_render :before_render
     controller_method :ignore
+    reset :reset
 
     def initialize(stasis)
       @stasis = stasis
-      @ignore = {}
+      reset
     end
 
     # This event triggers before each file renders. Rejects any `paths` that are included
@@ -30,6 +31,11 @@ class Stasis
           @ignore[path] << @stasis.path
         end
       end
+    end
+
+    # This event resets all instance variables.
+    def reset
+      @ignore = {}
     end
   end
 end

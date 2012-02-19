@@ -3,10 +3,11 @@ class Stasis
 
     controller_method :helpers
     before_render :before_render
+    reset :reset
 
     def initialize(stasis)
       @stasis = stasis
-      @blocks = []
+      reset
     end
 
     #  This event triggers before each file renders through Stasis. For each helper
@@ -24,6 +25,11 @@ class Stasis
       if block
         @blocks << [ @stasis.path, block ]
       end
+    end
+
+    # This event resets all instance variables.
+    def reset
+      @blocks = []
     end
   end
 end

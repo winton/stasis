@@ -16,10 +16,10 @@ class Stasis
         action_method
         after_all
         after_render
-        reset
         before_all
         before_render
         controller_method
+        reset
       ).each do |method|
         method = method.to_sym
         # Define method on the `Plugin` class.
