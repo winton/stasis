@@ -84,7 +84,7 @@ class Stasis
     # Create plugin instances.
     @plugins = find_plugins.collect { |klass| klass.new(self) }
 
-    load_controllers unless options[:development]
+    load_controllers
   end
 
   def load_paths
