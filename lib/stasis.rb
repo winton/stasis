@@ -175,7 +175,9 @@ class Stasis
         Tilt.mappings.keys.detect do |ext|
           File.extname(@path)[1..-1] == ext
         end
-      
+
+      @action.params[:path] = @path
+
       # Trigger all plugin `before_render` events.
       trigger(:before_render)
 
