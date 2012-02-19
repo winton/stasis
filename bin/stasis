@@ -24,7 +24,7 @@ elsif slop.only?
 elsif slop.server?
   Stasis::Server.new(Dir.pwd, options)
 elsif slop.public?
-  Stasis.new(Dir.pwd, slop[:public], options).render(*slop[:only])
+  Stasis.new(Dir.pwd, slop[:public], options).render(*(slop[:only].to_a))
 else
   Stasis.new(Dir.pwd, options).render
 end
