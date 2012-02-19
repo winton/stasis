@@ -14,6 +14,7 @@ class Stasis
 
       @dir = dir
       @options = options
+      @options[:development] ||= true
 
       @stasis = Stasis.new(*[ @dir, @options[:public], @options ].compact)
 
@@ -34,7 +35,7 @@ class Stasis
       dw.add_observer { render }
       dw.start
 
-      if options[:development]
+      if options[:development].is_a?(::Integer)
         mime_types = WEBrick::HTTPUtils::DefaultMimeTypes
         mime_types.store 'js', 'application/javascript'
 
@@ -43,7 +44,7 @@ class Stasis
           :DocumentRoot => @stasis.destination,
           :Logger => WEBrick::Log.new("/dev/null"),
           :MimeTypes => mime_types,
-          :Port => options[:development] || 3000
+          :Port => options[:development]
         )
         
         ['INT', 'TERM'].each do |signal|
@@ -61,6 +62,9 @@ class Stasis
     def render
       puts "\n[#{Time.now.strftime("%Y-%m-%d %H:%M:%S")}] Regenerating #{@options[:only] ? @options[:only].join(', ') : 'project'}..."
       begin
+        @stasis.load_paths
+        @stasis.trigger(:reset)
+        @stasis.load_controllers
         @stasis.render(*[ @options[:only] ].flatten.compact)
       rescue Exception => e
         puts "\n[#{Time.now.strftime("%Y-%m-%d %H:%M:%S")}] Error: #{e.message}`"

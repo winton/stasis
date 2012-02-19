@@ -5,10 +5,11 @@ class Stasis
     before_all :before_all
     controller_method :priority
     priority 2
+    reset :reset
 
     def initialize(stasis)
       @stasis = stasis
-      @priorities = {}
+      reset
     end
 
     # This event triggers before all files render through Stasis. Collect matching
@@ -36,6 +37,11 @@ class Stasis
         hash
       end
       @priorities.merge!(hash)
+    end
+
+    # This event resets all instance variables.
+    def reset
+      @priorities = {}
     end
   end
 end

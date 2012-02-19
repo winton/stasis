@@ -4,10 +4,11 @@ class Stasis
     action_method :layout => :layout_action
     before_render :before_render
     controller_method :layout => :layout_controller
+    reset :reset
 
     def initialize(stasis)
       @stasis = stasis
-      @layouts = {}
+      reset
     end
 
     # This event triggers before each file renders through Stasis. It sets the `action`
@@ -78,6 +79,11 @@ class Stasis
         end
         hash
       }
+    end
+
+    # This event resets all instance variables.
+    def reset
+      @layouts = {}
     end
   end
 end
