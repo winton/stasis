@@ -14,6 +14,7 @@ class Stasis
 
       @dir = dir
       @options = options
+      @options[:development] ||= true
 
       @stasis = Stasis.new(*[ @dir, @options[:public], @options ].compact)
 
@@ -34,7 +35,7 @@ class Stasis
       dw.add_observer { render }
       dw.start
 
-      if options[:development]
+      if options[:development].is_a?(::Integer)
         mime_types = WEBrick::HTTPUtils::DefaultMimeTypes
         mime_types.store 'js', 'application/javascript'
 
