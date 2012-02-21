@@ -24,12 +24,12 @@ gem "tilt", "~> 1.3.3"
 
 $:.unshift File.dirname(__FILE__)
 
-# Require all Stasis library files.
+# Require all Stasis library files, except for 'stasis/dev_mode' and
+# 'stasis/server'. Those are demand-loaded when the corresponding command-line
+# options are passed.
 
-require 'stasis/dev_mode'
 require 'stasis/options'
 require 'stasis/plugin'
-require 'stasis/server'
 
 require 'stasis/scope'
 require 'stasis/scope/action'
