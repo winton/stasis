@@ -82,7 +82,7 @@ class Stasis
     load_paths unless options[:development]
 
     # Create plugin instances.
-    @plugins = find_plugins.collect { |klass| klass.new(self) }
+    @plugins = Plugin.plugins.collect { |klass| klass.new(self) }
 
     load_controllers
   end
@@ -295,16 +295,5 @@ class Stasis
       plugin.class._priority
     end
     priorities.uniq.sort.each(&block)
-  end
-
-  # Returns an `Array` of `Stasis::Plugin` classes.
-  def find_plugins
-    plugins = []
-    ObjectSpace.each_object(Class) do |klass|
-      if klass < ::Stasis::Plugin
-        plugins << klass
-      end
-    end
-    plugins
   end
 end
