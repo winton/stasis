@@ -84,6 +84,7 @@ class Stasis
     # Create plugin instances.
     @plugins = Plugin.plugins.collect { |klass| klass.new(self) }
 
+    self.class.register_instance(self)
     load_controllers
   end
 
@@ -270,13 +271,22 @@ class Stasis
     collect if render_options[:collect]
   end
 
+  def self.register_instance(inst)
+    @instances ||= []
+    @instances << inst
+  end
+
+  def add_plugin(plugin)
+    plugin = plugin.new(self)
+    plugins << plugin
+    controller._bind_plugin(plugin, :controller_method)
+  end
+
   # Add a plugin to all existing controller instances. This method should be called by
   # all external plugins.
   def self.register(plugin)
-    ObjectSpace.each_object(::Stasis) do |stasis|
-      plugin = plugin.new(stasis)
-      stasis.plugins << plugin
-      stasis.controller._bind_plugin(plugin, :controller_method)
+    @instances.each do |stasis|
+      stasis.add_plugin(plugin)
     end
   end
 
