@@ -24,12 +24,12 @@ gem "tilt", "~> 1.3.3"
 
 $:.unshift File.dirname(__FILE__)
 
-# Require all Stasis library files.
+# Require all Stasis library files, except for 'stasis/dev_mode' and
+# 'stasis/server'. Those are demand-loaded when the corresponding command-line
+# options are passed.
 
-require 'stasis/dev_mode'
 require 'stasis/options'
 require 'stasis/plugin'
-require 'stasis/server'
 
 require 'stasis/scope'
 require 'stasis/scope/action'
@@ -82,8 +82,9 @@ class Stasis
     load_paths unless options[:development]
 
     # Create plugin instances.
-    @plugins = find_plugins.collect { |klass| klass.new(self) }
+    @plugins = Plugin.plugins.collect { |klass| klass.new(self) }
 
+    self.class.register_instance(self)
     load_controllers
   end
 
@@ -270,13 +271,22 @@ class Stasis
     collect if render_options[:collect]
   end
 
+  def self.register_instance(inst)
+    @instances ||= []
+    @instances << inst
+  end
+
+  def add_plugin(plugin)
+    plugin = plugin.new(self)
+    plugins << plugin
+    controller._bind_plugin(plugin, :controller_method)
+  end
+
   # Add a plugin to all existing controller instances. This method should be called by
   # all external plugins.
   def self.register(plugin)
-    ObjectSpace.each_object(::Stasis) do |stasis|
-      plugin = plugin.new(stasis)
-      stasis.plugins << plugin
-      stasis.controller._bind_plugin(plugin, :controller_method)
+    @instances.each do |stasis|
+      stasis.add_plugin(plugin)
     end
   end
 
@@ -295,16 +305,5 @@ class Stasis
       plugin.class._priority
     end
     priorities.uniq.sort.each(&block)
-  end
-
-  # Returns an `Array` of `Stasis::Plugin` classes.
-  def find_plugins
-    plugins = []
-    ObjectSpace.each_object(Class) do |klass|
-      if klass < ::Stasis::Plugin
-        plugins << klass
-      end
-    end
-    plugins
   end
 end

@@ -16,12 +16,14 @@ options = slop.to_hash
 options.delete(:server) unless slop.server?
 
 if slop.development?
+  require 'stasis/dev_mode'
   Stasis::DevMode.new(Dir.pwd, options)
 elsif slop.only? && slop.public?
   Stasis.new(Dir.pwd, slop[:public], options).render(*slop[:only])
 elsif slop.only?
   Stasis.new(Dir.pwd, options).render(*slop[:only])
 elsif slop.server?
+  require 'stasis/server'
   Stasis::Server.new(Dir.pwd, options)
 elsif slop.public?
   Stasis.new(Dir.pwd, slop[:public], options).render(*(slop[:only].to_a))

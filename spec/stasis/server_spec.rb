@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'stasis/server'
 
 describe Stasis::Server do
 
