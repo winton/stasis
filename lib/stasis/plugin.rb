@@ -1,6 +1,15 @@
 class Stasis
   class Plugin
-    class <<self
+    class << self
+
+      def inherited(subclass)
+        @plugins ||= []
+        @plugins << subclass
+      end
+
+      def plugins
+        (@plugins || []).dup
+      end
 
       # `Hash` -- Keys are the "bind as" method names and values are the actual method
       # names on the `Plugin` instance.
