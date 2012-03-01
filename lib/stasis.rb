@@ -206,7 +206,7 @@ class Stasis
           # If a layout was specified via the `layout` method...
           if @action._layout
             # Render the layout with a block for the layout to `yield` to.
-            @action.render(@action._layout) { output }
+            @action.render(@action._layout, render_opts) { output }
           # If a layout was not specified...
           else
             output
