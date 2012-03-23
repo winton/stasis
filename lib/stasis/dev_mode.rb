@@ -39,7 +39,7 @@ class Stasis
         mime_types = WEBrick::HTTPUtils::DefaultMimeTypes
         mime_types.store 'js', 'application/javascript'
         
-        outfile = RUBY_PLATFORM =~ /mswin|mingw/ ? 'NUL:' : '/dev/null'
+        outfile = (RUBY_PLATFORM =~ /mswin|mingw/) ? 'NUL:' : '/dev/null'
         server  = WEBrick::HTTPServer.new(
           :AccessLog => [ nil, nil ],
           :DocumentRoot => @stasis.destination,
