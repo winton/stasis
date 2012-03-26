@@ -94,7 +94,7 @@ class Stasis
 
     # Reject paths that are directories or within the destination directory.
     @paths.reject! do |path|
-      !File.file?(path) || path[0..@destination.length-1] == @destination
+      !File.file?(path) || path[0..@destination.length] == @destination+'/'
     end
 
     # Reject paths that are controllers.
