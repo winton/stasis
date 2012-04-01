@@ -11,6 +11,7 @@ class Stasis
       trap("INT") { exit }
 
       puts "\nDevelopment mode enabled: #{dir}"
+      $stdout.flush
 
       @dir = dir
       @options = options
@@ -73,6 +74,7 @@ class Stasis
       else
         puts "\n[#{Time.now.strftime("%Y-%m-%d %H:%M:%S")}] Complete"
       end
+      $stdout.flush
     end
   end
 end
