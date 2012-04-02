@@ -90,6 +90,25 @@ ul {
   }
 }
 
+#share {
+  margin-top: -20px;
+  text-align: center;
+
+  a, iframe {
+    margin-top: 20px;
+    opacity: 0.6;
+  }
+
+  a:hover, iframe:hover {
+    opacity: 1;
+  }
+
+  iframe {
+    margin-left: 4px;
+    margin-right: 5px;
+  }
+}
+
 #tm {
   font-size: 19.4px;
   font-weight: 700;
