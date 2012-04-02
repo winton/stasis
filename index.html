@@ -48,355 +48,379 @@
       <a href='https://github.com/winton/stasis'><img height='141' src='github.png' width='141' /></a>
     </div>
     <div id='title'><img src='stasis.png' />stasis<img class='reverse' src='stasis.png' /></div>
-    <div id='tm'>Static Sites Made Powerful</div>
+    <div id='share'>
+      <br />
+      <iframe allowtransparency='true' frameborder='0' height='20px' scrolling='0' src='http://markdotto.github.com/github-buttons/github-btn.html?user=winton&amp;repo=stasis&amp;type=watch&amp;count=true' width='110px'></iframe>
+      <a class='twitter-follow-button' data-show-count='false' href='https://twitter.com/wintonius'>Follow @wintonius</a>
+    </div>
+    <div id='tm'>
+      Static Sites Made Powerful
+    </div>
     <div id='body'>
       <h2><a name="install" href="#install">Install</a></h2>
-        
-        <div class="clear"></div>
-        <div class="highlight">
-        <pre><span class="gp">$</span> gem install stasis</pre>
-        </div>
-        <p>Install via <a href="http://rubygems.org/pages/download">RubyGems</a><img src="arrow.png" class="arrow"></p>
-        
-        <!-- language:console -->
-        
-        
-        
-        <h2><a name="example" href="#example">Example</a></h2>
-        
-        <p>At its most essential, Stasis takes a directory tree with <a href="#supported_markup_languages">supported template files</a> and renders them.</p>
-        
-        <div class="clear"></div>
-        <div class="highlight">
-        <pre><span class="go">project/</span>&#x000A;<span class="go">    index.html.haml</span>&#x000A;<span class="go">    images/</span>&#x000A;<span class="go">        image.png</span></pre>
-        </div>
-        <p>Example directory structure<img src="arrow.png" class="arrow"></p>
-        
-        <!-- language:console -->
-        
-        
-        
-        <div class="clear"></div>
-        <div class="highlight">
-        <pre><span class="gp">$</span> <span class="nb">cd </span>project&#x000A;<span class="gp">$</span> <span class="sr">stasis</span></pre>
-        </div>
-        <p>Run <code>stasis</code><img src="arrow.png" class="arrow"></p>
-        
-        <!-- highlight:stasis language:console -->
-        
-        
-        
-        <div class="clear"></div>
-        <div class="highlight">
-        <pre><span class="go">project/</span>&#x000A;<span class="go">    index.html.haml</span>&#x000A;<span class="go">    images/</span>&#x000A;<span class="go">        image.png</span>&#x000A;<span class="go">    <span class="sr">public/</span></span>&#x000A;<span class="go">        index.html</span>&#x000A;<span class="go">        images/</span>&#x000A;<span class="go">            image.png</span></pre>
-        </div>
-        <p>Stasis creates a <code>public</code> directory<img src="arrow.png" class="arrow"></p>
-        
-        <!-- highlight:public/ language:console -->
-        
-        
-        
-        <p><code>index.html.haml</code> becomes <code>public/index.html</code>.</p>
-        
-        <p>Unrecognized extensions are copied as-is (<code>image.png</code>).</p>
-        
-        <h2><a name="controllers" href="#controllers">Controllers</a></h2>
-        
-        <p>Controllers contain Ruby code that executes once before all templates render.</p>
-        
-        <div class="clear"></div>
-        <div class="highlight">
-        <pre><span class="go">project/</span>&#x000A;<span class="go">    <span class="sr">controller.rb</span></span>&#x000A;<span class="go">    index.html.haml</span>&#x000A;<span class="go">    styles/</span>&#x000A;<span class="go">        <span class="sr">controller.rb</span></span>&#x000A;<span class="go">        style.css.sass</span></pre>
-        </div>
-        <p>Example directory structure<img src="arrow.png" class="arrow"></p>
-        
-        <!-- highlight:controller.rb language:console -->
-        
-        
-        
-        <p>You may have a controller at any directory level.</p>
-        
-        <h2><a name="before" href="#before">Before</a></h2>
-        
-        <p>Use <code>before</code> blocks within <code>controller.rb</code> to execute code before a template renders.</p>
-        
-        <div class="clear"></div>
-        <div class="highlight">
-        <pre><span class="n">before</span> <span class="s1">'index.html.haml'</span> <span class="k">do</span>&#x000A;  <span class="vi">@something</span> <span class="o">=</span> <span class="kp">true</span>&#x000A;<span class="k">end</span></pre>
-        </div>
-        <p><code>controller.rb</code><img src="arrow.png" class="arrow"></p>
-        
-        
-        
-        <p><code>@something</code> is now available to the <code>index.html.haml</code> template.</p>
-        
-        <div class="clear"></div>
-        <div class="highlight">
-        <pre><span class="n">before</span> <span class="s1">'index.html.haml'</span><span class="p">,</span><span class="sr"> /.*html\.erb/</span> <span class="k">do</span>&#x000A;  <span class="vi">@something</span> <span class="o">=</span> <span class="kp">true</span>&#x000A;<span class="k">end</span></pre>
-        </div>
-        <p>The <code>before</code> method can take any number of paths and/or regular expressions<img src="arrow.png" class="arrow"></p>
-        
-        
-        
-        <h2><a name="layouts" href="#layouts">Layouts</a></h2>
-        
-        <div class="clear"></div>
-        <div class="highlight">
-        <pre><span class="o">%</span><span class="n">html</span>&#x000A;  <span class="o">%</span><span class="n">body</span><span class="o">=</span> <span class="k">yield</span></pre>
-        </div>
-        <p><code>layout.html.haml</code><img src="arrow.png" class="arrow"></p>
-        
-        
-        
-        <div class="clear"></div>
-        <div class="highlight">
-        <pre><span class="n">layout</span> <span class="s1">'layout.html.haml'</span></pre>
-        </div>
-        <p>In <code>controller.rb</code>, set the default layout<img src="arrow.png" class="arrow"></p>
-        
-        
-        
-        <div class="clear"></div>
-        <div class="highlight">
-        <pre><span class="n">layout</span> <span class="s1">'index.html.haml'</span> <span class="o">=&gt;</span> <span class="s1">'layout.html.haml'</span></pre>
-        </div>
-        <p>Set the layout for a particular template<img src="arrow.png" class="arrow"></p>
-        
-        
-        
-        <div class="clear"></div>
-        <div class="highlight">
-        <pre><span class="n">layout</span><span class="sr"> /.*html.haml/</span> <span class="o">=&gt;</span> <span class="s1">'layout.html.haml'</span></pre>
-        </div>
-        <p>Use a regular expression<img src="arrow.png" class="arrow"></p>
-        
-        
-        
-        <div class="clear"></div>
-        <div class="highlight">
-        <pre><span class="n">before</span> <span class="s1">'index.html.haml'</span> <span class="k">do</span>&#x000A;  <span class="n">layout</span> <span class="s1">'layout.html.haml'</span>&#x000A;<span class="k">end</span></pre>
-        </div>
-        <p>Set the layout from a <code>before</code> block<img src="arrow.png" class="arrow"></p>
-        
-        
-        
-        <h2><a name="render" href="#render">Render</a></h2>
-        
-        <div class="clear"></div>
-        <div class="highlight">
-        <pre><span class="o">%</span><span class="n">html</span>&#x000A;  <span class="o">%</span><span class="n">body</span><span class="o">=</span> <span class="n">render</span> <span class="s1">'_partial.html.haml'</span></pre>
-        </div>
-        <p>Within a template<img src="arrow.png" class="arrow"></p>
-        
-        
-        
-        <div class="clear"></div>
-        <div class="highlight">
-        <pre><span class="n">before</span> <span class="s1">'index.html.haml'</span> <span class="k">do</span>&#x000A;  <span class="vi">@partial</span> <span class="o">=</span> <span class="n">render</span> <span class="s1">'_partial.html.haml'</span>&#x000A;<span class="k">end</span></pre>
-        </div>
-        <p>Within a <code>before</code> block<img src="arrow.png" class="arrow"></p>
-        
-        
-        
-        <div class="clear"></div>
-        <div class="highlight">
-        <pre><span class="n">render</span> <span class="ss">:text</span> <span class="o">=&gt;</span> <span class="s1">'Hello'</span></pre>
-        </div>
-        <p>Text<img src="arrow.png" class="arrow"></p>
-        
-        
-        
-        <div class="clear"></div>
-        <div class="highlight">
-        <pre><span class="n">render</span> <span class="s1">'index.html.haml'</span><span class="p">,</span> <span class="ss">:locals</span> <span class="o">=&gt;</span> <span class="p">{</span> <span class="ss">:x</span> <span class="o">=&gt;</span> <span class="kp">true</span> <span class="p">}</span></pre>
-        </div>
-        <p>Local variables<img src="arrow.png" class="arrow"></p>
-        
-        
-        
-        <div class="clear"></div>
-        <div class="highlight">
-        <pre><span class="n">render</span> <span class="s1">'index.html.haml'</span> <span class="p">{</span> <span class="s1">'Hello'</span> <span class="p">}</span></pre>
-        </div>
-        <p>Include a block for the template to <code>yield</code> to<img src="arrow.png" class="arrow"></p>
-        
-        
-        
-        <h2><a name="instead" href="#instead">Instead</a></h2>
-        
-        <div class="clear"></div>
-        <div class="highlight">
-        <pre><span class="n">before</span> <span class="s1">'index.html.haml'</span> <span class="k">do</span>&#x000A;  <span class="n">instead</span> <span class="n">render</span><span class="p">(</span><span class="s1">'subdirectory/index.html.haml'</span><span class="p">)</span>&#x000A;<span class="k">end</span></pre>
-        </div>
-        <p>The <code>instead</code> method changes the output of the template being rendered<img src="arrow.png" class="arrow"></p>
-        
-        
-        
-        <h2><a name="helpers" href="#helpers">Helpers</a></h2>
-        
-        <div class="clear"></div>
-        <div class="highlight">
-        <pre><span class="n">helpers</span> <span class="k">do</span>&#x000A;  <span class="k">def</span> <span class="nf">say_hello</span>&#x000A;    <span class="s1">'Hello'</span>&#x000A;  <span class="k">end</span>&#x000A;<span class="k">end</span></pre>
-        </div>
-        <p><code>controller.rb</code><img src="arrow.png" class="arrow"></p>
-        
-        
-        
-        <p>The <code>say_hello</code> method is now available to all <code>before</code> blocks and templates.</p>
-        
-        <h2><a name="ignore" href="#ignore">Ignore</a></h2>
-        
-        <p>Use the <code>ignore</code> method in <code>controller.rb</code> to ignore certain paths.</p>
-        
-        <div class="clear"></div>
-        <div class="highlight">
-        <pre><span class="n">ignore</span><span class="sr"> /\/</span><span class="n">_</span><span class="o">.</span><span class="n">*</span><span class="o">/</span></pre>
-        </div>
-        <p>Ignore filenames with an underscore at the beginning<img src="arrow.png" class="arrow"></p>
-        
-        
-        
-        <h2><a name="priority" href="#priority">Priority</a></h2>
-        
-        <p>Use the <code>priority</code> method in <code>controller.rb</code> to change the file process order.</p>
-        
-        <div class="clear"></div>
-        <div class="highlight">
-        <pre><span class="n">priority</span><span class="sr"> /.*txt/</span> <span class="o">=&gt;</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">'index.html.erb'</span> <span class="o">=&gt;</span> <span class="mi">1</span></pre>
-        </div>
-        <p>Copy <code>.txt</code> files before rendering the <code>index.html.erb</code> template<img src="arrow.png" class="arrow"></p>
-        
-        
-        
-        <p>The default priority is <code>0</code> for all files.</p>
-        
-        <h2><a name="usage" href="#usage">Usage</a></h2>
-        
-        <div class="clear"></div>
-        <h3><a name="command_line" href="#command_line">Command Line</a></h3>
-        
-        <p>Always execute the <code>stasis</code> command in the root directory of your project.</p>
-        
-        <div class="clear"></div>
-        <div class="highlight">
-        <pre><span class="gp">$</span> stasis <span class="sr">-d</span></pre>
-        </div>
-        <p>Development mode (auto-regenerate on save)<img src="arrow.png" class="arrow"></p>
-        
-        <!-- highlight:-d language:console -->
-        
-        
-        
-        <div class="clear"></div>
-        <div class="highlight">
-        <pre><span class="gp">$</span> stasis <span class="sr">-d</span> 3000</pre>
-        </div>
-        <p>Specify a port to start an HTTP server<img src="arrow.png" class="arrow"></p>
-        
-        <!-- highlight:-d language:console -->
-        
-        
-        
-        <div class="clear"></div>
-        <div class="highlight">
-        <pre><span class="gp">$</span> stasis <span class="sr">-o</span> index.html.haml,subdirectory</pre>
-        </div>
-        <p>Only render specific files or directories<img src="arrow.png" class="arrow"></p>
-        
-        <!-- highlight:-o language:console -->
-        
-        
-        
-        <div class="clear"></div>
-        <div class="highlight">
-        <pre><span class="gp">$</span> stasis -p ../public</pre>
-        </div>
-        <p>Change the public (destination) directory<img src="arrow.png" class="arrow"></p>
-        
-        <!-- highlight:-o language:console -->
-        
-        
-        
-        <div class="clear"></div>
-        <h3><a name="ruby_library" href="#ruby_library">Ruby Library</a></h3>
-        
-        <div class="clear"></div>
-        <div class="highlight">
-        <pre><span class="n">stasis</span> <span class="o">=</span> <span class="no">Stasis</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s1">'/path/to/project/root'</span><span class="p">)</span></pre>
-        </div>
-        <p>Instantiate a <code>Stasis</code> object<img src="arrow.png" class="arrow"></p>
-        
-        
-        
-        <div class="clear"></div>
-        <div class="highlight">
-        <pre><span class="n">stasis</span> <span class="o">=</span> <span class="no">Stasis</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s1">'/project'</span><span class="p">,</span> <span class="s1">'/html'</span><span class="p">)</span></pre>
-        </div>
-        <p>Optionally specify a destination directory<img src="arrow.png" class="arrow"></p>
-        
-        
-        
-        <div class="clear"></div>
-        <div class="highlight">
-        <pre><span class="n">stasis</span><span class="o">.</span><span class="n">render</span></pre>
-        </div>
-        <p>Render all templates<img src="arrow.png" class="arrow"></p>
-        
-        
-        
-        <div class="clear"></div>
-        <div class="highlight">
-        <pre><span class="n">stasis</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="s1">'index.html.haml'</span><span class="p">,</span> <span class="s1">'subdirectory'</span><span class="p">)</span></pre>
-        </div>
-        <p>Render a specific template or directory<img src="arrow.png" class="arrow"></p>
-        
-        
-        
-        <h2><a name="more" href="#more">More</a></h2>
-        
-        <div class="clear"></div>
-        <h3><a name="supported_markup_languages" href="#supported_markup_languages">Supported Markup Languages</a></h3>
-        
-        <div class="clear"></div>
-        <div class="highlight">
-        <pre><span class="go">ENGINE                     FILE EXTENSIONS</span>&#x000A;<span class="go">-------------------------- -----------------------</span>&#x000A;<span class="go">ERB                        .erb, .rhtml</span>&#x000A;<span class="go">Interpolated String        .str</span>&#x000A;<span class="go">Erubis                     .erb, .rhtml, .erubis</span>&#x000A;<span class="go">Haml                       .haml</span>&#x000A;<span class="go">Sass                       .sass</span>&#x000A;<span class="go">Scss                       .scss</span>&#x000A;<span class="go">Less CSS                   .less</span>&#x000A;<span class="go">Builder                    .builder</span>&#x000A;<span class="go">Liquid                     .liquid</span>&#x000A;<span class="go">RDiscount                  .markdown, .mkd, .md</span>&#x000A;<span class="go">Redcarpet                  .markdown, .mkd, .md</span>&#x000A;<span class="go">BlueCloth                  .markdown, .mkd, .md</span>&#x000A;<span class="go">Kramdown                   .markdown, .mkd, .md</span>&#x000A;<span class="go">Maruku                     .markdown, .mkd, .md</span>&#x000A;<span class="go">RedCloth                   .textile</span>&#x000A;<span class="go">RDoc                       .rdoc</span>&#x000A;<span class="go">Radius                     .radius</span>&#x000A;<span class="go">Markaby                    .mab</span>&#x000A;<span class="go">Nokogiri                   .nokogiri</span>&#x000A;<span class="go">CoffeeScript               .coffee</span>&#x000A;<span class="go">Creole (Wiki markup)       .wiki, .creole</span>&#x000A;<span class="go">WikiCloth (Wiki markup)    .wiki, .mediawiki, .mw</span>&#x000A;<span class="go">Yajl                       .yajl</span></pre>
-        </div>
-        <p>Stasis uses <a href="https://github.com/rtomayko/tilt">Tilt</a> to support the following template engines<img src="arrow.png" class="arrow"></p>
-        
-        <!-- language:console -->
-        
-        
-        
-        <div class="clear"></div>
-        <h3><a name="server_mode" href="#server_mode">Server Mode</a></h3>
-        
-        <p>Stasis can run as a server that uses <a href="http://redis.io">redis</a> to wait for render jobs.</p>
-        
-        <div class="clear"></div>
-        <div class="highlight">
-        <pre><span class="gp">$</span> stasis <span class="sr">-s</span> localhost:6379/0</pre>
-        </div>
-        <p>Stasis server that uses redis on port 6379<img src="arrow.png" class="arrow"></p>
-        
-        <!-- highlight:-s language:console -->
-        
-        
-        
-        <div class="clear"></div>
-        <div class="highlight">
-        <pre><span class="no">Stasis</span><span class="o">::</span><span class="no">Server</span><span class="o">.</span><span class="n">push</span><span class="p">(</span>&#x000A;  <span class="c1"># Paths to render</span>&#x000A;  <span class="ss">:paths</span> <span class="o">=&gt;</span> <span class="o">[</span> <span class="s2">"index.html.haml"</span><span class="p">,</span> <span class="s2">"subdirectory"</span> <span class="o">]</span><span class="p">,</span>&#x000A;&#x000A;  <span class="c1"># Made available to views as `params`</span>&#x000A;  <span class="ss">:params</span> <span class="o">=&gt;</span> <span class="p">{},</span>&#x000A;&#x000A;  <span class="c1"># Redis address</span>&#x000A;  <span class="ss">:redis</span> <span class="o">=&gt;</span> <span class="s2">"localhost:6379/0"</span><span class="p">,</span>&#x000A;&#x000A;  <span class="c1"># Return rendered templates (false by default)</span>&#x000A;  <span class="ss">:return</span> <span class="o">=&gt;</span> <span class="kp">false</span><span class="p">,</span>&#x000A;&#x000A;  <span class="c1"># Block until templates generate (false by default)</span>&#x000A;  <span class="ss">:wait</span> <span class="o">=&gt;</span> <span class="kp">false</span><span class="p">,</span>&#x000A;&#x000A;  <span class="c1"># Write to the filesystem (true by default)</span>&#x000A;  <span class="ss">:write</span> <span class="o">=&gt;</span> <span class="kp">true</span><span class="p">,</span>&#x000A;&#x000A;  <span class="c1"># Cache ttl for returned templates (nil by default)</span>&#x000A;  <span class="ss">:ttl</span> <span class="o">=&gt;</span> <span class="kp">nil</span><span class="p">,</span>&#x000A;&#x000A;  <span class="c1"># Force write even if cached (false by default)</span>&#x000A;  <span class="ss">:force</span> <span class="o">=&gt;</span> <span class="kp">false</span>&#x000A;<span class="p">)</span></pre>
-        </div>
-        <p>Push to the server (in Ruby)<img src="arrow.png" class="arrow"></p>
-        
-        
-        
-        <div class="clear"></div>
-        <h3><a name="this_web_site" href="#this_web_site">This Web Site</a></h3>
-        
-        <p><a href="https://github.com/winton/stasis/tree/master/site">Take a look at the Stasis project</a> that automatically generated this web site from the project <a href="https://github.com/winton/stasis/blob/master/README.md">README</a>.</p>
+      
+      <div class="clear"></div>
+      <div class="highlight">
+      <pre><span class="gp">$</span> gem install stasis</pre>
+      </div>
+      <p>Install via <a href="http://rubygems.org/pages/download">RubyGems</a><img src="arrow.png" class="arrow"></p>
+      
+      <!-- language:console -->
+      
+      
+      
+      <h2><a name="example" href="#example">Example</a></h2>
+      
+      <p>At its most essential, Stasis takes a directory tree with <a href="#supported_markup_languages">supported template files</a> and renders them.</p>
+      
+      <div class="clear"></div>
+      <div class="highlight">
+      <pre><span class="go">project/</span>&#x000A;<span class="go">    index.html.haml</span>&#x000A;<span class="go">    images/</span>&#x000A;<span class="go">        image.png</span></pre>
+      </div>
+      <p>Example directory structure<img src="arrow.png" class="arrow"></p>
+      
+      <!-- language:console -->
+      
+      
+      
+      <div class="clear"></div>
+      <div class="highlight">
+      <pre><span class="gp">$</span> <span class="nb">cd </span>project&#x000A;<span class="gp">$</span> <span class="sr">stasis</span></pre>
+      </div>
+      <p>Run <code>stasis</code><img src="arrow.png" class="arrow"></p>
+      
+      <!-- highlight:stasis language:console -->
+      
+      
+      
+      <div class="clear"></div>
+      <div class="highlight">
+      <pre><span class="go">project/</span>&#x000A;<span class="go">    index.html.haml</span>&#x000A;<span class="go">    images/</span>&#x000A;<span class="go">        image.png</span>&#x000A;<span class="go">    <span class="sr">public/</span></span>&#x000A;<span class="go">        index.html</span>&#x000A;<span class="go">        images/</span>&#x000A;<span class="go">            image.png</span></pre>
+      </div>
+      <p>Stasis creates a <code>public</code> directory<img src="arrow.png" class="arrow"></p>
+      
+      <!-- highlight:public/ language:console -->
+      
+      
+      
+      <p><code>index.html.haml</code> becomes <code>public/index.html</code>.</p>
+      
+      <p>Unrecognized extensions are copied as-is (<code>image.png</code>).</p>
+      
+      <h2><a name="controllers" href="#controllers">Controllers</a></h2>
+      
+      <p>Controllers contain Ruby code that executes once before all templates render.</p>
+      
+      <div class="clear"></div>
+      <div class="highlight">
+      <pre><span class="go">project/</span>&#x000A;<span class="go">    <span class="sr">controller.rb</span></span>&#x000A;<span class="go">    index.html.haml</span>&#x000A;<span class="go">    styles/</span>&#x000A;<span class="go">        <span class="sr">controller.rb</span></span>&#x000A;<span class="go">        style.css.sass</span></pre>
+      </div>
+      <p>Example directory structure<img src="arrow.png" class="arrow"></p>
+      
+      <!-- highlight:controller.rb language:console -->
+      
+      
+      
+      <p>You may have a controller at any directory level.</p>
+      
+      <h2><a name="before" href="#before">Before</a></h2>
+      
+      <p>Use <code>before</code> blocks within <code>controller.rb</code> to execute code before a template renders.</p>
+      
+      <div class="clear"></div>
+      <div class="highlight">
+      <pre><span class="n">before</span> <span class="s1">'index.html.haml'</span> <span class="k">do</span>&#x000A;  <span class="vi">@something</span> <span class="o">=</span> <span class="kp">true</span>&#x000A;<span class="k">end</span></pre>
+      </div>
+      <p><code>controller.rb</code><img src="arrow.png" class="arrow"></p>
+      
+      
+      
+      <p><code>@something</code> is now available to the <code>index.html.haml</code> template.</p>
+      
+      <div class="clear"></div>
+      <div class="highlight">
+      <pre><span class="n">before</span> <span class="s1">'index.html.haml'</span><span class="p">,</span><span class="sr"> /.*html\.erb/</span> <span class="k">do</span>&#x000A;  <span class="vi">@something</span> <span class="o">=</span> <span class="kp">true</span>&#x000A;<span class="k">end</span></pre>
+      </div>
+      <p>The <code>before</code> method can take any number of paths and/or regular expressions<img src="arrow.png" class="arrow"></p>
+      
+      
+      
+      <h2><a name="layouts" href="#layouts">Layouts</a></h2>
+      
+      <div class="clear"></div>
+      <div class="highlight">
+      <pre><span class="o">%</span><span class="n">html</span>&#x000A;  <span class="o">%</span><span class="n">body</span><span class="o">=</span> <span class="k">yield</span></pre>
+      </div>
+      <p><code>layout.html.haml</code><img src="arrow.png" class="arrow"></p>
+      
+      
+      
+      <div class="clear"></div>
+      <div class="highlight">
+      <pre><span class="n">layout</span> <span class="s1">'layout.html.haml'</span></pre>
+      </div>
+      <p>In <code>controller.rb</code>, set the default layout<img src="arrow.png" class="arrow"></p>
+      
+      
+      
+      <div class="clear"></div>
+      <div class="highlight">
+      <pre><span class="n">layout</span> <span class="s1">'index.html.haml'</span> <span class="o">=&gt;</span> <span class="s1">'layout.html.haml'</span></pre>
+      </div>
+      <p>Set the layout for a particular template<img src="arrow.png" class="arrow"></p>
+      
+      
+      
+      <div class="clear"></div>
+      <div class="highlight">
+      <pre><span class="n">layout</span><span class="sr"> /.*html.haml/</span> <span class="o">=&gt;</span> <span class="s1">'layout.html.haml'</span></pre>
+      </div>
+      <p>Use a regular expression<img src="arrow.png" class="arrow"></p>
+      
+      
+      
+      <div class="clear"></div>
+      <div class="highlight">
+      <pre><span class="n">before</span> <span class="s1">'index.html.haml'</span> <span class="k">do</span>&#x000A;  <span class="n">layout</span> <span class="s1">'layout.html.haml'</span>&#x000A;<span class="k">end</span></pre>
+      </div>
+      <p>Set the layout from a <code>before</code> block<img src="arrow.png" class="arrow"></p>
+      
+      
+      
+      <h2><a name="render" href="#render">Render</a></h2>
+      
+      <div class="clear"></div>
+      <div class="highlight">
+      <pre><span class="o">%</span><span class="n">html</span>&#x000A;  <span class="o">%</span><span class="n">body</span><span class="o">=</span> <span class="n">render</span> <span class="s1">'_partial.html.haml'</span></pre>
+      </div>
+      <p>Within a template<img src="arrow.png" class="arrow"></p>
+      
+      
+      
+      <div class="clear"></div>
+      <div class="highlight">
+      <pre><span class="n">before</span> <span class="s1">'index.html.haml'</span> <span class="k">do</span>&#x000A;  <span class="vi">@partial</span> <span class="o">=</span> <span class="n">render</span> <span class="s1">'_partial.html.haml'</span>&#x000A;<span class="k">end</span></pre>
+      </div>
+      <p>Within a <code>before</code> block<img src="arrow.png" class="arrow"></p>
+      
+      
+      
+      <div class="clear"></div>
+      <div class="highlight">
+      <pre><span class="n">render</span> <span class="ss">:text</span> <span class="o">=&gt;</span> <span class="s1">'Hello'</span></pre>
+      </div>
+      <p>Text<img src="arrow.png" class="arrow"></p>
+      
+      
+      
+      <div class="clear"></div>
+      <div class="highlight">
+      <pre><span class="n">render</span> <span class="s1">'index.html.haml'</span><span class="p">,</span> <span class="ss">:locals</span> <span class="o">=&gt;</span> <span class="p">{</span> <span class="ss">:x</span> <span class="o">=&gt;</span> <span class="kp">true</span> <span class="p">}</span></pre>
+      </div>
+      <p>Local variables<img src="arrow.png" class="arrow"></p>
+      
+      
+      
+      <div class="clear"></div>
+      <div class="highlight">
+      <pre><span class="n">render</span> <span class="s1">'index.html.haml'</span> <span class="p">{</span> <span class="s1">'Hello'</span> <span class="p">}</span></pre>
+      </div>
+      <p>Include a block for the template to <code>yield</code> to<img src="arrow.png" class="arrow"></p>
+      
+      
+      
+      <h2><a name="instead" href="#instead">Instead</a></h2>
+      
+      <div class="clear"></div>
+      <div class="highlight">
+      <pre><span class="n">before</span> <span class="s1">'index.html.haml'</span> <span class="k">do</span>&#x000A;  <span class="n">instead</span> <span class="n">render</span><span class="p">(</span><span class="s1">'subdirectory/index.html.haml'</span><span class="p">)</span>&#x000A;<span class="k">end</span></pre>
+      </div>
+      <p>The <code>instead</code> method changes the output of the template being rendered<img src="arrow.png" class="arrow"></p>
+      
+      
+      
+      <h2><a name="helpers" href="#helpers">Helpers</a></h2>
+      
+      <div class="clear"></div>
+      <div class="highlight">
+      <pre><span class="n">helpers</span> <span class="k">do</span>&#x000A;  <span class="k">def</span> <span class="nf">say_hello</span>&#x000A;    <span class="s1">'Hello'</span>&#x000A;  <span class="k">end</span>&#x000A;<span class="k">end</span></pre>
+      </div>
+      <p><code>controller.rb</code><img src="arrow.png" class="arrow"></p>
+      
+      
+      
+      <p>The <code>say_hello</code> method is now available to all <code>before</code> blocks and templates.</p>
+      
+      <h2><a name="ignore" href="#ignore">Ignore</a></h2>
+      
+      <p>Use the <code>ignore</code> method in <code>controller.rb</code> to ignore certain paths.</p>
+      
+      <div class="clear"></div>
+      <div class="highlight">
+      <pre><span class="n">ignore</span><span class="sr"> /\/</span><span class="n">_</span><span class="o">.</span><span class="n">*</span><span class="o">/</span></pre>
+      </div>
+      <p>Ignore filenames with an underscore at the beginning<img src="arrow.png" class="arrow"></p>
+      
+      
+      
+      <h2><a name="priority" href="#priority">Priority</a></h2>
+      
+      <p>Use the <code>priority</code> method in <code>controller.rb</code> to change the file process order.</p>
+      
+      <div class="clear"></div>
+      <div class="highlight">
+      <pre><span class="n">priority</span><span class="sr"> /.*txt/</span> <span class="o">=&gt;</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">'index.html.erb'</span> <span class="o">=&gt;</span> <span class="mi">1</span></pre>
+      </div>
+      <p>Copy <code>.txt</code> files before rendering the <code>index.html.erb</code> template<img src="arrow.png" class="arrow"></p>
+      
+      
+      
+      <p>The default priority is <code>0</code> for all files.</p>
+      
+      <h2><a name="usage" href="#usage">Usage</a></h2>
+      
+      <div class="clear"></div>
+      <h3><a name="command_line" href="#command_line">Command Line</a></h3>
+      
+      <p>Always execute the <code>stasis</code> command in the root directory of your project.</p>
+      
+      <div class="clear"></div>
+      <div class="highlight">
+      <pre><span class="gp">$</span> stasis <span class="sr">-d</span></pre>
+      </div>
+      <p>Development mode (auto-regenerate on save)<img src="arrow.png" class="arrow"></p>
+      
+      <!-- highlight:-d language:console -->
+      
+      
+      
+      <div class="clear"></div>
+      <div class="highlight">
+      <pre><span class="gp">$</span> stasis <span class="sr">-d</span> 3000</pre>
+      </div>
+      <p>Specify a port to start an HTTP server<img src="arrow.png" class="arrow"></p>
+      
+      <!-- highlight:-d language:console -->
+      
+      
+      
+      <div class="clear"></div>
+      <div class="highlight">
+      <pre><span class="gp">$</span> stasis <span class="sr">-o</span> index.html.haml,subdirectory</pre>
+      </div>
+      <p>Only render specific files or directories<img src="arrow.png" class="arrow"></p>
+      
+      <!-- highlight:-o language:console -->
+      
+      
+      
+      <div class="clear"></div>
+      <div class="highlight">
+      <pre><span class="gp">$</span> stasis -p ../public</pre>
+      </div>
+      <p>Change the public (destination) directory<img src="arrow.png" class="arrow"></p>
+      
+      <!-- highlight:-o language:console -->
+      
+      
+      
+      <div class="clear"></div>
+      <h3><a name="ruby_library" href="#ruby_library">Ruby Library</a></h3>
+      
+      <div class="clear"></div>
+      <div class="highlight">
+      <pre><span class="n">stasis</span> <span class="o">=</span> <span class="no">Stasis</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s1">'/path/to/project/root'</span><span class="p">)</span></pre>
+      </div>
+      <p>Instantiate a <code>Stasis</code> object<img src="arrow.png" class="arrow"></p>
+      
+      
+      
+      <div class="clear"></div>
+      <div class="highlight">
+      <pre><span class="n">stasis</span> <span class="o">=</span> <span class="no">Stasis</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s1">'/project'</span><span class="p">,</span> <span class="s1">'/html'</span><span class="p">)</span></pre>
+      </div>
+      <p>Optionally specify a destination directory<img src="arrow.png" class="arrow"></p>
+      
+      
+      
+      <div class="clear"></div>
+      <div class="highlight">
+      <pre><span class="n">stasis</span><span class="o">.</span><span class="n">render</span></pre>
+      </div>
+      <p>Render all templates<img src="arrow.png" class="arrow"></p>
+      
+      
+      
+      <div class="clear"></div>
+      <div class="highlight">
+      <pre><span class="n">stasis</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="s1">'index.html.haml'</span><span class="p">,</span> <span class="s1">'subdirectory'</span><span class="p">)</span></pre>
+      </div>
+      <p>Render a specific template or directory<img src="arrow.png" class="arrow"></p>
+      
+      
+      
+      <h2><a name="more" href="#more">More</a></h2>
+      
+      <div class="clear"></div>
+      <h3><a name="supported_markup_languages" href="#supported_markup_languages">Supported Markup Languages</a></h3>
+      
+      <div class="clear"></div>
+      <div class="highlight">
+      <pre><span class="go">ENGINE                     FILE EXTENSIONS</span>&#x000A;<span class="go">-------------------------- -----------------------</span>&#x000A;<span class="go">ERB                        .erb, .rhtml</span>&#x000A;<span class="go">Interpolated String        .str</span>&#x000A;<span class="go">Erubis                     .erb, .rhtml, .erubis</span>&#x000A;<span class="go">Haml                       .haml</span>&#x000A;<span class="go">Sass                       .sass</span>&#x000A;<span class="go">Scss                       .scss</span>&#x000A;<span class="go">Less CSS                   .less</span>&#x000A;<span class="go">Builder                    .builder</span>&#x000A;<span class="go">Liquid                     .liquid</span>&#x000A;<span class="go">RDiscount                  .markdown, .mkd, .md</span>&#x000A;<span class="go">Redcarpet                  .markdown, .mkd, .md</span>&#x000A;<span class="go">BlueCloth                  .markdown, .mkd, .md</span>&#x000A;<span class="go">Kramdown                   .markdown, .mkd, .md</span>&#x000A;<span class="go">Maruku                     .markdown, .mkd, .md</span>&#x000A;<span class="go">RedCloth                   .textile</span>&#x000A;<span class="go">RDoc                       .rdoc</span>&#x000A;<span class="go">Radius                     .radius</span>&#x000A;<span class="go">Markaby                    .mab</span>&#x000A;<span class="go">Nokogiri                   .nokogiri</span>&#x000A;<span class="go">CoffeeScript               .coffee</span>&#x000A;<span class="go">Creole (Wiki markup)       .wiki, .creole</span>&#x000A;<span class="go">WikiCloth (Wiki markup)    .wiki, .mediawiki, .mw</span>&#x000A;<span class="go">Yajl                       .yajl</span></pre>
+      </div>
+      <p>Stasis uses <a href="https://github.com/rtomayko/tilt">Tilt</a> to support the following template engines<img src="arrow.png" class="arrow"></p>
+      
+      <!-- language:console -->
+      
+      
+      
+      <div class="clear"></div>
+      <h3><a name="server_mode" href="#server_mode">Server Mode</a></h3>
+      
+      <p>Stasis can run as a server that uses <a href="http://redis.io">redis</a> to wait for render jobs.</p>
+      
+      <div class="clear"></div>
+      <div class="highlight">
+      <pre><span class="gp">$</span> stasis <span class="sr">-s</span> localhost:6379/0</pre>
+      </div>
+      <p>Stasis server that uses redis on port 6379<img src="arrow.png" class="arrow"></p>
+      
+      <!-- highlight:-s language:console -->
+      
+      
+      
+      <div class="clear"></div>
+      <div class="highlight">
+      <pre><span class="no">Stasis</span><span class="o">::</span><span class="no">Server</span><span class="o">.</span><span class="n">push</span><span class="p">(</span>&#x000A;  <span class="c1"># Paths to render</span>&#x000A;  <span class="ss">:paths</span> <span class="o">=&gt;</span> <span class="o">[</span> <span class="s2">"index.html.haml"</span><span class="p">,</span> <span class="s2">"subdirectory"</span> <span class="o">]</span><span class="p">,</span>&#x000A;&#x000A;  <span class="c1"># Made available to views as `params`</span>&#x000A;  <span class="ss">:params</span> <span class="o">=&gt;</span> <span class="p">{},</span>&#x000A;&#x000A;  <span class="c1"># Redis address</span>&#x000A;  <span class="ss">:redis</span> <span class="o">=&gt;</span> <span class="s2">"localhost:6379/0"</span><span class="p">,</span>&#x000A;&#x000A;  <span class="c1"># Return rendered templates (false by default)</span>&#x000A;  <span class="ss">:return</span> <span class="o">=&gt;</span> <span class="kp">false</span><span class="p">,</span>&#x000A;&#x000A;  <span class="c1"># Block until templates generate (false by default)</span>&#x000A;  <span class="ss">:wait</span> <span class="o">=&gt;</span> <span class="kp">false</span><span class="p">,</span>&#x000A;&#x000A;  <span class="c1"># Write to the filesystem (true by default)</span>&#x000A;  <span class="ss">:write</span> <span class="o">=&gt;</span> <span class="kp">true</span><span class="p">,</span>&#x000A;&#x000A;  <span class="c1"># Cache ttl for returned templates (nil by default)</span>&#x000A;  <span class="ss">:ttl</span> <span class="o">=&gt;</span> <span class="kp">nil</span><span class="p">,</span>&#x000A;&#x000A;  <span class="c1"># Force write even if cached (false by default)</span>&#x000A;  <span class="ss">:force</span> <span class="o">=&gt;</span> <span class="kp">false</span>&#x000A;<span class="p">)</span></pre>
+      </div>
+      <p>Push to the server (in Ruby)<img src="arrow.png" class="arrow"></p>
+      
+      
+      
+      <div class="clear"></div>
+      <h3><a name="this_web_site" href="#this_web_site">This Web Site</a></h3>
+      
+      <p><a href="https://github.com/winton/stasis/tree/master/site">Take a look at the Stasis project</a> that automatically generated this web site from the project <a href="https://github.com/winton/stasis/blob/master/README.md">README</a>.</p>
       <div class='clear'></div>
+      <h3>
+        <a href='#thanks' name='thanks'>Thanks</a>
+      </h3>
+      <p>
+        Please follow the project on Github:
+        <br />
+        <iframe allowtransparency='true' frameborder='0' height='20px' scrolling='0' src='http://markdotto.github.com/github-buttons/github-btn.html?user=winton&amp;repo=stasis&amp;type=watch&amp;count=true' width='110px'></iframe>
+        <br />
+        Follow Winton Welsh on Twitter for updates:
+        <br />
+        <a class='twitter-follow-button' data-show-count='false' href='https://twitter.com/wintonius'>Follow @wintonius</a>
+      </p>
     </div>
     <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js' type='text/javascript'></script>
     <script src='stasis.js' type='text/javascript'></script>
+    <script type='text/javascript'>
+      //<![CDATA[
+        !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
+      //]]>
+    </script>
   </body>
 </html>

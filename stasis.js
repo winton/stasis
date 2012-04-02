@@ -1,5 +1,6 @@
 (function() {
   var highlightNav, smoothScroll;
+
   smoothScroll = function() {
     return $('a[href*=#]').click(function() {
       var anchor, ran, target;
@@ -20,6 +21,7 @@
       return false;
     });
   };
+
   highlightNav = function() {
     var anchor_links, anchors, positions, scrollHappened;
     anchors = $('h2 a[name]');
@@ -51,8 +53,10 @@
     $(window).scroll(scrollHappened);
     return scrollHappened();
   };
+
   $(function() {
     smoothScroll();
     return highlightNav();
   });
+
 }).call(this);

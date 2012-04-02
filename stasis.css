@@ -65,6 +65,18 @@ ul {
     transform: scaleX(-1);
     filter: fliph; }
 
+#share {
+  margin-top: -20px;
+  text-align: center; }
+  #share a, #share iframe {
+    margin-top: 20px;
+    opacity: 0.6; }
+  #share a:hover, #share iframe:hover {
+    opacity: 1; }
+  #share iframe {
+    margin-left: 4px;
+    margin-right: 5px; }
+
 #tm {
   font-size: 19.4px;
   font-weight: 700;
