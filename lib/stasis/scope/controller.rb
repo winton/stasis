@@ -23,9 +23,6 @@ class Stasis
       # Temporarily set path variables.
       @_stasis.path = path
 
-      # Change current working directory.
-      Dir.chdir(File.dirname(path))
-      
       # Evaluate `controller.rb`.
       instance_eval(File.read(path), path)
 
