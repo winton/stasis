@@ -71,6 +71,9 @@ class Stasis
   # `String` -- the root path passed to `Stasis.new`.
   attr_accessor :root
   
+  # `String` -- the view output from Tilt.
+  attr_accessor :output
+  
   def initialize(root, *args)
     @options = {}
     @options = args.pop if args.last.is_a?(::Hash)
@@ -217,6 +220,9 @@ class Stasis
           @action._render
         end
       
+      # Set @output instance variable for manipulation from within plugins
+      @output = view
+      
       # Trigger all plugin `after_render` events.
       trigger(:after_render)
 
@@ -241,16 +247,16 @@ class Stasis
       end
 
       # If markup was rendered...
-      if view
+      if @output
         # Write the rendered markup to the destination.
         if render_options[:write] != false
           File.open(dest, 'w') do |f|
-            f.write(view)
+            f.write(@output)
           end
         end
         # Collect render output.
         if render_options[:collect]
-          collect[relative[1..-1]] = view
+          collect[relative[1..-1]] = @output
         end
       # If markup was not rendered and the path exists...
       elsif File.exists?(@path)
@@ -259,13 +265,16 @@ class Stasis
           FileUtils.cp(@path, dest)
         end
       end
+      
+      # Trigger all plugin `after_write` events. Only fires if view was created.
+      trigger(:after_write)
     end
 
     # Trigger all plugin `after_all` events, passing the `Stasis` instance.
     trigger(:after_all)
 
     # Unset class-level instance variables.
-    @action, @path = nil, nil
+    @action, @path, @output = nil, nil, nil
 
     # Respond with collected render output if `collect` option given.
     collect if render_options[:collect]
