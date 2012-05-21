@@ -3,8 +3,6 @@ Stasis
 
 Stasis is a dynamic framework for static sites.
 
-[![Build Status](https://secure.travis-ci.org/winton/stasis.png)](http://travis-ci.org/winton/stasis)
-
 Install
 -------
 
