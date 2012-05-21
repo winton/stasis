@@ -25,6 +25,7 @@ class Stasis
         action_method
         after_all
         after_render
+        after_write
         before_all
         before_render
         controller_method
