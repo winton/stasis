@@ -6,7 +6,7 @@ $:.unshift lib unless $:.include?(lib)
 
 Gem::Specification.new do |s|
   s.name        = "stasis"
-  s.version     = '0.1.22'
+  s.version     = '0.1.23'
   s.platform    = Gem::Platform::RUBY
   s.authors     = [ 'Winton Welsh' ]
   s.email       = [ 'mail@wintoni.us' ]
