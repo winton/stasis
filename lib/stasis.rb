@@ -80,7 +80,7 @@ class Stasis
     
     @root = File.expand_path(root)
     @destination = args[0] || @root + '/public'
-    @destination = File.expand_path(@destination, @root)
+    @destination = File.expand_path(@destination, Dir.pwd)
 
     load_paths unless options[:development]
 
