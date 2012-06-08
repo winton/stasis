@@ -10,6 +10,7 @@ slop = Slop.parse :help => true do
   on :o, :only, "Only generate specific files\t(comma-separated)", :optional => true, :as => Array
   on :p, :public, "Public directory path", :optional => true
   on :s, :server, "Server mode\t\t\t(default redis host: localhost:6379/0)", :optional => true, :default => "localhost:6379/0"
+  on :r, :source, "Source directory path\t(defaults to current directory)", :optional => true, :default => Dir.pwd
 end
 
 options = slop.to_hash
@@ -17,16 +18,16 @@ options.delete(:server) unless slop.server?
 
 if slop.development?
   require 'stasis/dev_mode'
-  Stasis::DevMode.new(Dir.pwd, options)
+  Stasis::DevMode.new(slop[:source], options)
 elsif slop.only? && slop.public?
-  Stasis.new(Dir.pwd, slop[:public], options).render(*slop[:only])
+  Stasis.new(slop[:source], slop[:public], options).render(*slop[:only])
 elsif slop.only?
-  Stasis.new(Dir.pwd, options).render(*slop[:only])
+  Stasis.new(slop[:source], options).render(*slop[:only])
 elsif slop.server?
   require 'stasis/server'
-  Stasis::Server.new(Dir.pwd, options)
+  Stasis::Server.new(slop[:source], options)
 elsif slop.public?
-  Stasis.new(Dir.pwd, slop[:public], options).render(*(slop[:only].to_a))
+  Stasis.new(slop[:source], slop[:public], options).render(*(slop[:only].to_a))
 else
-  Stasis.new(Dir.pwd, options).render
+  Stasis.new(slop[:source], options).render
 end
