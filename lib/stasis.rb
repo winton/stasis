@@ -179,15 +179,15 @@ class Stasis
         Tilt.mappings.keys.detect do |ext|
           File.extname(@path)[1..-1] == ext
         end
+
+      # Change current working directory.
+      Dir.chdir(File.dirname(@path))
       
       # Trigger all plugin `before_render` events.
       trigger(:before_render)
 
       # Skip if `@path` set to `nil`.
       next unless @path
-
-      # Change current working directory.
-      Dir.chdir(File.dirname(@path))
 
       # Render the view.
       view =
