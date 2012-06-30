@@ -115,7 +115,7 @@ class Stasis
     @controller = Controller.new(self)
 
     # Reload controllers
-    Dir["#{@root}/**/controller.rb"].each do |path|
+    Dir["#{@root}/**/controller.rb"].sort.each do |path|
       @controller._add(path) unless path[0..@destination.length-1] == @destination
     end
   end
