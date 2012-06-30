@@ -28,6 +28,8 @@ $:.unshift File.dirname(__FILE__)
 # 'stasis/server'. Those are demand-loaded when the corresponding command-line
 # options are passed.
 
+require 'ext/string'
+
 require 'stasis/options'
 require 'stasis/plugin'
 

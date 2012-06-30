@@ -5,15 +5,14 @@ require File.expand_path(File.dirname(__FILE__) + "/../lib/stasis")
 gem "slop", "3.3.2"
 require 'slop'
 
-slop = Slop.parse :help => true do
-  on :d, :development, "Development mode\t\t(auto-regenerate)", :optional => true, :as => Integer
-  on :o, :only, "Only generate specific files\t(comma-separated)", :optional => true, :as => Array
-  on :p, :public, "Public directory path", :optional => true
-  on :s, :server, "Server mode\t\t\t(default redis host: localhost:6379/0)", :optional => true, :default => "localhost:6379/0"
+slop = Slop.parse :help => true, :optional_arguments => true do
+  on :d, :development, "Development mode", :as => Integer
+  on :o, :only, "Only generate specific files (comma-separated)", :as => Array
+  on :p, :public, "Public directory path"
 end
 
+exit if slop.help?
 options = slop.to_hash
-options.delete(:server) unless slop.server?
 
 if slop.development?
   require 'stasis/dev_mode'
@@ -22,9 +21,6 @@ elsif slop.only? && slop.public?
   Stasis.new(Dir.pwd, slop[:public], options).render(*slop[:only])
 elsif slop.only?
   Stasis.new(Dir.pwd, options).render(*slop[:only])
-elsif slop.server?
-  require 'stasis/server'
-  Stasis::Server.new(Dir.pwd, options)
 elsif slop.public?
   Stasis.new(Dir.pwd, slop[:public], options).render(*(slop[:only].to_a))
 else
