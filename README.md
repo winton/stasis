@@ -268,44 +268,6 @@ Stasis uses [Tilt](https://github.com/rtomayko/tilt) to support the following te
     WikiCloth (Wiki markup)    .wiki, .mediawiki, .mw
     Yajl                       .yajl
 
-### Server Mode
-
-Stasis can run as a server that uses [redis](http://redis.io) to wait for render jobs.
-
-Stasis server that uses redis on port 6379:
-
-<!-- highlight:-s language:console -->
-
-    $ stasis -s localhost:6379/0
-
-Push to the server (in Ruby):
-
-    Stasis::Server.push(
-      # Paths to render
-      :paths => [ "index.html.haml", "subdirectory" ],
-
-      # Made available to views as `params`
-      :params => {},
-
-      # Redis address
-      :redis => "localhost:6379/0",
-
-      # Return rendered templates (false by default)
-      :return => false,
-
-      # Block until templates generate (false by default)
-      :wait => false,
-
-      # Write to the filesystem (true by default)
-      :write => true,
-
-      # Cache ttl for returned templates (nil by default)
-      :ttl => nil,
-
-      # Force write even if cached (false by default)
-      :force => false
-    )
-
 ### This Web Site
 
 [Take a look at the Stasis project](https://github.com/winton/stasis/tree/master/site) that automatically generated this web site from the project [README](https://github.com/winton/stasis/blob/master/README.md).
