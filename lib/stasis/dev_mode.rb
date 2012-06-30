@@ -1,4 +1,4 @@
-gem "directory_watcher", "~> 1.4.1"
+gem "directory_watcher", "1.4.1"
 require 'directory_watcher'
 
 require 'logger'

@@ -1,5 +1,5 @@
-gem "redis", "~> 2.2.2"
-gem "yajl-ruby", "~> 1.0.0"
+gem "redis", "3.0.1"
+gem "yajl-ruby", "1.1.0"
 
 require 'digest/sha1'
 require 'redis'
