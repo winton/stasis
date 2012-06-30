@@ -18,7 +18,7 @@ end
 
 # Activate the [Tilt][ti] gem.
 
-gem "tilt", "~> 1.3.3"
+gem "tilt", "1.3.3"
 
 # Add the project directory to the load paths.
 
