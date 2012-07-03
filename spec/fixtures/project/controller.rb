@@ -41,6 +41,10 @@ before 'before_non_existent.html' do
   instead render(:path => '_partial.html.haml')
 end
 
+before 'before_render_locals.html.haml' do
+  instead render(:path => '_locals.html.haml', :locals => { :x => true })
+end
+
 # Helpers
 
 helpers do

@@ -20,4 +20,12 @@ describe Stasis::Render do
     $files['no_controller/index.html'].should =~ /render from root\nroot/
     $files['no_controller/index.html'].should =~ /render from subdirectory\nsubdirectory/
   end
+
+  it "should render locals into before_render_locals.html" do
+    $files['before_render_locals.html'].should =~ /true/
+  end
+
+  it "should render locals into subdirectory/before_render_locals.html" do
+    $files['subdirectory/before_render_locals.html'].should =~ /true/
+  end
 end
