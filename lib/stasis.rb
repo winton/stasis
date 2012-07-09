@@ -296,8 +296,10 @@ class Stasis
   # Add a plugin to all existing controller instances. This method should be called by
   # all external plugins.
   def self.register(plugin)
-    @instances.each do |stasis|
-      stasis.add_plugin(plugin)
+    if @instances
+      @instances.each do |stasis|
+        stasis.add_plugin(plugin)
+      end
     end
   end
 
