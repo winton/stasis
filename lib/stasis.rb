@@ -61,6 +61,9 @@ class Stasis
   # `String` -- changes with each iteration of the main loop within `Stasis#render`.
   attr_accessor :path
 
+  # `String` -- changes with each iteration of the main loop within `Stasis#render`.
+  attr_accessor :dest
+
   # `Array` -- all paths in the project that Stasis will act upon.
   attr_accessor :paths
 
@@ -233,26 +236,26 @@ class Stasis
 
       # Add `destination` (as specified from `Stasis.new`) to front of relative
       # destination.
-      dest = "#{destination}#{relative}"
+      @dest = "#{destination}#{relative}"
 
       # Cut off the extension if the extension is supported by [Tilt][ti].
-      dest =
-        if ext && File.extname(dest) == ".#{ext}"
-          dest[0..-1*ext.length-2]
+      @dest =
+        if ext && File.extname(@dest) == ".#{ext}"
+          @dest[0..-1*ext.length-2]
         else
-          dest
+          @dest
         end
 
       # Create the directories leading up to the destination.
       if render_options[:write] != false
-        FileUtils.mkdir_p(File.dirname(dest))
+        FileUtils.mkdir_p(File.dirname(@dest))
       end
 
       # If markup was rendered...
       if @output
         # Write the rendered markup to the destination.
         if render_options[:write] != false
-          File.open(dest, 'w') do |f|
+          File.open(@dest, 'w') do |f|
             f.write(@output)
           end
         end
@@ -264,10 +267,10 @@ class Stasis
       elsif File.exists?(@path)
         # Copy the file located at the path to the destination path.
         if render_options[:write] != false
-          FileUtils.cp(@path, dest)
+          FileUtils.cp(@path, @dest)
         end
       end
-      
+
       # Trigger all plugin `after_write` events. Only fires if view was created.
       trigger(:after_write)
     end
@@ -276,7 +279,7 @@ class Stasis
     trigger(:after_all)
 
     # Unset class-level instance variables.
-    @action, @path, @output = nil, nil, nil
+    @action, @path, @dest, @output = nil, nil, nil, nil
 
     # Respond with collected render output if `collect` option given.
     collect if render_options[:collect]
