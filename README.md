@@ -14,6 +14,13 @@ Install via [RubyGems](http://rubygems.org/pages/download):
 
     $ gem install stasis
 
+By default, Stasis uses [DirectoryWatcher](http://rubygems.org/gems/directory_watcher) to monitor file changes.  DirectoryWatcher scans the file system at periodic intervals looking for changes.  If you are on OSX, you can install the [rb-fsevent](https://rubygems.org/gems/rb-fsevent) gem to tie into OSX's file event API and reduce the impact on your hard drive and CPU.
+
+<!-- language:console -->
+
+    $ gem install rb-fsevent
+
+
 Example
 -------
 
