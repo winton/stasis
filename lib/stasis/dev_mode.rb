@@ -42,8 +42,16 @@ class Stasis
 
       if @options[:development].is_a?(::Integer)
         mime_types = WEBrick::HTTPUtils::DefaultMimeTypes
-        mime_types.store 'js', 'application/javascript'
+
+        additional_mime_types = @options[:mime_types]
         
+        additional_mime_types.each do |extension, mimetype|
+          mime_types.store extension, mimetype
+          puts "add mime type #{mimetype} with extension .#{extension}"
+        end
+
+        mime_types.store 'js', 'application/javascript'
+
         server  = WEBrick::HTTPServer.new(
           :AccessLog => [ nil, nil ],
           :DocumentRoot => @stasis.destination,
