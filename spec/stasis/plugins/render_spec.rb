@@ -36,4 +36,12 @@ describe Stasis::Render do
   it "should render locals into subdirectory/render_locals.html" do
     $files['subdirectory/render_locals.html'].should =~ /true/
   end
+
+  it "should respect Stasis::Options.set_template_option settings in template_options.css" do
+    $files['template_options.css'].should =~ /pass: true/
+  end
+
+  it "should respect Stasis::Options.set_template_option settings in before blocks template_options.html" do
+    $files['template_options.css'].should =~ /pass: true/
+  end
 end
