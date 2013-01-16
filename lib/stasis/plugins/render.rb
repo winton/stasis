@@ -20,9 +20,10 @@ class Stasis
       callback = options[:callback]
       locals = options[:locals]
       path = options[:path]
+      ext = File.extname(path.to_s)[1..-1]
       scope = options[:scope]
       text = options[:text]
-      template_options = options[:template]
+      template_options = Options.get_template_option(ext).merge( options[:template] || {} )
 
       if @stasis.controller
         path = @stasis.controller._resolve(path)
@@ -40,7 +41,7 @@ class Stasis
           end
 
           output =
-            if Tilt.mappings.keys.include?(File.extname(path)[1..-1])
+            if Tilt.mappings.keys.include?(ext)
               scope = options[:scope] ||= @stasis.action
               tilt = Tilt.new(path, nil, template_options)
               if block_given?
