@@ -3,10 +3,16 @@
 
 require "#{File.dirname(__FILE__)}/plugin"
 
+Stasis::Options.set_template_option 'scss', { :load_paths => ["#{File.dirname(__FILE__)}/../mixins"] }
+
 # Before
 
 before 'index.html.haml' do
   @before_index_literal = :root
+end
+
+before 'template_options.html.haml' do
+  @css = render 'template_options.css.scss'
 end
 
 before 'no_controller/index.html.haml' do
