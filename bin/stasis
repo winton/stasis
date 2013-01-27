@@ -1,7 +1,6 @@
 #!/usr/bin/env ruby
 
 require File.expand_path(File.dirname(__FILE__) + "/../lib/stasis")
-
 gem "slop", "3.3.2"
 require 'slop'
 
@@ -9,10 +8,12 @@ slop = Slop.parse :help => true, :optional_arguments => true do
   on :d, :development, "Development mode", :as => Integer
   on :o, :only, "Only generate specific files (comma-separated)", :as => Array
   on :p, :public, "Public directory path"
+  on :m, :mime_types, "Additional Mime Types", :as => Array
 end
 
 exit if slop.help?
 options = slop.to_hash
+options[:mime_types] = Hash[*options[:mime_types]]
 
 if slop.development?
   require 'stasis/dev_mode'
