@@ -15,6 +15,12 @@ exit if slop.help?
 options = slop.to_hash
 options[:mime_types] = Hash[*options[:mime_types]]
 
+# Autoload Gemfile if present in pwd
+begin
+  require "bundler/setup"
+  Bundler.require
+rescue; end
+
 if slop.development?
   require 'stasis/dev_mode'
   Stasis::DevMode.new(Dir.pwd, options)
