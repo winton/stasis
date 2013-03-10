@@ -26,6 +26,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency "rake"
   s.add_development_dependency "rocco"
   s.add_development_dependency "rspec", "~> 1.0"
+  s.add_development_dependency "sass"
 
   s.add_dependency "directory_watcher", "1.4.1"
   s.add_dependency "slop", "3.3.2"
