@@ -241,7 +241,7 @@ class Stasis
       # Cut off the extension if the extension is supported by [Tilt][ti].
       @dest =
         if ext && File.extname(@dest) == ".#{ext}"
-          @dest[0..-1*ext.length-2]
+          determine_extension(@dest, ext)
         else
           @dest
         end
@@ -321,5 +321,15 @@ class Stasis
       plugin.class._priority
     end
     priorities.uniq.sort.each(&block)
+  end
+
+  def determine_extension(path, ext)
+    cutted = path[0..-1*ext.length-2]
+    if ['scss'].include?(ext) && !(cutted =~ /.*\.css$/)
+      cutted << '.css'
+    elsif ['coffee'].include?(ext) && !(cutted =~ /.*\.js$/)
+      cutted << '.js'
+    end
+    cutted
   end
 end
