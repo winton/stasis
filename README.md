@@ -52,6 +52,11 @@ Stasis creates a `public` directory:
 
 Unrecognized extensions are copied as-is (`image.png`).
 
+> NOTE:
+> Sass and CoffeeSript files have a default extensions.   
+> So `application.scss` becomes `application.css` and
+> `application.coffee` becomes `application.js`.
+
 Controllers
 -----------
 
