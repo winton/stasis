@@ -29,7 +29,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency "rspec", "~> 2.0"
   s.add_development_dependency "sass"
 
-  s.add_dependency "directory_watcher", "1.4.1"
-  s.add_dependency "slop", "3.3.2"
+  s.add_dependency "listen", "1.0.2"
+  s.add_dependency "slop", "3.4.4"
   s.add_dependency "tilt", "1.3.3"
 end

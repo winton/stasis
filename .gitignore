@@ -1,6 +1,7 @@
 .bundle
 .DS_Store
 *.gem
+*.swp
 docs
 dump.rdb
 Gemfile.lock
@@ -10,3 +11,4 @@ site/public
 spec/fixtures/project/.sass-cache
 spec/fixtures/project/public
 tmp
+vendor/bundle
