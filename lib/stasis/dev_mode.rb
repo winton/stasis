@@ -19,8 +19,7 @@ class Stasis
       @stasis = Stasis.new(*[ dir, @options[:public], @options ].compact)
 
       #relative_destination_path = @stasis.destination.
-      @listener = Listen.to(@stasis.root)
-        .change {render}
+      @listener = Listen.to(@stasis.root).change {render}
 
       if @stasis.destination.include?(@stasis.root)
         relative_destination_path = @stasis.destination.gsub(@stasis.root + '/', '')
