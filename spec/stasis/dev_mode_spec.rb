@@ -2,7 +2,7 @@ require 'spec_helper'
 require 'stasis/dev_mode'
 
 describe Stasis::DevMode do
-  let(:sample_app_dir) { File.expand_path(File.join(File.path(__FILE__), '..', '..', 'sample_app')) }
+  let(:sample_app_dir) { File.expand_path(File.join(File.dirname(__FILE__), '..', 'sample_app')) }
   let(:public_dir)     { 'custom_public' }
   let(:stasis)         { Stasis::DevMode.new(sample_app_dir, :public => public_dir) }
 
