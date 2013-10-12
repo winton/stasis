@@ -55,7 +55,9 @@ class Stasis
 
     # This method is bound to all actions. Set the `action` layout.
     def layout_action(path)
-      if path = @stasis.controller._resolve(path)
+      if !path
+        @stasis.action._layout = nil
+      elsif path = @stasis.controller._resolve(path)
         @stasis.action._layout = path
       end
     end
