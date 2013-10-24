@@ -18,7 +18,11 @@ end
 
 # Activate the [Tilt][ti] gem.
 
-gem "tilt", "1.3.3"
+gem "tilt", "1.4.1"
+
+# Tilt 1.3.4 introduced a plain HTML no-op "template" that breaks Stasis behavior
+# for copying files ending with .html. Remove that template handler.
+::Tilt.mappings.delete('html')
 
 # Add the project directory to the load paths.
 
