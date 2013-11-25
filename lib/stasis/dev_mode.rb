@@ -1,11 +1,11 @@
-gem 'directory_watcher', '1.4.1'
-require 'directory_watcher'
+require 'listen'
 
 require 'logger'
 require 'webrick'
 
 class Stasis
   class DevMode
+    attr_reader :listener
 
     def initialize(dir, options={})
       trap("INT") { exit }
@@ -18,33 +18,23 @@ class Stasis
 
       @stasis = Stasis.new(*[ dir, @options[:public], @options ].compact)
 
-      glob =
-        Dir.chdir(@stasis.root) do
-          # If destination is within root
-          if @stasis.destination[0..@stasis.root.length] == "#{@stasis.root}/"
-            relative = @stasis.destination[@stasis.root.length+1..-1] rescue nil
-            Dir["*"].inject(["*"]) do |array, path|
-              if File.directory?(path) && path != relative
-                array.push("#{path}/**/*")
-              end
-              array
-            end
-          else
-            [ "*", "**/*" ]
-          end
-        end
+      #relative_destination_path = @stasis.destination.
+      @listener = Listen.to(@stasis.root).change {render}
 
-      dw = DirectoryWatcher.new(@stasis.root)
-      dw.add_observer { render }
-      dw.glob = glob
-      dw.interval = 0.1
-      dw.start
+      if @stasis.destination.include?(@stasis.root)
+        relative_destination_path = @stasis.destination.gsub(@stasis.root + '/', '')
+        @listener.ignore Regexp.new(relative_destination_path)
+      end
+    end
 
+    def run
       if @options[:development].is_a?(::Integer)
+        @listener.start
+
         mime_types = WEBrick::HTTPUtils::DefaultMimeTypes
 
         additional_mime_types = @options[:mime_types]
-        
+
         additional_mime_types.each do |extension, mimetype|
           mime_types.store extension, mimetype
           puts "add mime type #{mimetype} with extension .#{extension}"
@@ -61,14 +51,14 @@ class Stasis
           :MimeTypes => mime_types,
           :Port => @options[:development]
         )
-        
+
         ['INT', 'TERM'].each do |signal|
           trap(signal) { server.shutdown }
         end
 
         server.start
       else
-        loop { sleep 1 }
+        @listener.start!
       end
     end
 

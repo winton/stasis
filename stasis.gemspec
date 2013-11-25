@@ -21,14 +21,15 @@ Gem::Specification.new do |s|
 
   s.add_development_dependency "albino"
   s.add_development_dependency "coffee-script"
+  s.add_development_dependency "guard-rspec"
   s.add_development_dependency "haml"
   s.add_development_dependency "nokogiri"
   s.add_development_dependency "rake"
   s.add_development_dependency "rocco"
-  s.add_development_dependency "rspec", "~> 1.0"
+  s.add_development_dependency "rspec", "~> 2.0"
   s.add_development_dependency "sass"
 
-  s.add_dependency "directory_watcher", "1.4.1"
-  s.add_dependency "slop", "3.3.2"
+  s.add_dependency "listen", "1.0.2"
+  s.add_dependency "slop", "3.4.4"
   s.add_dependency "tilt", "1.3.3"
 end
