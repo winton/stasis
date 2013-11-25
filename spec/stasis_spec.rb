@@ -18,6 +18,16 @@ describe Stasis do
     $files['custom_plugin.html'].should =~ /pass/
   end
 
+  context "default extensions for Sass and CoffeeScript files without infix extension" do
+    it "should use .css for no_middle_extension.scss" do
+      $files['no_middle_extension.css'].should_not be_nil
+    end
+
+    it "should use .js for no_middle_extension.coffee" do
+      $files['no_middle_extension.js'].should_not be_nil
+    end
+  end
+
   describe 'generate with :only option' do
     
     before(:each) do
