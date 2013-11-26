@@ -37,6 +37,7 @@ require 'stasis/scope'
 require 'stasis/scope/action'
 require 'stasis/scope/controller'
 
+require 'stasis/plugins/after'
 require 'stasis/plugins/before'
 require 'stasis/plugins/helpers'
 require 'stasis/plugins/ignore'
