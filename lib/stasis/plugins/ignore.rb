@@ -37,5 +37,15 @@ class Stasis
     def reset
       @ignore = {}
     end
+
+    # Returns true if controller.rb file was included in ignore list.
+    def ignore_controller?(path)
+      @ignore.keys.each do |key|
+        if (key.is_a?(::String) && key == path) || (key.is_a?(::Regexp) && key =~ path)
+          return true
+        end
+      end
+      false
+    end
   end
 end
