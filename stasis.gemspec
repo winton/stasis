@@ -30,5 +30,5 @@ Gem::Specification.new do |s|
 
   s.add_dependency "directory_watcher", "1.4.1"
   s.add_dependency "slop", "3.3.2"
-  s.add_dependency "tilt", "1.3.3"
+  s.add_dependency "tilt", "1.4.1"
 end
