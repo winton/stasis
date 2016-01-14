@@ -41,7 +41,7 @@ class Stasis
           end
 
           output =
-            if Tilt.mappings.keys.include?(ext)
+            if @stasis.tilt_registered?(ext)
               scope = options[:scope] ||= @stasis.action
               tilt = Tilt.new(path, nil, template_options)
               if block_given?
