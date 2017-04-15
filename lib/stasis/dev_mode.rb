@@ -1,5 +1,10 @@
-gem 'directory_watcher', '1.4.1'
-require 'directory_watcher'
+begin
+  gem 'rb-fsevent'
+  require 'rb-fsevent'
+rescue LoadError
+  gem 'directory_watcher', '1.4.1'
+  require 'directory_watcher'
+end
 
 require 'logger'
 require 'webrick'
@@ -18,27 +23,12 @@ class Stasis
 
       @stasis = Stasis.new(*[ dir, @options[:public], @options ].compact)
 
-      glob =
-        Dir.chdir(@stasis.root) do
-          # If destination is within root
-          if @stasis.destination[0..@stasis.root.length] == "#{@stasis.root}/"
-            relative = @stasis.destination[@stasis.root.length+1..-1] rescue nil
-            Dir["*"].inject(["*"]) do |array, path|
-              if File.directory?(path) && path != relative
-                array.push("#{path}/**/*")
-              end
-              array
-            end
-          else
-            [ "*", "**/*" ]
-          end
-        end
+      if defined?(FSEvent)
+        watch_directory_with_fsevent
+      else
+        watch_directory_with_directory_watcher
+      end
 
-      dw = DirectoryWatcher.new(@stasis.root)
-      dw.add_observer { render }
-      dw.glob = glob
-      dw.interval = 0.1
-      dw.start
 
       if @options[:development].is_a?(::Integer)
         mime_types = WEBrick::HTTPUtils::DefaultMimeTypes
@@ -73,6 +63,51 @@ class Stasis
     end
 
     private
+
+    def watch_directory_with_fsevent
+      Thread.new do
+        fsevent = FSEvent.new
+        @last_render_at = Time.now.to_i
+        fsevent.watch(@stasis.root, :latency => 0.1) do |directories|
+          # remove any directory elements that are in public
+          directories.reject!{|d| d.start_with?(@stasis.destination + '/')}
+          # if the only remaining directory is the root, check to see if any files were updated
+          directories.clear if directories.size == 1 && 
+                               directories.first == @stasis.root + '/' && 
+                               Dir["#{@stasis.root}/*"].none?{|p| File.file?(p) && File.mtime(p).to_i > @last_render_at}
+          # only if we have something to do, do it.
+          unless directories.empty?
+            render 
+            @last_render_at = Time.now.to_i
+          end
+        end
+        fsevent.run
+      end
+    end
+
+    def watch_directory_with_directory_watcher
+      glob =
+        Dir.chdir(@stasis.root) do
+          # If destination is within root
+          if @stasis.destination[0..@stasis.root.length] == "#{@stasis.root}/"
+            relative = @stasis.destination[@stasis.root.length+1..-1] rescue nil
+            Dir["*"].inject(["*"]) do |array, path|
+              if File.directory?(path) && path != relative
+                array.push("#{path}/**/*")
+              end
+              array
+            end
+          else
+            [ "*", "**/*" ]
+          end
+        end
+
+      dw = DirectoryWatcher.new(@stasis.root)
+      dw.add_observer { render }
+      dw.glob = glob
+      dw.interval = 0.1
+      dw.start
+    end
 
     def render
       puts "\n[#{Time.now.strftime("%Y-%m-%d %H:%M:%S")}]" + " Regenerating #{@options[:only] ? @options[:only].join(', ') : 'project'}...".yellow
