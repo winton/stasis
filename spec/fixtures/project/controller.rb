@@ -62,6 +62,7 @@ end
 # Ignore
 
 ignore /\/_.*/
+ignore 'ignored_subdirectory/controller.rb'
 
 # Layout
 

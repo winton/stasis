@@ -122,9 +122,14 @@ class Stasis
     # Create a controller instance.
     @controller = Controller.new(self)
 
+    # Get ignore plugin to determine which controllers to ignore
+    ignore = @plugins.find { |plugin| plugin.is_a?(Stasis::Ignore) }
+
     # Reload controllers
     Dir["#{@root}/**/controller.rb"].sort.each do |path|
-      @controller._add(path) unless path[0..@destination.length-1] == @destination
+      if !ignore.ignore_controller?(path)
+        @controller._add(path) unless path[0..@destination.length-1] == @destination
+      end
     end
   end
 
