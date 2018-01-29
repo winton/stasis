@@ -18,7 +18,10 @@ end
 
 # Activate the [Tilt][ti] gem.
 
-gem "tilt", "1.3.3"
+gem "tilt", "~> 2.0"
+
+# Tilt introduces a plain HTML no-op template that breaks Stasis behavior with HTML files.
+Tilt.default_mapping.lazy_map.delete('html')
 
 # Add the project directory to the load paths.
 
@@ -180,10 +183,8 @@ class Stasis
       @action = Action.new(self, :params => render_options[:params])
 
       # Set the extension if the `@path` extension is supported by [Tilt][ti].
-      ext =
-        Tilt.mappings.keys.detect do |ext|
-          File.extname(@path)[1..-1] == ext
-        end
+      ext = File.extname(@path)[1..-1]
+      ext = nil if !tilt_registered?(ext)
 
       # Change current working directory.
       Dir.chdir(File.dirname(@path))
@@ -311,6 +312,13 @@ class Stasis
     each_priority do |priority|
       @controller._send_to_plugin(priority, type)
     end
+  end
+
+  # Checks if extension has been registered with Tilt AND at least one template engine loaded.
+  def tilt_registered?(ext)
+    !!Tilt[ext]
+  rescue LoadError
+    false
   end
 
   private
