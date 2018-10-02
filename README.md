@@ -17,7 +17,7 @@ Install via [RubyGems](http://rubygems.org/pages/download):
 Example
 -------
 
-At its most essential, Stasis takes a directory tree with [supported template files](#supported_markup_languages) and renders them.
+At its most essential, Stasis takes a directory tree with [supported template files](#supported-markup-languages) and renders them.
 
 Example directory structure:
 
