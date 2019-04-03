@@ -58,6 +58,10 @@ before 'layout_action.html.haml' do
   layout 'layout.html.haml'
 end
 
+before 'layout_action_false.html.haml' do
+  layout false
+end
+
 before 'layout_action_from_root.html.haml' do
   layout '/layout.html.haml'
 end
